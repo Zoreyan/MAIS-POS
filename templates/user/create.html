@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid page-body-wrapper full-page-wrapper">
+    <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+    <div class="row mt-4 justify-content-center w-100">
+            <div class="col-12 col-md-6 col-lg-5 mx-auto p-3">
+
+                <div class="card">
+                    <div class="card-body px-3 py-4">
+                        <form method="post" for="formAuthentication">
+                            {% csrf_token %}
+                            <div class="form-group mb-3">
+                                <label>Изображение</label>
+                                {{ form.image }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Логин</label>
+                                {{ form.username }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Имя</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Фамилия</label>
+                                {{ form.last_name }}
+                            </div>
+                            <div class="form-group mb-3">
+                              <label>Телефон</label>
+                              {{ form.phone }}
+                          </div>
+                            <div class="form-group mb-3">
+                                <label>Пароль</label>
+                                {{ form.password1 }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Подтвердить пароль</label>
+                                {{ form.password2 }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Роль</label>
+                                {{ form.role }}
+                            </div>
+                            <div class="text-center d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-block enter-btn">Добавить</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible mt-3" role="alert">
+                        <h4 class="alert-heading d-flex align-items-center"><span class="alert-icon rounded-circle"><i class="bx bx-error"></i></span>Form error!!</h4>
+                        {% if form.username.errors %}
+                        <p>Username: {{ form.username.errors }}</p>
+                        {% endif %}
+                        {% if form.email.errors %}
+                        <p>Email: {{ form.email.errors }}</p>
+                        {% endif %}
+                        {% if form.password1.errors %}
+                        <p>Password: {{ form.password1.errors }}</p>
+                        {% endif %}
+                        {% if form.password2.errors %}
+                        <p>Confirm password: {{ form.password2.errors }}</p>
+                        {% endif %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

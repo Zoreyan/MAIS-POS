@@ -1,0 +1,97 @@
+{% load static %}
+<html lang="ru" data-bs-theme="light" data-layout-mode="fluid" data-menu-color="dark" data-topbar-color="light" data-layout-position="fixed" data-sidenav-size="condensed">
+<head>
+  <meta charset="utf-8">
+  <title>Вход | Hyper - Адаптивная админ-панель Bootstrap 5</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="Полнофункциональная админ-тема, которую можно использовать для создания CRM, CMS и других систем." name="description">
+  <meta content="Coderthemes" name="author">
+
+  <!-- Иконка сайта -->
+  <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+
+  <!-- Конфигурация темы -->
+  <script src="{% static 'assets/js/hyper-config.js' %}"></script>
+
+  <!-- CSS поставщиков -->
+  <link href="{% static 'assets/css/vendor.min.css' %}" rel="stylesheet" type="text/css">
+
+  <!-- CSS приложения -->
+  <link href="{% static 'assets/css/app-saas.min.css' %}" rel="stylesheet" type="text/css" id="app-style">
+
+  <!-- Boxicons -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body class="authentication-bg position-relative" cz-shortcut-listen="true">
+
+  <div class="position-absolute start-0 end-0 start-0 bottom-0 w-100 h-100">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 800 800">
+      <g fill-opacity="0.22">
+        <circle style="fill: rgba(var(--ct-primary-rgb), 0.1);" cx="400" cy="400" r="600"></circle>
+        <circle style="fill: rgba(var(--ct-primary-rgb), 0.2);" cx="400" cy="400" r="500"></circle>
+        <circle style="fill: rgba(var(--ct-primary-rgb), 0.3);" cx="400" cy="400" r="300"></circle>
+        <circle style="fill: rgba(var(--ct-primary-rgb), 0.4);" cx="400" cy="400" r="200"></circle>
+        <circle style="fill: rgba(var(--ct-primary-rgb), 0.5);" cx="400" cy="400" r="100"></circle>
+      </g>
+    </svg>
+  </div>
+
+  <div class="account-pages pt-2 pt-sm-5 pb-4 pb-sm-5 position-relative">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xxl-4 col-lg-5">
+          <div class="card">
+
+            <!-- Логотип -->
+            <div class="card-header py-4 text-center bg-primary">
+              <a href="index.html">
+                <span><img src="{% static 'assets/images/logo.png' %}" alt="logo" height="22"></span>
+              </a>
+            </div>
+
+            <div class="card-body p-4">
+              <div class="text-center w-75 m-auto">
+                <h4 class="text-dark-50 text-center pb-0 fw-bold">Войти</h4>
+                <p class="text-muted mb-4">Введите свой логин и пароль для доступа к админ-панели.</p>
+              </div>
+
+              <form action="" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="username" class="form-label">Логин</label>
+                  <input class="form-control" name="username" type="text" id="username" required="" placeholder="Введите ваш логин">
+                </div>
+
+                <div class="mb-3">
+                  <label for="password" class="form-label">Пароль</label>
+                  <div class="input-group input-group-merge">
+                    <input type="password" id="password" class="form-control" name="password" placeholder="Введите ваш пароль">
+                    <div class="input-group-text" data-password="false">
+                      <i class='bx bx-show' id="togglePassword"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3 text-center">
+                  <button class="btn btn-primary" type="submit">Войти</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer footer-alt">
+    2018 - <script>document.write(new Date().getFullYear())</script> 2024 © Hyper - Coderthemes.com
+  </footer>
+
+  <!-- JS поставщиков -->
+  <script src="{% static 'assets/js/vendor.min.js' %}"></script>
+
+  <!-- JS приложения -->
+  <script src="{% static 'assets/js/app.min.js' %}"></script>
+
+</body></html>

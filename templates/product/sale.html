@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Main Content -->
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row mb-2 align-items-center justify-content-between">
+            <div class="col-sm-auto d-flex align-items-center gap-2">
+              <input type="number" placeholder="Штрих код" maxlength="8" class="form-control barcode me-2" name="barcode" autofocus>
+              <input type="number" placeholder="Сумма оплаты" maxlength="8" class="form-control amount" name="amount">
+              <input type="number" placeholder="Скидка" maxlength="8" class="form-control discount" name="discount">
+              <input type="search" placeholder="добавить по названию" class="form-control search" name="search">
+            </div>
+            <div class="col-sm-auto">
+              <button type="button" class="btn btn-success d-flex align-items-center sell">
+                <i class="bx bx-plus-circle me-2"></i>Отправить
+              </button> 
+            </div>
+          </div>
+          
+          <div class="row mb-2">
+            <div class="col-sm-12">
+                <div class="product-search-results" style="display: none; max-height: 400px; overflow-y: auto;">
+                    <div class="row" id="search-results">
+                        <!-- Динамически добавляемые карточки товаров будут вставлены сюда -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+          <div class="row mb-2">
+            <div class="col-sm-4 product-info"></div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-centered w-100" id="products-datatable">
+              <thead class="table-light">
+                <tr>
+                  <th>Товар</th>
+                  <th>Штрих код</th>
+                  <th>Кол-во</th>
+                  <th>Цена</th>
+                  <th>Действия</th>
+                </tr>
+              </thead>
+              <tbody id="product-table-body">
+                <!-- Данные о товарах будут вставлены сюда динамически -->
+              </tbody>
+            </table>
+          </div>
+          <div id="total-sum" class="fs-5 fw-semibold">Итоговая сумма: 0</div>
+          <span class="d-flex align-items-center change fs-5 fw-semibold">Сдача: 0</span>
+        </div> <!-- end card-body-->
+      </div> <!-- end card-->
+    </div> <!-- end col -->
+  </div>
+
+  <script>
+    $(document).ready(function () {
+        let productList = []; // Определяем массив для списка продуктов
+
+        // Обработчик события для поиска товара по названию
+        $('.search').on('input', function () {
+            let searchQuery = $(this).val().toLowerCase();
+            
+            if (searchQuery.length >= 2) { // Начинаем поиск после ввода 2 символов
+                $.ajax({
+                    url: "{% url 'search-product' %}", // Убедитесь, что у вас есть этот URL для обработки поиска
+                    type: "GET",
+                    data: { query: searchQuery },
+                    success: function (data) {
+                        $('#search-results').empty(); // Очищаем предыдущие результаты
+                        $('.product-search-results').show(); // Показываем контейнер с результатами
+                        
+                        if (data.length > 0) {
+                            data.forEach(function(product) {
+                                $('#search-results').append(`
+                                    <div class="col-sm-2 mb-0">
+                                        <div class="card">
+                                            <div class="card-body text-center p-2">
+                                                <img src="${product.image}" alt="${product.name}" class="img-fluid mb-2" style="max-height: 50px;">
+                                                <h5 class="card-title">${product.name}</h5>
+                                                <p class="card-text">${product.bar_code}</p>
+                                                <p class="card-text">Кол: ${product.quantity}</p>
+                                                <button class="btn btn-primary add-product" data-barcode="${product.bar_code}">Добавить</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `);
+                            });
+                        } else {
+                            $('#search-results').append('<div class="col-sm-12">Товары не найдены.</div>');
+                        }
+                    },
+                    error: function () {
+                        $('#search-results').append('<div class="col-sm-12">Ошибка поиска товара.</div>');
+                    }
+                });
+            } else {
+                $('.product-search-results').hide(); // Скрываем результаты, если введено менее 2 символов
+            }
+        });
+
+        // Обработчик события для добавления товара из карточки
+        $(document).on('click', '.add-product', function () {
+            let barcode = $(this).data('barcode');
+            $('.barcode').val(barcode).trigger('keyup'); // Устанавливаем штрих-код в input и запускаем событие keyup
+            $('.product-search-results').hide(); // Скрываем результаты поиска после добавления
+        });
+    });
+</script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function () {
+        let barcodeInput = $('.barcode');
+        let amountInput = $('.amount');
+        let discountInput = $('.discount');
+        let productList = [];
+        let totalSum = 0;
+        let discountedSum = 0;
+
+        // Обработчик события для ввода штрих-кода
+        barcodeInput.on('keyup', function () {
+            let barcode = $(this).val();
+            if (barcode.length >= 8) {
+                $.ajax({
+                    url: "{% url 'get-product' %}",
+                    type: "GET",
+                    data: { bar_code: barcode },
+                    success: function (data) {
+                        if (data.quantity <= 0) {
+                          $('.product-info').empty();
+                            $('.product-info').append(`
+                                <div class="alert alert-danger bg-transparent text-danger" role="alert">
+                                    Недостаточно товара на складе!
+                                </div>
+                            `);
+                            return;
+                        }
+
+                        let existingProduct = productList.find(product => product.bar_code === data.bar_code);
+                        if (existingProduct) {
+                            if (existingProduct.quantity < data.quantity) {
+                                existingProduct.quantity++;
+                            } else {
+                                alert('Товара недостаточно на складе!');
+                            }
+                        } else {
+                            productList.unshift({
+                                id: data.id,
+                                name: data.name,
+                                bar_code: data.bar_code,
+                                quantity: 1,
+                                price: data.sale_price,
+                                stock: data.quantity,
+                                image: data.image
+                            });
+                        }
+                        updateTable();
+                    },
+                    error: function () {
+                      $('.product-info').empty();
+                        $('.product-info').append(`
+                            <div class="alert alert-danger bg-transparent text-danger" role="alert">
+                                Товар не найден!
+                            </div>
+                        `);
+                    }
+                });
+                $(this).val('');
+            }
+        });
+
+        $(document).on('click', '.increment', function () {
+    let barcode = $(this).data('bar_code');
+    const product = productList.find(product => product.bar_code == barcode);
+
+    // Очищаем старые сообщения об ошибках
+    $('.product-info').empty();
+
+    if (product && product.quantity < product.stock) {
+        product.quantity++;
+        updateTable();
+    } else {
+        // Показать сообщение об ошибке в интерфейсе
+        $('.product-info').append(`
+            <div class="alert alert-danger bg-transparent text-danger" role="alert">
+                Товара недостаточно на складе!
+            </div>
+        `);
+    }
+});
+
+        $(document).on('click', '.decrement', function () {
+            let barcode = $(this).data('bar_code');
+            const product = productList.find(product => product.bar_code == barcode);
+            if (product && product.quantity > 1) {
+                product.quantity--;
+                updateTable();
+            }
+        });
+
+        function updateTotal() {
+            totalSum = productList.reduce((sum, product) => sum + product.price * product.quantity, 0);
+            applyDiscount();
+            updateDisplay();
+        }
+
+        function applyDiscount() {
+            const discount = parseFloat(discountInput.val()) || 0;
+            discountedSum = Math.max(totalSum - discount, 0);
+        }
+
+        function updateDisplay() {
+            $('#total-sum').text('Итоговая сумма: ' + discountedSum.toFixed(2));
+            updateChange();
+        }
+
+        function updateChange() {
+            let amount = parseFloat(amountInput.val()) || 0;
+            $('.change').text('Сдача: ' + (amount - discountedSum).toFixed(2));
+        }
+
+        amountInput.on('input', updateChange);
+        discountInput.on('input', updateTotal);
+
+        function updateTable() {
+            $('#product-table-body').empty();
+            for (let product of productList) {
+                $('#product-table-body').append(`
+                    <tr>
+                        <td>${product.name}</td>
+                        <td>${product.bar_code}</td>
+                        <td class="product-quantity d-flex align-items-center gap-2">
+                            ${product.quantity}/${product.stock}
+                            <div class="d-flex flex-column">
+                                <span class="text-muted increment" data-bar_code="${product.bar_code}">
+                                    <i class='bx bx-chevron-up'></i>
+                                </span>
+                                <span class="text-muted decrement" data-bar_code="${product.bar_code}">
+                                    <i class='bx bx-chevron-down'></i>
+                                </span>
+                            </div>
+                        </td>
+                        <td>${product.price}</td>
+                        <td><button class="btn btn-danger delete-product" data-barcode="${product.bar_code}">Удалить</button></td>
+                    </tr>
+                `);
+            }
+            updateTotal();
+        }
+
+        // Удаление продукта
+      $(document).on('click', '.delete-product', function () {
+        let barcode = $(this).data('barcode');
+        
+        // Удаляем продукт из productList
+        productList = productList.filter(product => product.bar_code !== barcode);
+        
+        let product = productList.find(product => product.bar_code == barcode);
+
+        // Визуальный эффект удаления
+        $(this).closest('tr').fadeOut(300, function() {
+          $(this).remove();
+          totalSum -= product.price * product.quantity;
+          productList.splice(productList.indexOf(product), productList.indexOf(product) + 1);
+          updateTotal();
+          updateChange();
+        });
+      });
+
+        $('.sell').on('click', function () {
+            if (amountInput.val() < discountedSum) {
+              $('.product-info').empty();
+                $('.product-info').append(`
+                    <div class="alert alert-danger bg-transparent text-danger" role="alert">
+                        Недостаточно средств!
+                    </div>
+                `);
+                return false;
+            }
+            if (productList.length === 0) {
+              $('.product-info').empty();
+                $('.product-info').append(`
+                    <div class="alert alert-danger bg-transparent text-danger" role="alert">
+                        Введите хотя бы один товар!
+                    </div>
+                `);
+                return false;
+            }
+
+            let products = productList.map(product => ({
+                id: product.id,
+                quantity: product.quantity
+            }));
+
+            $.ajax({
+                url: "{% url 'create-sell-history' %}",
+                type: "POST",
+                data: {
+                    products: JSON.stringify(products),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    amount: amountInput.val(),
+                    change: amountInput.val() - discountedSum,
+                    discount: discountInput.val()
+                },
+                success: function () {
+                  $('.product-info').empty();
+                    $('.product-info').append(`
+                        <div class="alert alert-success bg-transparent text-success" role="alert">
+                            Продажа успешна!
+                        </div>
+                    `);
+                    productList = [];
+                    $('#product-table-body').empty();
+                    $('#total-sum').text('Итоговая сумма: 0');
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+  </script>
+</div>
+{% endblock %}

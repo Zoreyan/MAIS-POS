@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <form class="d-flex">
+                        <div class="input-group">
+                            <input type="month" class="form-control form-control-light" id="dash-daterange">
+                            <button class="input-group-text bg-primary border-primary text-white" type="submit">
+                                <i class='bx bx-check'></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <h4 class="page-title">Панель управления</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-sm-6 col-md-3">
+            <div class="card widget-flat">
+                <div class="card-body">
+                    <h5 class="text-muted fw-normal mt-0" title="Прибыль">Чистая прибыль</h5>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h2 class="mt-3 mb-3">{{ total_profit }} сом</h2>
+                        <i class='bx bxs-chevrons-up fs-1 text-success'></i>
+                    </div>
+                    <p class="mb-0 text-muted">
+                        <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> 5.27%</span>
+                        <span class="text-nowrap">С прошлого месяца</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-md-3">
+            <div class="card widget-flat">
+                <div class="card-body">
+                    <h5 class="text-muted fw-normal mt-0" title="Доход">Выручка</h5>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h2 class="mt-3 mb-3">{{ total_income }} сом</h2>
+                        <i class='bx bx-money fs-1 text-warning' ></i>
+                    </div>
+                    <p class="mb-0 text-muted">
+                        <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 1.08%</span>
+                        <span class="text-nowrap">С прошлого месяца</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-md-3">
+            <div class="card widget-flat">
+                <div class="card-body">
+                    <h5 class="text-muted fw-normal mt-0" title="Выручка">Объем продаж</h5>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h2 class="mt-3 mb-3">{{ total_revenue }} шт</h2>
+                        <i class='bx bx-objects-vertical-bottom  fs-1 text-info' ></i>
+                    </div>
+                    <p class="mb-0 text-muted">
+                        <span class="text-danger me-2"><i class="mdi mdi-arrow-down-bold"></i> 7.00%</span>
+                        <span class="text-nowrap">С прошлого месяца</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-md-3">
+            <div class="card widget-flat">
+                <div class="card-body">
+                    <h5 class="text-muted fw-normal mt-0" title="Рост">Расходы и поставки</h5>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h2 class="mt-3 mb-3">{{ growth }}%</h2>
+                        <i class='bx bxs-chevrons-down fs-1 text-danger'></i>
+                    </div>
+                    <p class="mb-0 text-muted">
+                        <span class="text-success me-2"><i class="mdi mdi-arrow-up-bold"></i> 4.87%</span>
+                        <span class="text-nowrap">С прошлого месяца</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card h-100">
+                <h5 class="card-header">График продаж</h5>
+                <div class="card-body">
+                    <div id="chart1" class="apex-charts"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <h4 class="card-header">Топ продаваемых товаров за этот месяц</h4>
+                <div class="card-body pt-0">
+                    <div class="table-responsive">
+                        <table class="table table-centered table-nowrap table-hover mb-0">
+                            <tbody>
+                                {% for product in sold_products %}
+                                <tr>
+                                    <td>
+                                        <h5 class="font-14 my-1 fw-normal">{{ product.name }}</h5>
+                                        <span class="text-muted font-13">Дата последней продажи:
+                                            {{ product.soldhistory_set.last.created|date:"d M Y" }}</span>
+                                    </td>
+                                    <td>
+                                        <h5 class="font-14 my-1 fw-normal">{{ product.sale_price }}c</h5>
+                                        <span class="text-muted font-13">Цена</span>
+                                    </td>
+                                    <td>
+                                        <h5 class="font-14 my-1 fw-normal">{{ product.total_quantity }}шт</h5>
+                                        <span class="text-muted font-13">Количество</span>
+                                    </td>
+                                    <td>
+                                        <h5 class="font-14 my-1 fw-normal">{{ product.total_sum }}c</h5>
+                                        <span class="text-muted font-13">Сумма</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <h4 class="card-header">Топ поставок товаров за этот месяц</h4>
+                <div class="card-body pt-0">
+                    <div class="table-responsive">
+                        <table class="table table-centered table-nowrap table-hover mb-0">
+                            <tbody>
+                                {% for product in sold_products %}
+                                <tr>
+                                    <td>
+                                        <h5 class="font-14 my-1 fw-normal">{{ product.name }}</h5>
+                                        <span class="text-muted font-13">Дата последней продажи:
+                                            {{ product.soldhistory_set.last.created|date:"d M Y" }}</span>
+                                    </td>
+                                    <td>
+                                        <h5 class="font-14 my-1 fw-normal">{{ product.sale_price }}c</h5>
+                                        <span class="text-muted font-13">Цена</span>
+                                    </td>
+                                    <td>
+                                        <h5 class="font-14 my-1 fw-normal">{{ product.total_quantity }}шт</h5>
+                                        <span class="text-muted font-13">Количество</span>
+                                    </td>
+                                    <td>
+                                        <h5 class="font-14 my-1 fw-normal">{{ product.total_sum }}c</h5>
+                                        <span class="text-muted font-13">Сумма</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: "{% url 'get-chart-data' %}",
+            success: function (data) {
+                var options = {
+                    chart: {
+                        height: 280,
+                        type: "area"
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    series: [
+                        {
+                            name: "Прибыль",
+                            data: data.profit
+                        }
+                    ],
+                    fill: {
+                        type: "gradient",
+                        gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.7,
+                            opacityTo: 0.9,
+                            stops: [0, 90, 100]
+                        }
+                    },
+                    xaxis: {
+                        categories: data.months,
+                    }
+                };
+
+                var chart1 = new ApexCharts(document.querySelector("#chart1"), options);
+                chart1.render();
+            }
+        });
+
+        $.ajax({
+            type: "GET",
+            url: "{% url 'get-top-products-data' %}",
+            success: function (data) {
+                var options = {
+                    series: data.product_sales,
+                    chart: {
+                        type: 'donut',
+                    },
+                    labels: data.product_names,
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 200
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                };
+
+                var chart2 = new ApexCharts(document.querySelector("#chart2"), options);
+                chart2.render();
+            }
+        });
+    });
+</script>
+{% endblock content %}

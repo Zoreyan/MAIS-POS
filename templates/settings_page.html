@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4 text-center">
+                Добавить продукт
+            </h2>
+            <img src="{{ request.user.shop.image.url }}" alt="" class="img-fluid mb-3 rounded" width="300" height="300">
+            <form method="post" enctype="multipart/form-data" class="row g-3">
+                {% csrf_token %}
+                {% if messages %}
+                <div class="row justify-content-center">
+                    <div class="col-5">
+                        <span class="badge bg-info p-2">
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-md-6">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}<span class="text-danger">*</span></label>
+                    <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" 
+                           class="form-control {% if form.name.errors %}is-invalid{% endif %}" 
+                           value="{{ form.name.value|default_if_none:'' }}">
+                    {% if form.name.errors %}
+                        <div class="invalid-feedback">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="{{ form.bar_code.id_for_label }}" class="form-label">{{ form.address.label }}</label>
+                    {{ form.address }}
+                    {% if form.address.errors %}
+                        <div class="invalid-feedback">{{ form.address.errors }}</div>
+                    {% endif %}
+                </div>
+
+
+                <div class="col-md-6">
+                    <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
+                    <input type="file" name="{{ form.image.name }}" id="{{ form.image.id_for_label }}" 
+                           class="form-control" 
+                           value="{{ form.image.value|default_if_none:'' }}">
+                    {% if form.image.errors %}
+                        <div class="invalid-feedback">{{ form.image.errors }}</div>
+                    {% endif %}
+                </div>
+
+
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary product-create-btn">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

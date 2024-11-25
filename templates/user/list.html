@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row mb-2">
+                        <div class="col-sm-5">
+                            <a href="{% url 'user-create' %}" class="btn btn-primary mb-2"><i class="bx bx-plus-circle me-2"></i>Добавить</a>
+                        </div>
+                    </div>
+    
+                    <div class="table-responsive">
+                        <table class="table table-centered table-striped dt-responsive nowrap w-100" id="products-datatable">
+                            <thead>
+                                <tr>
+                                    <th>Сотрудник</th>
+                                    <th>Телефон</th>
+                                    <th>Роль</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td class="table-user">
+                                        <img src="{% static 'assets/images/users/avatar-1.jpg' %}" alt="table-user" class="me-2 rounded-circle">
+                                        <a href="javascript:void(0);" class="text-body fw-semibold">{{ user.first_name }} {{ user.last_name }}</a>
+                                    </td>
+                                    <td>
+                                        {{ user.phone }}
+                                    </td>
+                                    <td>
+                                        {{ user.get_role_display }}
+                                    </td>
+    
+                                    <td>
+                                        <a href="javascript:void(0);" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                        <a href="javascript:void(0);" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div> <!-- end card-body-->
+            </div> <!-- end card-->
+        </div> <!-- end col -->
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,565 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>ThinkerSale - Автоматизация вашего бизнеса</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Premium Bootstrap 5 Landing Page Template" />
+        <meta name="keywords" content="bootstrap 5, premium, marketing, multipurpose" />
+        <meta content="Themesbrand" name="author" />
+        <!-- favicon -->
+        <link rel="shortcut icon" type="image/x-icon" style="object-fit: cover;" href="{% static 'landing/images/favicon.png' %}" />
+
+        <!-- css -->
+        <link href="{% static 'landing/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'landing/css/materialdesignicons.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'landing/css/style.min.css' %}" rel="stylesheet" type="text/css" />
+    </head>
+
+    <body data-bs-spy="scroll" data-bs-target="#navbar" data-bs-offset="20">
+
+        <!-- Loader -->
+
+        <!--Navbar Start-->
+        <nav class="navbar navbar-expand-lg fixed-top navbar-custo" id="navbar">
+            <div class="container">
+                <!-- LOGO -->
+                <a class="navbar-brand logo" href="#">
+                    <img src="{% static 'landing/images/logo-dark.png' %}" alt="" class="logo-dark" height="28" />
+                    <img src="{% static 'landing/images/logo-light.png' %}" alt="" class="logo-light" height="28" />
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav ms-auto navbar-center" id="navbar-navlist">
+                        <li class="nav-item">
+                            <a href="#home" class="nav-link">Главная</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#services" class="nav-link">Услуги</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#features" class="nav-link">Особенности</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#pricing" class="nav-link">Цены</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#contact" class="nav-link">Контакты</a>
+                        </li>
+                    </ul>
+                    <a href="#pricing" class="btn btn-sm rounded-pill nav-btn ms-lg-3">Купить сейчас</a>
+                </div>
+            </div>
+            <!-- end container -->
+        </nav>
+        <!-- Navbar End -->
+
+        <!-- Hero Start -->
+        <section class="hero-1 bg-center bg-primary position-relative" style="background-image: url({% static 'images/hero-1-bg.png' %});" id="home">
+            <div class="container">
+                <div class="row align-items-center hero-content">
+                    <div class="col-lg-5">
+                        <h1 class="text-white display-4 font-weight-semibold mb-4 hero-1-title">Упростите продажи с ThinkerSale</h1>
+                        <p class="text-white-70 mb-4 mb-lg-5">ThinkerSale - это облачная платформа, созданная для оптимизации процессов продаж. Мы помогаем бизнесам любого размера легко управлять товарами, отслеживать продажи и взаимодействовать с клиентами.</p>
+                        <a href="#pricing" class="btn btn-lg btn-light rounded-pill me-2">Начать</a>
+                        <div class="d-inline-block" data-bs-toggle="modal" data-bs-target="#watchvideomodal">
+                            <a href="javascript: void(0);" class="video-play-icon text-white">
+                                <span class="play-icon-circle align-middle me-2"><i class="icon-sm icon" data-feather="play"></i></span>
+                                <span>Ознакомительное видео!</span>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- end col -->
+                    <div class="col-lg-6 col-sm-10 mx-auto ms-lg-auto me-lg-0">
+                        <div class="mt-lg-0 mt-4">
+                            <img src="{% static 'landing/images/hero-1-img.png' %}" alt="Сервисный бизнес" class="img-md-responsive" />
+                        </div>
+                    </div><!-- end col -->
+                </div><!-- end row -->
+        
+                <!-- Modal -->
+                <div class="modal fade bd-example-modal-lg" id="watchvideomodal" data-keyboard="false" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content hero-modal-0 bg-transparent">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <video id="VisaChipCardVideo" class="w-100" controls="">
+                                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                <!-- Браузер не поддерживает тег <video> -->
+                            </video>
+                        </div>
+                    </div>
+                </div>
+                <!-- end modal -->
+            </div>
+            <!-- end container -->
+            <div class="hero-bottom-shape shape-light">
+                <img src="{% static 'landing/images/hero-1-bottom-shape.png' %}" alt="Светлая форма внизу" class="img-fluid d-block mx-auto" />
+            </div>
+            <div class="hero-bottom-shape shape-dark">
+                <img src="{% static 'landing/images/hero-1-bottom-shape-dark.png' %}" alt="Темная форма внизу" class="img-fluid d-block mx-auto" />
+            </div>
+            <!-- end hero shape -->
+        </section>
+        <!-- Hero End -->
+
+        <!-- Services start -->
+        <section class="section" id="services">
+            <div class="container">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-lg-7 text-center">
+                        <h2 class="fw-bold">Наши услуги</h2>
+                        <p class="text-muted">Оптимизируйте ваши процессы и увеличьте продажи с ThinkerSale — современным решением для автоматизации бизнеса.</p>
+                    </div>
+                </div>
+                <!-- end row -->
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="service-box text-center px-4 py-5 position-relative mb-4">
+                            <div class="service-box-content p-4">
+                                <div class="icon-mono service-icon avatar-md mx-auto mb-4">
+                                    <i class="" data-feather="box"></i>
+                                </div>
+                                <h4 class="mb-3 font-size-22">Автоматизация продаж</h4>
+                                <p class="text-muted mb-0">Оптимизируйте процессы продаж с помощью автоматизированных инструментов для ускорения работы вашего бизнеса.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+        
+                    <div class="col-lg-4">
+                        <div class="service-box text-center px-4 py-5 position-relative mb-4">
+                            <div class="service-box-content p-4">
+                                <div class="icon-mono service-icon avatar-md mx-auto mb-4">
+                                    <i class="" data-feather="layers"></i>
+                                </div>
+                                <h4 class="mb-3 font-size-22">Управление товарами</h4>
+                                <p class="text-muted mb-0">Легко управляйте товарами и запасами в реальном времени с нашим удобным интерфейсом.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+        
+                    <div class="col-lg-4">
+                        <div class="service-box text-center px-4 py-5 position-relative mb-4">
+                            <div class="service-box-content p-4">
+                                <div class="icon-mono service-icon avatar-md mx-auto mb-4">
+                                    <i class="" data-feather="server"></i>
+                                </div>
+                                <h4 class="mb-3 font-size-22">Аналитика и отчетность</h4>
+                                <p class="text-muted mb-0">Получите доступ к мощным инструментам аналитики и создавайте кастомизированные отчеты.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+        
+                    <div class="col-lg-4">
+                        <div class="service-box text-center px-4 py-5 position-relative mb-4">
+                            <div class="service-box-content p-4">
+                                <div class="icon-mono service-icon avatar-md mx-auto mb-4">
+                                    <i class="" data-feather="star"></i>
+                                </div>
+                                <h4 class="mb-3 font-size-22">Интеграция с платежными системами</h4>
+                                <p class="text-muted mb-0">Поддержка различных платежных систем для удобства ваших клиентов.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+        
+                    <div class="col-lg-4">
+                        <div class="service-box text-center px-4 py-5 position-relative mb-4">
+                            <div class="service-box-content p-4">
+                                <div class="icon-mono service-icon avatar-md mx-auto mb-4">
+                                    <i class="" data-feather="tablet"></i>
+                                </div>
+                                <h4 class="mb-3 font-size-22">Поддержка сканеров и мобильных устройств</h4>
+                                <p class="text-muted mb-0">Используйте сканеры для упрощения обработки заказов и доступа с мобильных устройств.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+        
+                    <div class="col-lg-4">
+                        <div class="service-box text-center px-4 py-5 position-relative mb-4">
+                            <div class="service-box-content p-4">
+                                <div class="icon-mono service-icon avatar-md mx-auto mb-4">
+                                    <i class="" data-feather="help-circle"></i>
+                                </div>
+                                <h4 class="mb-3 font-size-22">Обслуживание клиентов</h4>
+                                <p class="text-muted mb-0">Профессиональная техническая поддержка и консультации для вашего бизнеса.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </section>
+        
+        <!-- Services end -->
+
+        <!-- Features start -->
+        <section class="section bg-light" id="features">
+            <div class="container">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-lg-7 text-center">
+                        <h2 class="fw-bold">Наши функции</h2>
+                        <p class="text-muted">Современное решение для автоматизации бизнеса, которое включает в себя мощные инструменты для увеличения продаж и оптимизации процессов.</p>
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+                <div class="row align-items-center mb-5">
+                    <div class="col-md-5 order-2 order-md-1 mt-md-0 mt-5">
+                        <h2 class="mb-4">Идеальное решение для малого бизнеса</h2>
+                        <p class="text-muted mb-5">Наше программное обеспечение предлагает легкость в управлении запасами, анализе данных и автоматизации продаж, что позволяет вам сосредоточиться на развитии бизнеса.</p>
+                    </div>
+                    <!-- end col -->
+                    <div class="col-md-6 ms-md-auto order-1 order-md-2">
+                        <div class="position-relative">
+                            <div class="ms-5 features-img">
+                                <img src="{% static 'landing/images/features-1.jpg' %}" alt="" class="img-fluid d-block mx-auto rounded shadow" />
+                            </div>
+                            <img src="{% static 'landing/images/dot-img.png' %}" alt="" class="dot-img-left" />
+                        </div>
+                    </div>
+                    <!-- end col -->
+                </div> 
+                <!-- end row -->
+                <div class="row align-items-center section pb-0">
+                    <div class="col-md-6">
+                        <div class="position-relative mb-md-0 mb-5">
+                            <div class="me-5 features-img">
+                                <img src="{% static 'landing/images/features-2.jpg' %}" alt="" class="img-fluid d-block mx-auto rounded shadow" />
+                            </div>
+                            <img src="{% static 'landing/images/dot-img.png' %}" alt="" class="dot-img-right" />
+                        </div>
+                    </div>
+                    <!-- end col -->
+                    <div class="col-md-5 ms-md-auto">
+                        <h2 class="mb-4">Создание сообщества и повышение конверсии с помощью нашего набора социальных инструментов</h2>
+                        <p class="text-muted mb-5">Интеграция с популярными социальными платформами для увеличения охвата и вовлеченности вашей аудитории.</p>
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </section>
+        
+        <!-- Features end -->
+
+        <section class="section bg-gradient-primary">
+            <div class="bg-overlay-img" style="background-image: url({% static 'landing/images/demos.png' %});"></div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="text-center">
+                            <h1 class="text-white mb-4">Начните с беслатного пробного тарифа</h1>
+                            <p class="text-white mb-5 font-size-16">Современные решения для автоматизации вашего бизнеса. Оптимизируйте процессы и увеличьте продажи с нашим программным обеспечением.</p>
+                            <a href="index-1.html#" class="btn btn-lg btn-light">Начать беслатного</a>
+                        </div>
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </section>
+        
+        <!-- Cta end -->
+
+        <!-- Pricing start -->
+        <section class="section" id="pricing">
+            <div class="container">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-lg-7 text-center">
+                        <h2 class="fw-bold">Тарифные планы</h2>
+                        <p class="text-muted">Выберите интересующий вас тарифный план и начните работать с нами</p>
+                    </div>
+                </div>
+                <!-- end row -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="tab-content" id="pricingpills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-monthly" role="tabpanel" aria-labelledby="pills-monthly-tab">
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="card plan-card mt-4 rounded text-center border-0 shadow overflow-hidden">
+                                            <div class="card-body px-4 py-5">
+                                                <div class="icon-mono avatar-md bg-soft-primary rounded mx-auto mb-5 p-3">
+                                                    <img src="{% static 'landing/images/pricing/1.png' %}" alt="" class="img-fluid d-block mx-auto" />
+                                                </div>
+                                                <h4 class="text-uppercase mb-4 pb-1">Базовый</h4>
+                                                <p class="text-muted">Сканер: <span class="fw-bold">Есть</span></p>
+                                                <p class="text-muted">Аналитика: <span class="fw-bold">Есть</span></p>
+                                                <p class="text-muted">Поддержка: <span class="fw-bold">Нет</span></p>
+                                                <p class="text-muted">Автоматизация поставок: <span class="fw-bold">Нет</span></p>
+                                                <br>
+                                                <br>
+                                                <br>
+                                                <p class="font-size-16 font-weight-semibold mb-4 price-tag">Бесплатно</p>
+                                                <a href="javascript: void(0);" class="btn btn-soft-primary">Начать</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- end col -->
+                                    <div class="col-lg-4">
+                                        <div class="card plan-card mt-4 rounded text-center border-0 shadow overflow-hidden">
+                                            <div class="card-body px-4 py-5">
+                                                <span class="badge badge-primary pricing-badge shadow-lg">Покупают</span>
+                                                <div class="icon-mono avatar-md bg-soft-primary rounded mx-auto mb-5 p-3">
+                                                    <img src="{% static 'landing/images/pricing/2.png' %}" alt="" class="img-fluid d-block mx-auto" />
+                                                </div>
+                                                <h4 class="text-uppercase mb-4 pb-1">Стандарт</h4>
+                                                <p class="text-muted">Сканер: <span class="fw-bold">Есть</span></p>
+                                                <p class="text-muted">Аналитика: <span class="fw-bold">Есть</span></p>
+                                                <p class="text-muted">Поддержка: <span class="fw-bold">Есть</span></p>
+                                                <p class="text-muted">Автоматизация поставок: <span class="fw-bold">Есть</span></p>
+                                                <br>
+                                                <br>
+                                                <br>
+                                                <p class="font-size-16 font-weight-semibold mb-4 price-tag">$400.00</p>
+                                                <a href="javascript: void(0);" class="btn btn-primary">Купить сейчас</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- end col -->
+                                    <div class="col-lg-4">
+                                        <div class="card plan-card mt-4 rounded text-center border-0 shadow overflow-hidden">
+                                            <div class="card-body px-4 py-5">
+                                                <div class="icon-mono avatar-md bg-soft-primary rounded mx-auto mb-5 p-3">
+                                                    <img src="{% static 'landing/images/pricing/3.png' %}" alt="" class="img-fluid d-block mx-auto" />
+                                                </div>
+                                                <h4 class="text-uppercase mb-4 pb-1">Премиум</h4>
+                                                <p class="text-muted">Сканер: <span class="fw-bold">Есть</span></p>
+                                                <p class="text-muted">Аналитика: <span class="fw-bold">Расширенная</span></p>
+                                                <p class="text-muted">Поддержка: <span class="fw-bold">Приоритетная</span></p>
+                                                <p class="text-muted">Автоматизация поставок: <span class="fw-bold">Да</span></p>
+                                                <p class="text-muted">Дополнительно: <span class="fw-bold">Интернет магазин</span></p>
+                                                 <br>
+                                                <p class="font-size-16 font-weight-semibold mb-4 price-tag">$700.00</p>
+                                                <a href="javascript: void(0);" class="btn btn-soft-primary">Купить сейчас</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- end col -->
+                                </div>
+                                <!-- end row -->
+                            </div>
+                            <!-- end monthly tab pane -->
+                        </div>
+                        <!-- end tab content -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </section>
+        
+        
+        <!-- Pricing end -->
+
+
+        <!-- CTA start -->
+        <section class="section bg-center w-100 bg-light" style="background-image: url({% static 'images/cta-bg.png' %});">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card bg-gradient-primary text-center border-0">
+                            <div class="bg-overlay-img" style="background-image: url({% static 'images/demos.png' %});"></div>
+                            <div class="card-body mx-auto p-sm-5 p-4">
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-10">
+                                        <div class="p-3">
+                                            <h2 class="text-white mb-4">Присоединяйтесь к нашему растущему сообществу</h2>
+                                            <p class="text-white-70 font-size-16 mb-4 pb-3">Мы помогаем бизнесам автоматизировать процессы и улучшать аналитику для достижения новых высот.</p>
+                                            <a href="javascript: void(0);" class="btn btn-light rounded-pill">Зарегистрируйтесь бесплатно</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </section>
+        
+        <!-- CTA end -->
+
+        <!-- Contact us start -->
+        <section class="section" id="contact">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="fw-bold mb-4">Связаться с нами</h2>
+                        <p class="text-muted mb-5">Если у вас есть вопросы или вам нужна помощь с автоматизацией продаж, оставьте сообщение, и мы свяжемся с вами.</p>
+                        
+                        <div>
+                            <form method="post" name="myForm" onsubmit="return validateForm()">
+                                <p id="error-msg"></p>
+                                <div id="simple-msg"></div>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-4">
+                                            <label for="name" class="text-muted form-label">Имя</label>
+                                            <input name="name" id="name" type="text" class="form-control" placeholder="Введите имя*" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-4">
+                                            <label for="email" class="text-muted form-label">Email</label>
+                                            <input name="email" id="email" type="email" class="form-control" placeholder="Введите email*" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-4">
+                                            <label for="subject" class="text-muted form-label">Тема</label>
+                                            <input type="text" class="form-control" id="subject" name="subject" placeholder="Введите тему.." required>
+                                        </div>
+        
+                                        <div class="mb-4 pb-2">
+                                            <label for="comments" class="text-muted form-label">Сообщение</label>
+                                            <textarea name="comments" id="comments" rows="4" class="form-control" placeholder="Введите сообщение..." required></textarea>
+                                        </div>
+        
+                                        <button type="submit" id="submit" name="send" class="btn btn-primary">Отправить сообщение</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                    </div>
+                    <!-- end col -->
+        
+                    <div class="col-lg-5 ms-lg-auto">
+                        <div class="mt-5 mt-lg-0">
+                            <img src="{% static 'landing/images/contact.png' %}" alt="Contact Us" class="img-fluid d-block" />
+                            <p class="text-muted mt-5 mb-3"><i class="me-2 text-muted icon icon-xs" data-feather="mail"></i> support@вашдомен.com</p>
+                            <p class="text-muted mb-3"><i class="me-2 text-muted icon icon-xs" data-feather="phone"></i> +996 123 456 789</p>
+                            <p class="text-muted mb-3"><i class="me-2 text-muted icon icon-xs" data-feather="map-pin"></i> Бишкек, Кыргызстан</p>
+                            <ul class="list-inline pt-4">
+                                <li class="list-inline-item me-3">
+                                    <a href="javascript: void(0);" class="social-icon icon-mono avatar-xs rounded-circle"><i class="icon-xs" data-feather="facebook"></i></a>
+                                </li>
+                                <li class="list-inline-item me-3">
+                                    <a href="javascript: void(0);" class="social-icon icon-mono avatar-xs rounded-circle"><i class="icon-xs" data-feather="twitter"></i></a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a href="javascript: void(0);" class="social-icon icon-mono avatar-xs rounded-circle"><i class="icon-xs" data-feather="instagram"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </section>
+        
+        <!-- Contact us end -->
+
+        <!-- Footer Start -->
+        <footer class="footer" style="background-image: url({% static 'images/footer-bg.png' %});">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="mb-4">
+                            <a href="index-1.html"><img src="{% static 'landing/images/logo-light.png' %}" alt="" class="" height="30" /></a>
+                            <p class="text-white-50 my-4">Мы ценим ваши идеи и готовы помочь вам реализовать их.</p>
+                        </div>
+                    </div>
+                    <!-- end col -->
+        
+                    <div class="col-lg-7 ms-lg-auto">
+                        <div class="row">
+                            <div class="col-lg-4 col-6">
+                                <div class="mt-4 mt-lg-0">
+                                    <h4 class="text-white font-size-18 mb-3">Продукт</h4>
+                                    <ul class="list-unstyled footer-sub-menu">
+                                        <li><a href="javascript: void(0);" class="footer-link">Популярное</a></li>
+                                        <li><a href="javascript: void(0);" class="footer-link">Тренды</a></li>
+                                        <li><a href="javascript: void(0);" class="footer-link">Клиенты</a></li>
+                                        <li><a href="javascript: void(0);" class="footer-link">Особенности</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <div class="mt-4 mt-lg-0">
+                                    <h4 class="text-white font-size-18 mb-3">Информация</h4>
+                                    <ul class="list-unstyled footer-sub-menu">
+                                        <li><a href="javascript: void(0);" class="footer-link">Разработчики</a></li>
+                                        <li><a href="javascript: void(0);" class="footer-link">Поддержка</a></li>
+                                        <li><a href="javascript: void(0);" class="footer-link">Служба поддержки</a></li>
+                                        <li><a href="javascript: void(0);" class="footer-link">Начать</a></li>
+                                        <li><a href="javascript: void(0);" class="footer-link">Руководство</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-6">
+                                <div class="mt-4 mt-lg-0">
+                                    <h4 class="text-white font-size-18 mb-3">Поддержка</h4>
+                                    <ul class="list-unstyled footer-sub-menu">
+                                        <li><a href="javascript: void(0);" class="footer-link">Часто задаваемые вопросы</a></li>
+                                        <li><a href="javascript: void(0);" class="footer-link">Контакт</a></li>
+                                        <li><a href="javascript: void(0);" class="footer-link">Обсуждение</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+        
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center mt-5">
+                            <p class="text-white-50 f-15 mb-0">
+                                <script>
+                                    document.write(new Date().getFullYear())
+                                </script> © ThinkerSale. Все права защищены</p>
+                        </div>
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end container -->
+        </footer>
+        
+        
+        <!-- Footer End -->
+
+
+        <!-- Style switcher -->
+        <div id="style-switcher">
+            <div class="bottom">
+                <a href="javascript: void(0);" id="mode" class="mode-btn text-white">
+                    <i class="mdi mdi-white-balance-sunny mode-light"></i>
+                    <i class="mdi mdi-moon-waning-crescent mode-dark"></i>
+                </a>
+                <a href="javascript: void(0);" class="settings" onclick="toggleSwitcher()"><i class="mdi mdi-cog  mdi-spin"></i></a>
+            </div>
+        </div>
+
+        <!-- javascript -->
+        <script src="{% static 'landing/js/bootstrap.bundle.min.js' %}"></script>
+        <script src="{% static 'landing/js/smooth-scroll.polyfills.min.js' %}"></script>
+        <!-- feather-icons js -->
+        <script src="https://unpkg.com/feather-icons"></script>
+
+        <!-- App Js -->
+        <script src="{% static 'landing/js/app.js' %}"></script>
+
+    </body>
+</html>

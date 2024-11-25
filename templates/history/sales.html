@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">История продаж</h4>
+            <div class="table-responsive">
+                <table class="table table-centered w-100" id="products-datatable">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Ордер</th>
+                      <th>Товар</th>
+                      <th>Штрих код</th>
+                      <th>Кол-во</th>
+                      <th>Цена</th>
+                      <th>Общая цена</th>
+                      <th>Дата</th>
+                      <th>Действия</th>
+                    </tr>
+                  </thead>
+                  <tbody id="product-table-body">
+                    {% for sale in sales %}
+                      <tr>
+                        <td>#{{ sale.order.id }}</td>
+                        <td>{{ sale.product.name }}</td>
+                        <td>{{ sale.product.bar_code }}</td>
+                        <td>{{ sale.quantity }}</td>
+                        <td>{{ sale.product.sale_price }}</td>
+                        <td>{{ sale.total_sum }}</td>
+                        <td>{{ sale.created }}</td>
+                        <td>
+                        
+                          <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                          data-bs-target="#deleteModal"><i class="mdi mdi-cart me-1"></i>Удалить</button>
+                      <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog"
+                          aria-hidden="true">
+                          <div class="modal-dialog">
+                              <div class="modal-content">
+
+                                  <div class="modal-body">
+
+                                      <form class="ps-3 pe-3" method="POST">
+                                          {% csrf_token %}
+                                          <p>Вы действительно хотите удалить поставку?</p>
+
+
+                                          <div class="mb-3 text-center">
+                                              <a class="btn btn-danger"
+                                                  href="{% url 'sold-history-delete' sale.id %}">Удалить</a>
+                                          </div>
+
+                                      </form>
+
+                                  </div>
+                              </div><!-- /.modal-content -->
+                          </div><!-- /.modal-dialog -->
+                      </div><!-- /.modal -->
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+{% endblock %}
