@@ -4,6 +4,7 @@ from .forms import *
 from django.db.models import Sum
 from .models import Expense
 from apps.history.models import *
+from apps.user.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -105,39 +106,25 @@ def finance_list(request):
     return render(request, 'finance/list.html')
 
 def create(request):
-    # Получаем expend_type из GET-запроса
     expend_type = request.GET.get('type')
-    expend_display_name = dict(Expense.EXPEND_TYPE_CHOICES).get(expend_type)
-    
-    # Инициализируем форму с начальным значением expend_type
-    form = ExpenseForm(initial={'expend_type': expend_type})
+    expend_display_name = dict(Expense.CHOICES).get(expend_type)  # Получаем отображаемое имя типа расхода
+    print(expend_display_name, expend_type)
+    form = ExpenseForm(initial={'expend_type': expend_type})  # Устанавливаем начальное значение типа расхода
     
     if request.method == 'POST':
-        # При POST-запросе создаем форму с данными из запроса
         form = ExpenseForm(request.POST)
-        
-        # Проверяем валидность формы
         if form.is_valid():
-            # Устанавливаем значение expend_type перед сохранением объекта
             expend = form.save(commit=False)
+            expend.shop = request.user.shop
             expend.expend_type = expend_type
             expend.shop = request.user.shop
             if expend_type == 'other':
                 expend.description = form.cleaned_data['description']
             else:
                 expend.description = expend_display_name
-
-            if expend.status == 'paid':
-             # Предположим, что для конкретного shop есть только один объект order
-                order = OrderHistory.objects.filter(shop=request.user.shop).first()
-                if order:  # Проверяем, что order существует
-                    order.profit = Decimal(order.profit) - Decimal(expend.amount)
-                    order.save()  # Сохраняем изменения
-
-            expend.save()
-            return redirect('expends')
-        else:
-            print(form.errors, expend_type)
+            expend.save()  # Сохраняем объект в базе данных
+            
+            return redirect('expends')  # Перенаправление на список расходов
     
     context = {
         'form': form,
@@ -149,68 +136,53 @@ def create(request):
 def expends(request):
     expends = Expense.objects.exclude(expend_type='salaries').filter(shop=request.user.shop).order_by('-id')
 
-    context = {
-        'expends': expends
+        # Фильтр по дате начала
+    date_from = request.GET.get('date_from')
+    if date_from:
+        expends = expends.filter(created__date__gte=date_from)
+
+    # Фильтр по дате окончания
+    date_to = request.GET.get('date_to')
+    if date_to:
+        expends = expends.filter(created__date__lte=date_to)
+
+    expend_type = request.GET.get('expend_type')
+    if expend_type:
+        expends = expends.filter(expend_type=expend_type)
+
+    expend_types = Expense.objects.values_list('expend_type', flat=True).distinct()
+
+    context = {     
+        'expends': expends,
+        'expend_types': expend_types,
     }
     return render(request, 'finance/expends.html', context)
 
-def expend_update(request, pk):
-    # Находим объект Expense по первичному ключу (pk)
-    expend = get_object_or_404(Expense, id=pk)
-    start_day = expend.start_date
-    end_day = expend.end_date
-    
-    # Получаем тип расхода (expend_type) из объекта и название для отображения
-    expend_type = expend.expend_type
-    expend_display_name = dict(Expense.EXPEND_TYPE_CHOICES).get(expend_type)
-    
-    # Инициализируем форму с данными объекта
-    form = ExpenseForm(instance=expend, initial={'expend_type': expend_type})
-
-    if request.method == 'POST':
-        # При POST-запросе обновляем форму с данными из запроса
-        form = ExpenseForm(request.POST, instance=expend)
-        
-        if form.is_valid():
-            # Сохраняем значения start_date и end_date, если они не были изменены
-            expend.start_date = form.cleaned_data.get('start_date', start_day)
-            expend.end_date = form.cleaned_data.get('end_date', end_day)
-            expend = form.save(commit=False)
-            expend.expend_type = expend_type
-            expend.shop = request.user.shop
-            # Устанавливаем описание в зависимости от типа расхода
-            if expend_type == 'other':
-                expend.description = form.cleaned_data['description']
-            else:
-                expend.description = expend_display_name
-
-            if expend.status == 'paid':
-            # Предположим, что для конкретного shop есть только один объект order
-                order = OrderHistory.objects.filter(shop=request.user.shop).first()  # Используем first() для получения первого объекта или None, если его нет
-    
-                if order:
-                    order.profit = Decimal(order.profit) - Decimal(expend.amount)
-                    order.save()
-
-            expend.save()
-            return redirect('expends')
-        else:
-            print(form.errors, expend_type)
-    
-    context = {
-        'form': form,
-        'expend_type': expend_type,
-        'expend_display_name': expend_display_name
-    }
-    return render(request, 'finance/update.html', context)
-
-
 def expend_delete(request, pk):
-    # Настрой объект Expense по первичному ключу (pk)
     expend = get_object_or_404(Expense, id=pk)
     expend.delete()
     return redirect('expends')
 
 def salary_list(request):
     salaries = Expense.objects.filter(expend_type='salaries', shop=request.user.shop)
-    return render(request, 'finance/salaries.html', {'salaries': salaries})
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    employee_id = request.GET.get('employee')
+    
+    if date_from:
+        salaries = salaries.filter(created__date__gte=date_from)
+    if date_to:
+        salaries = salaries.filter(created__date__lte=date_to)
+    if employee_id:
+        salaries = salaries.filter(user_id=employee_id)
+    
+    users = User.objects.all()
+    
+    context = {
+        'salaries': salaries,
+        'users': users,
+        'date_from': date_from,
+        'date_to': date_to,
+        'employee_id': employee_id,
+    }
+    return render(request, 'finance/salaries.html', context)

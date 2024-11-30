@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<div class="row">
+    <div class="col-12">
+        <div class="card h-100">
+            <h5 class="card-header">График прибыли, продаж и расходов</h5>
+            <div class="card-body">
+                <div id="chart2"></div>
+            </div>
+        </div>
+    </div>      
+</div>
     <!-- Модальное окно с типами расхода -->
     <div class="modal fade" id="expendTypeModal" tabindex="-1" aria-labelledby="expendTypeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -29,13 +39,48 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
+
                 <div class="row mb-2">
                     <div class="col-sm-5">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expendTypeModal">
                             Добавить расход
                         </button>
                     </div>
-                    
+                    <div class="col-sm-7">
+                        <form method="get" class="row">
+                            <!-- Дата с -->
+                            <div class="col-md-3">
+                                <label for="employee" class="form-label">Дата с</label>
+                                <input type="date" name="date_from" class="form-control" placeholder="Дата с" 
+                                    value="{{ request.GET.date_from }}">
+                            </div>
+                            <!-- Дата по -->
+                            <div class="col-md-3">
+                                <label for="employee" class="form-label">Дата по</label>
+                                <input type="date" name="date_to" class="form-control" placeholder="Дата по" 
+                                    value="{{ request.GET.date_to }}">
+                            </div>
+                            <!-- Тип расхода -->
+                            <div class="col-md-3">
+                                <label for="employee" class="form-label">Тип</label>
+                                <select name="expend_type" class="form-control">
+                                    <option value="" {% if request.GET.expend_type == "" %}selected{% endif %}>Все типы</option>
+                                    {% for expend_type in expend_types %}
+                                    {% if expend_type != 'salaries' %}
+                                    <option value="{{ expend_type }}" 
+                                            {% if request.GET.expend_type == expend_type %}selected{% endif %}>
+                                        {{ expend_type }}
+                                    </option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <!-- Кнопка фильтрации -->
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 <div class="table-responsive">
@@ -46,10 +91,8 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th class="">Описание</th>
-                                            <th class="">Период от</th>
-                                            <th class="">Период до</th>
                                             <th class="">Сумма</th>
-                                            <th class="">Статус</th>
+                                            <th class="">Дата</th>
                                             <th class="">Действия</th>
                                         </tr>
                                     </thead>
@@ -59,17 +102,9 @@
                                         {% for expend in expends %}
                                             <tr>
                                                 <td>{{ expend.description|default:"-" }}</td>
-                                                <td>{{ expend.start_date|date:"d.m.Y" }}</td>
-                                                <td>{{ expend.end_date|date:"d.m.Y" }}</td>
-                                                <td>{{ expend.amount }} ₽</td>
+                                                <td>{{ expend.amount }}</td>
+                                                <td>{{ expend.created }}</td>
                                                 <td>
-                                                    {% if expend.status == 'paid' %}
-                                                        <span class="badge bg-success">{{ expend.get_status_display }}</span>
-                                                    {% else %}
-                                                        <span class="badge bg-danger">{{ expend.get_status_display }}</span>
-                                                    {% endif %}
-                                                </td>
-                                                <td><a href="{% url 'expend-update' expend.id %}?type={{ expend.expend_type }}"><i class='bx bx-edit fs-5'></i></a>
                                                     <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ expend.id }}">
                                                         <i class='bx bx-trash text-danger fs-5'></i>
                                                     </button>
@@ -92,6 +127,8 @@
                                                     </div>
                                                 </td>
                                             </tr>
+                                            {% empty %}
+                                                <p>Нет расходов, соответствующих фильтру.</p>
                                             {% endfor %}
                                     </tbody>
                                 </table>
@@ -102,5 +139,44 @@
         </div> <!-- end card-->
     </div> <!-- end col -->
 </div>
-    
+
+<script>
+    $.ajax({
+        type: "GET",
+        url: "{% url 'extends-chart-data' %}",
+        success: function (data) {
+            console.log(data);  // Для отладки
+
+            var options = {
+                chart: { height: 280, type: "area" },
+                dataLabels: { enabled: false },
+                series: [
+                    { name: "Аренда", data: data.rent_data },
+                    { name: "Коммунальные услуги", data: data.utilities_data },
+                    { name: "Зарплаты", data: data.salaries_data },
+                    { name: "Поставки", data: data.supplies_data },
+                    { name: "Другое", data: data.other_data }
+                ],
+                fill: {
+                    type: "gradient",
+                    gradient: {
+                        shadeIntensity: 0.5,
+                        opacityFrom: 0.6,
+                        opacityTo: 0.5,
+                        stops: [0, 100]
+                    }
+                },
+                colors: ['#28a745', '#007bff', '#ffc107', '#dc3545', '#6c757d'], // Зеленый для аренды, синий для коммунальных, желтый для зарплат, красный для поставок, серый для прочего
+                xaxis: { categories: data.months },  // Месяцы
+            };
+
+            var chart1 = new ApexCharts(document.querySelector("#chart2"), options);
+            chart1.render();
+        },
+        error: function (xhr, status, error) {
+            console.log("Error:", status, error); // Для отладки
+        }
+    });
+</script>
+
 {% endblock %}

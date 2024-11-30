@@ -146,10 +146,10 @@ LOGIN_URL = 'user/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-
+EMAIL_TIMEOUT = 60
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_SSL = True
 EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'muhammadazizmadakimov06@gmail.com'
-EMAIL_HOST_PASSWORD = 'azgh bsqt csxn ujnw'
-EMAIL_PORT = 465
+EMAIL_HOST_PASSWORD = 'dwfj njfq nlvh elui'

@@ -10,7 +10,6 @@ urlpatterns = [
     path('get-chart-data-finance/', get_chart_data, name='get-chart-data-finance'),
     path('expends/', expends, name='expends'),
     path('extends_chart/', extends_chart_data, name='extends-chart-data'),
-    path('update/<int:pk>/', expend_update, name='expend-update'),
     path('delete/<int:pk>/', expend_delete, name='expend-delete'),
     path('salaries/', salary_list, name='salary-list'),
 ]

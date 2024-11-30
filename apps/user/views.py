@@ -55,7 +55,7 @@ def create(request):
         if form.is_valid():
             form.instance.shop = request.user.shop
             form.save()
-            return redirect('users_list')
+            return redirect('user-list')
 
     context = {
         'form':form

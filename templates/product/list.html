@@ -7,12 +7,42 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+
                     <div class="row mb-2">
                         <div class="col-sm-5">
-                            <a href="{% url 'product-create' %}" class="btn btn-primary mb-2"><i class="mdi mdi-plus-circle me-2"></i>
-                                Добавить товар</a>
+                            <a href="{% url 'product-create' %}" class="btn btn-primary mb-2">
+                                <i class="mdi mdi-plus-circle me-2"></i> Добавить товар
+                            </a>
                         </div>
-                        
+                        <div class="col-sm-7">
+                            <form method="get" class="row">
+                                <!-- Сумма от -->
+                                <div class="col-md-3">
+                                    <label for="employee" class="form-label">Цена с</label>
+                                    <input type="number" name="price_min" class="form-control" placeholder="Сумма от" 
+                                           value="{{ request.GET.price_min }}">
+                                </div>
+                                <!-- Сумма по -->
+                                <div class="col-md-3">
+                                    <label for="employee" class="form-label">Цена по</label>
+                                    <input type="number" name="price_max" class="form-control" placeholder="Сумма по" 
+                                           value="{{ request.GET.price_max }}">
+                                </div>
+                                <!-- В наличии -->
+                                <div class="col-md-3">
+                                    <label for="employee" class="form-label">Доступность</label>
+                                    <select name="in_stock" class="form-control">
+                                        <option value="" {% if request.GET.in_stock == "" %}selected{% endif %}>Все</option>
+                                        <option value="yes" {% if request.GET.in_stock == "yes" %}selected{% endif %}>В наличии</option>
+                                        <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии</option>
+                                    </select>
+                                </div>
+                                <!-- Кнопка фильтрации -->
+                                <div class="col-md-3">
+                                    <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
     
                     <div class="table-responsive">
@@ -93,6 +123,8 @@
                                                     </div>
                                                 </td>
                                             </tr>
+                                            {% empty %}
+                                                <p>Нет товаров, соответствующих фильтру.</p>
                                             {% endfor %}
                                         </tbody>
                                     </table>

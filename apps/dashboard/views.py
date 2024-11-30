@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from apps.product.models import Shop, Product
 from datetime import datetime
 from apps.product.forms import ShopForm
+from apps.dashboard.templatetags.tags import low_stock
 
 @login_required
 def get_top_products_data(request):
@@ -64,7 +65,6 @@ def get_chart_data(request):
 # Средняя цена поставок
 
 
-
 @login_required
 def dashboard(request):
     total_profit = SoldHistory.objects.filter().aggregate(profit=Sum('quantity'))['profit'] or 0
@@ -73,7 +73,10 @@ def dashboard(request):
     # Дополнительные данные для расчета роста
     growth = round((total_profit - total_income) / total_income * 100, 3) if total_income else 0
     sold_products = Product.objects.filter(shop=request.user.shop).annotate(total_quantity=Sum('soldhistory__quantity'), total_sum=Sum('soldhistory__quantity') * F('sale_price')).order_by('-total_quantity')[:5]
-
+    if low_stock:
+        print(low_stock())
+    else:
+        print("No low stock notifications found.")
     context = {
         'sold_products': sold_products,
         'total_profit': total_profit,

@@ -66,6 +66,13 @@
                             {% endif %}
                         </div>
                         <div class="col-md-6">
+                            <label for="{{ form.min_quantity.id_for_label }}" class="form-label">{{ form.min_quantity.label }}</label>
+                            {{ form.min_quantity }}
+                            {% if form.min_quantity.errors %}
+                                <div class="invalid-feedback">{{ form.min_quantity.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
                             <label for="{{ form.quantity.id_for_label }}" class="form-label">{{ form.unit.label }}</label>
                             {{ form.unit }}
                             {% if form.unit.errors %}

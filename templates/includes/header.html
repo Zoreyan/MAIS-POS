@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load tags %}
 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
 
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none ">
@@ -61,17 +61,20 @@
                     </li>
                     <li class="dropdown-notifications-list scrollable-container">
                         <ul class="list-group list-group-flush">
+                            {% low_stock as low_stock %}
+                        {% if low_stock %}
                             <li class="list-group-item list-group-item-action dropdown-notifications-item">
                                 <div class="d-flex">
                                     <div class="flex-shrink-0 me-3">
                                         <div class="avatar">
-                                            <img src="../../assets/img/avatars/1.png" alt class="rounded-circle">
+                                            <span class="avatar-initial rounded-circle bg-label-danger">System</span>
                                         </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="small mb-1">Поздравляем, Летти 🎉</h6>
-                                        <small class="mb-1 d-block text-body">Завоевала золотой значок лучшего продавца месяца</small>
-                                        <small class="text-muted">1 час назад</small>
+                                        <h6 class="mb-1 small">Низкое количество товара!</h6>
+                                        <small class="mb-1 d-block text-body">{{ low_stock.message }}</small>
+                                        <small class="text-muted">{{ low_stock.created }}</small>
+                                        <a href="{% url 'low-stock' %}" class="btn btn-sm btn-text-primary">Просмотреть все товары ></a>
                                     </div>
                                     <div class="flex-shrink-0 dropdown-notifications-actions">
                                         <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
@@ -79,24 +82,9 @@
                                     </div>
                                 </div>
                             </li>
-                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0 me-3">
-                                        <div class="avatar">
-                                            <span class="avatar-initial rounded-circle bg-label-danger">CF</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1 small">Чарльз Франклин</h6>
-                                        <small class="mb-1 d-block text-body">Принял ваше приглашение в друзья</small>
-                                        <small class="text-muted">12 часов назад</small>
-                                    </div>
-                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                    </div>
-                                </div>
-                            </li>
+                        {% else %}
+                            <p>No low stock notifications found.</p>
+                        {% endif %} 
                             <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                                 <div class="d-flex">
                                     <div class="flex-shrink-0 me-3">

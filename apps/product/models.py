@@ -21,7 +21,8 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
     sale_price = models.DecimalField(
         max_digits=10, decimal_places=2,
-        verbose_name='Продажная цена'
+        verbose_name='Продажная цена',
+        default=0
     )
     UNITS = [
         ('шт', 'шт'),
@@ -31,6 +32,7 @@ class Product(models.Model):
     image = models.ImageField(null=True, blank=True, upload_to='products', verbose_name='Изображение')
     bar_code = models.CharField(max_length=100, null=True, verbose_name='Штрихкод', unique=True)
     quantity = models.IntegerField(default=0, verbose_name='Количество')
+    min_quantity = models.IntegerField(default=0, verbose_name='Минимальное количество', null=True)
 
     class Meta:
         verbose_name = 'Продукт'
@@ -45,3 +47,15 @@ class Product(models.Model):
 
     def month_sales(self):
         return sum(i.quantity for i in self.soldhistory_set.filter(created__year=datetime.now().year, created__month=datetime.now().month))
+
+class LogEntry(models.Model):
+    action = models.CharField(max_length=255)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Лог'
+        verbose_name_plural = 'Логи'
+    
+    def __str__(self):
+        return self.action

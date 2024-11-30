@@ -5,7 +5,30 @@
 <div class="col-12">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">История поставок</h4>
+
+            <div class="row mb-2">
+              <div class="col-sm-5">
+                <h4 class="card-title">История поставок</h4>
+              </div>
+              <div class="col-sm-7">
+                <form method="get">
+                  <div class="row">
+                    <div class="col-md-3">
+                        <label for="date_from" class="form-label">Дата с</label>
+                        <input type="date" id="date_from" name="date_from" class="form-control" value="{{ date_from }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="date_to" class="form-label">Дата по</label>
+                        <input type="date" id="date_to" name="date_to" class="form-control" value="{{ date_to }}">
+                    </div>
+                    <div class="col-md-3">
+                  <button type="submit" class="btn btn-primary">Фильтровать</button>
+                </div>
+                  </div>
+              </form>
+              </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-centered w-100" id="products-datatable">
                   <thead class="table-light">
@@ -25,7 +48,7 @@
                         <td>{{ income.product.name }}</td>
                         <td>{{ income.product.bar_code }}</td>
                         <td>{{ income.quantity }}</td>
-                        <td>{{ income.price_at_income }}</td>
+                        <td>{{ income.price_at_moment}}</td>
                         <td>{{ income.total_sum }}</td>
                         <td>{{ income.created }}</td>
                         <td>

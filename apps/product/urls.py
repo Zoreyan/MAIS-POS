@@ -17,4 +17,5 @@ urlpatterns = [
     path('update-quantity/', update_quantity, name='update-quantity'),
     path('find-product/', find_product, name='find-product'),
     path('search-product/', search_product, name='search-product'),
+    path('low-stock/', low_stock, name='low-stock'),
 ]
