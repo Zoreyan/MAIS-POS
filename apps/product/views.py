@@ -237,3 +237,17 @@ def search_product(request):
     query = request.GET.get('query', '')
     products = Product.objects.filter(name__icontains=query).values('bar_code', 'name', 'quantity')
     return JsonResponse(list(products), safe=False)
+
+
+
+
+def category_list(request):
+    context = {
+    }
+    return render(request, 'product/category_list.html', context)
+
+
+def category_create(request):
+    context = {
+    }
+    return render(request, 'product/category_create.html', context)

@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'apps.history',
     'apps.client',
     'apps.finance',
+    'apps.shop',
 ]
 
 MIDDLEWARE = [

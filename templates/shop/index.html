@@ -1,0 +1,68 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+<div class="row">
+   
+    <div class="col-12">
+        <h3 class="fw-bold text-center text-md-start">Каталог</h3>
+        <div class="row gy-4 gy-md-5">
+            {% for product in products %}
+            <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="" class="img-fluid rounded-2 waves-effect mb-3"
+                            style="object-fit: cover; height: 255px;">
+                        {% else %}
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019"
+                            alt="" class="img-fluid rounded-pill mb-3" style="object-fit: cover; height: 255px;">
+                        {% endif %}
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h4 class="card-title fw-bold">{{ product.name }} </h4>
+                            <span class="badge bg-warning fs-6">20%</span>
+                        </div>
+                        <p class="card-text mb-2">Цена: <s>{{ product.sale_price }} руб.</s> {{ product.price }} руб.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-between">
+                            <a href="#" class="btn btn-primary">Подробнее</a>
+                            <div class="d-flex align-items-center gap-1">
+                                <button class="btn rounded-pill btn-icon waves-effect waves-light">
+                                    <i class="bx bx-cart bx-sm"></i>
+                                </button>
+                                <button class="btn rounded-pill btn-icon waves-effect waves-light">
+                                    <i class="bx bx-heart bx-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-center">Товары не найдены</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="d-flex justify-content-center justify-content-md-end mt-3">
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-rounded">
+                    <li class="page-item">
+                        <a class="page-link waves-effect" href="#"><i class="bx bx-chevrons-left bx-sm"></i></a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link waves-effect" href="#"><i class="bx bx-chevron-left bx-sm"></i></a>
+                    </li>
+                    <li class="page-item active"><a class="page-link waves-effect" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link waves-effect" href="#"><i class="bx bx-chevron-right bx-sm"></i></a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link waves-effect" href="#"><i class="bx bx-chevrons-right bx-sm"></i></a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

@@ -2,108 +2,118 @@
 {% load static %}
 {% block content %}
 
-
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-5">
-                            <a href="{% url 'product-create' %}" class="btn btn-primary mb-2"><i class="mdi mdi-plus-circle me-2"></i>
-                                Добавить товар</a>
-                        </div>
-                        
-                    </div>
-    
-                    <div class="table-responsive">
-                            
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <table class="table">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th class="">Товар</th>
-                                                <th class="">Штрих код</th>
-                                                <th class="">Кол-во</th>
-                                                <th class="">Цена</th>
-                                                <th class="">Цена для продажи</th>
-                                                <th class="">Единица</th>
-                                                <th>В наличии</th>
-                                                <th class="">Действия</th>
-                                            </tr>
-                                        </thead>
-    
-                                        <tbody>
-    
-                                            {% for product in products %}
-    
-                                            <tr class="odd">
-                                                <td class="">
-                                                    {% if product.image %}
-                                                    <img src="{{ product.image.url }}" alt="contact-img"
-                                                        title="contact-img" class="rounded me-3" height="48" width="48" style="object-fit: cover;">
-                                                    {% endif %}
-                                                    <p class="m-0 d-inline-block align-middle font-16">
-                                                        <a href="{% url 'product-details' product.id %}" class="text-body">{{ product.name }}</a>
-                                                    </p>
-                                                </td>
-                                                <td class="">
-                                                    {{ product.bar_code }}
-                                                </td>
-                                                <td class="sorting_1">
-                                                    {{ product.quantity }}шт
-                                                    
-                                                </td>
-                                                <td>
-                                                    {{ product.price }}с
-                                                </td>
-                                                <td>
-                                                    {{ product.sale_price }}с
-                                                </td>
-                                                <td>
-                                                    {{ product.unit }}
-                                                </td>
-                                                <td>
-                                                    {% if product.in_stock %}
-                                                    <span class="badge bg-success">В наличии</span>
-                                                    {% else %}
-                                                    <span class="badge bg-danger">Нет в наличии</span>
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    <a href="{% url 'product-update' product.id %}"><i class='bx bx-edit fs-5'></i></a>
-                                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ product.id }}">
-                                                        <i class='bx bx-trash text-danger fs-5'></i>
-                                                    </button>
-                                                    <div class="modal fade" id="deleteModal{{ product.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="fs-5" id="deleteModalLabel">Вы уверены, что хотите удалить?</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    {{ product.name }}
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <a href="{% url 'product-delete' product.id %}" type="submit" name="delete" class="btn btn-danger">Да</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                           
-                    </div>
-                </div> <!-- end card-body-->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+<div class="card">
+    <div class="card-header">
+      <h5 class="card-title">Фильтр</h5>
+      <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
+        <div class="col-md-3 product_status"><select id="ProductStatus" class="form-select text-capitalize"><option value="">Status</option><option value="Scheduled">Scheduled</option><option value="Publish">Publish</option><option value="Inactive">Inactive</option></select></div>
+        <div class="col-md-3 product_category"><select id="ProductCategory" class="form-select text-capitalize"><option value="">Category</option><option value="Household">Household</option><option value="Office">Office</option><option value="Electronics">Electronics</option><option value="Shoes">Shoes</option><option value="Accessories">Accessories</option><option value="Game">Game</option></select></div>
+        <div class="col-md-3 product_stock"><select id="ProductStock" class="form-select text-capitalize"><option value=""> Stock </option><option value="Out_of_Stock">Out of Stock</option><option value="In_Stock">In Stock</option></select></div>
+        <div class="col-md-3">
+            <div class="btn-group flex-wrap d-flex mb-sm-0">
+                <!-- Кнопка фильтрации -->
+                <button class="btn btn-success d-flex align-items-center">
+                    <i class="bx bx-filter-alt me-1"></i>
+                    <span>Фильтр</span>
+                </button>
+            
+                <!-- Кнопка добавления -->
+                <a href="{% url 'product-create' %}" class="btn btn-primary ms-2 d-flex align-items-center">
+                    <i class="bx bx-plus me-1"></i>
+                    <span>Добавить</span>
+                </a>
+            </div>
+        </div>
     </div>
-    
+    </div>
+    <div class="table-responsive">
+      <table class="datatables-products table">
+        <thead class="border-top">
+          <tr>
+            <th>Баркод</th>
+            <th>Название</th>
+            <th>Категория</th>
+            <th>В наличии</th>
+            <th>Цена</th>
+            <th>Цена для продажи</th>
+            <th>Кол-во</th>
+            <th>Единица измерения</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.bar_code }}</td>
+                <td>
+                    <div class="d-flex justify-content-start align-items-center product-name">
+                        <div class="avatar-wrapper">
+                            <div class="avatar avatar me-4 rounded-2 bg-label-secondary">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="rounded-2" alt="" style="object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'assets/images/products/product-3.jpg' %}" class="rounded-2" alt="" style="object-fit: cover;">
+                            {% endif %}
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <h6 class="text-nowrap mb-0">{{ product.name }}</h6>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.stock }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.sale_price }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.unit }}</td>
+                <td>
+                    <div class="d-inline-block text-nowrap"><button
+                            class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light"><i
+                                class="bx bx-edit bx-sm"></i></button><button
+                            class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"
+                            data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-vertical bx-sm"></i></button>
+                        <div class="dropdown-menu dropdown-menu-end m-0" style=""><a href="javascript:0;"
+                                class="dropdown-item">Открыть</a><a href="javascript:0;" class="dropdown-item">Удалить</a></div>
+                    </div>
+                </td>
+            {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-end align-items-center mt-3 me-3">
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-rounded d-flex align-items-center">
+              <li class="page-item first">
+                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-left bx-sm"></i></a>
+              </li>
+              <li class="page-item prev">
+                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-left bx-sm"></i></a>
+              </li>
+              <li class="page-item">
+                <a class="page-link waves-effect" href="javascript:void(0);">1</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link waves-effect" href="javascript:void(0);">2</a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link waves-effect" href="javascript:void(0);">3</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link waves-effect" href="javascript:void(0);">4</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link waves-effect" href="javascript:void(0);">5</a>
+              </li>
+              <li class="page-item next">
+                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-right bx-sm"></i></a>
+              </li>
+              <li class="page-item last">
+                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-right bx-sm"></i></a>
+              </li>
+            </ul>
+          </nav>
+    </div>
+  </div>
 
 {% endblock %}

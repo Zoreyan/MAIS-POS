@@ -4,7 +4,7 @@
 
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none ">
         <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-            <i class="bx bx-menu-alt-left bx-sm"></i>
+            <i class="bx bx-menu bx-sm"></i>
         </a>
     </div>
 
@@ -22,22 +22,22 @@
 
             <li class="nav-item dropdown-style-switcher dropdown">
                 <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <i class="bx bx-cog bx-sm"></i>
+                    <i class="bx bx-sun bx-sm"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
                     <li>
                         <a class="dropdown-item" href="javascript:void(0);" data-theme="light">
-                            <span class="align-middle"><i class="bx bx-sun bx-sm me-3"></i>Светлая</span>
+                            <span class="d-flex align-items-center"><i class="bx bx-sun bx-sm me-3"></i>Светлая</span>
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="javascript:void(0);" data-theme="dark">
-                            <span class="align-middle"><i class="bx bx-moon bx-sm me-3"></i>Тёмная</span>
+                            <span class="d-flex align-items-center"><i class="bx bx-moon bx-sm me-3"></i>Тёмная</span>
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="javascript:void(0);" data-theme="system">
-                            <span class="align-middle"><i class="bx bx-device-desktop bx-sm me-3"></i>Системная</span>
+                            <span class="d-flex align-items-center"><i class="bx bx-desktop bx-sm me-3"></i>Системная</span>
                         </a>
                     </li>
                 </ul>
@@ -132,20 +132,20 @@
                         {% if request.user.image %}
                             <img src="{{ request.user.image.url }}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                         {% else %}
-                            <img src="{% static 'assets/img/avatars/1.png' %}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
+                            <img src="{% static 'assets/images/avatars/1.png' %}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                         {% endif %}
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item mt-0" href="#">
+                        <a class="dropdown-item mt-0" href="{% url 'user-profile' request.user.id %}">
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-2">
                                     <div class="avatar avatar-online">
                                         {% if request.user.image %}
                                             <img src="{{ request.user.image.url }}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                                         {% else %}
-                                            <img src="{% static 'assets/img/avatars/1.png' %}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
+                                            <img src="{% static 'assets/images/avatars/1.png' %}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                                         {% endif %}
                                     </div>
                                 </div>

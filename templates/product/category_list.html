@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title">Категории</h5>
+            <div class="btn-group flex-wrap d-flex mb-sm-0">
+                <!-- Кнопка добавления -->
+                <button type="button" class="btn btn-primary waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#modalCenter">
+                    <i class="bx bx-plus me-1"></i>
+                    Добавить
+                </button>
+                <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalCenterTitle">Добавление категории</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-12 mb-4">
+                                        <label for="nameWithTitle" class="form-label">Родитель (необязательно)</label>
+                                        <select class="form-select">
+                                            <option selected>Выберите родителя</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 mb-4">
+                                        <label for="nameWithTitle" class="form-label">Название</label>
+                                        <input type="text" id="nameWithTitle" class="form-control" placeholder="Введите название">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                                <button type="button" class="btn btn-primary waves-effect waves-light">Сохранить изменения</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="datatables-products table">
+            <thead class="border-top">
+                <tr>
+                    <th>Название</th>
+                    <th>Родитель</th>
+                    <th>Всего товаров</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>
+                        <div class="d-inline-block text-nowrap">
+                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
+                                <i class="bx bx-edit bx-sm"></i>
+                            </button>
+                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                <i class="bx bx-dots-vertical bx-sm"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end m-0">
+                                <a href="javascript:void(0);" class="dropdown-item">Открыть</a>
+                                <a href="javascript:void(0);" class="dropdown-item">Удалить</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-end align-items-center mt-3 me-3">
+        <nav aria-label="Навигация по страницам">
+            <ul class="pagination pagination-rounded d-flex align-items-center">
+                <li class="page-item first">
+                    <a class="page-link waves-effect" href="javascript:void(0);">
+                        <i class="bx bx-chevrons-left bx-sm"></i>
+                    </a>
+                </li>
+                <li class="page-item prev">
+                    <a class="page-link waves-effect" href="javascript:void(0);">
+                        <i class="bx bx-chevron-left bx-sm"></i>
+                    </a>
+                </li>
+                <li class="page-item active">
+                    <a class="page-link waves-effect" href="javascript:void(0);">1</a>
+                </li>
+                
+                <li class="page-item next">
+                    <a class="page-link waves-effect" href="javascript:void(0);">
+                        <i class="bx bx-chevron-right bx-sm"></i>
+                    </a>
+                </li>
+                <li class="page-item last">
+                    <a class="page-link waves-effect" href="javascript:void(0);">
+                        <i class="bx bx-chevrons-right bx-sm"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+{% endblock %}

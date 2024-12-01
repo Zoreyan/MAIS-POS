@@ -5,39 +5,65 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-5">
-                            <a href="{% url 'user-create' %}" class="btn btn-primary mb-2"><i class="bx bx-plus-circle me-2"></i>Добавить</a>
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div id="DataTables_Table_0_filter" class="dataTables_filter"><label><input type="search"
+                                        class="form-control" placeholder="Поиск сотрудников"
+                                        aria-controls="DataTables_Table_0"></label></div>
+                        </div>
+                        <div class="col-md-10">
+                            <div
+                                class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-6 mb-md-0 mt-n6 mt-md-0">
+
+                                <div class="dt-buttons btn-group flex-wrap">
+
+                                    <a href="{% url 'user-create' %}"
+                                        class="btn btn-secondary add-new btn-primary waves-effect waves-light"><span><i
+                                                class="bx bx-plus me-0 me-sm-1 bx-xs"></i><span
+                                                class="d-none d-sm-inline-block">Новый сотрудник</span></span></a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-    
+                </div>
+                <div class="card-body">
+
                     <div class="table-responsive">
-                        <table class="table table-centered table-striped dt-responsive nowrap w-100" id="products-datatable">
+                        <table class="table table-centered table-striped dt-responsive nowrap w-100">
                             <thead>
                                 <tr>
                                     <th>Сотрудник</th>
-                                    <th>Телефон</th>
                                     <th>Роль</th>
+                                    <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for user in users %}
                                 <tr>
                                     <td class="table-user">
-                                        <img src="{% static 'assets/images/users/avatar-1.jpg' %}" alt="table-user" class="me-2 rounded-circle">
-                                        <a href="javascript:void(0);" class="text-body fw-semibold">{{ user.first_name }} {{ user.last_name }}</a>
+                                        <div class="d-flex justify-content-start align-items-center user-name">
+                                            <div class="avatar-wrapper">
+                                                <div class="avatar avatar-sm me-4"><img src="{{ user.image.url }}" alt="Avatar"
+                                                        class="rounded-circle"></div>
+                                            </div>
+                                            <div class="d-flex flex-column"><a href="app-user-view-account.html" class="text-heading text-truncate"><span
+                                                        class="fw-medium">{{ user.username }}</span></a><small>{{ user.phone }}</small></div>
+                                        </div>
                                     </td>
+                                    
                                     <td>
-                                        {{ user.phone }}
-                                    </td>
-                                    <td>
+                                        <span class="d-flex align-items-center">
+                                            <i class="bx bx-desktop bx-sm text-danger me-2"></i>
                                         {{ user.get_role_display }}
+                                        </span>
                                     </td>
-    
+
                                     <td>
-                                        <a href="javascript:void(0);" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
-                                        <a href="javascript:void(0);" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                        <a href="javascript:void(0);" class="text-warning"> <i
+                                                class="bx bx-edit bx-sm"></i></a>
+                                        <a href="javascript:void(0);" class="text-danger"> <i
+                                                class="bx bx-trash bx-sm"></i></a>
                                     </td>
                                 </tr>
                                 {% endfor %}

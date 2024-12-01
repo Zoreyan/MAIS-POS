@@ -22,8 +22,7 @@
         </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-            <i class="bx bx-menu menu-toggle-icon d-none d-xl-block align-middle"></i>
-            <i class="bx bx-circle d-block d-xl-none bx-sm align-middle"></i>
+            <i class="bx bx-circle d-block bx-sm align-middle"></i>
         </a>
     </div>
 
@@ -31,53 +30,52 @@
 
     <ul class="menu-inner py-1">
         <li class="menu-header small">
-            <span class="menu-header-text">Основное</span>
+            <span class="menu-header-text">Меню</span>
         </li>
         <li class="menu-item">
             <a href="{% url 'dashboard' %}" class="menu-link">
-                <i class="menu-icon bx bx-home"></i>
+                <i class="menu-icon bx bx-home-circle"></i>
                 <div>Главная</div>
             </a>
         </li>
-
         <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon bx bx-line-chart"></i>
-                <div>Расходы</div>
+            <a href="{% url 'dashboard' %}" class="menu-link">
+                <i class='menu-icon bx bx-link'></i>
+                <div>Wildberries</div>
+                <div class="badge bg-danger rounded-pill ms-auto">Скоро</div>
             </a>
-            <ul class="menu-sub">
-                <li class="menu-item">
-                    <a href="{% url 'finance-list' %}" class="menu-link">
-                        <div>График</div>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="{% url 'expends' %}" class="menu-link">
-                        <div>Расходы</div>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="{% url 'salary-list' %}" class="menu-link">
-                        <div>Зарплаты</div>
-                    </a>
-                </li>
-            </ul>
         </li>
-
+    
+        <li class="menu-item">
+            <a href="{% url 'finance-list' %}" class="menu-link">
+                <i class="menu-icon bx bx-dollar-circle"></i>
+                <div>Финансы</div>
+            </a>
+        </li>
+    
+        <li class="menu-header small">
+            <span class="menu-header-text">Продажи</span>
+        </li>
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon bx bx-box"></i>
+                <i class="menu-icon bx bx-store"></i>
                 <div>Товары</div>
+
             </a>
             <ul class="menu-sub">
+                <li class="menu-item">
+                    <a href="{% url 'category-list' %}" class="menu-link">
+                        <div>Категории</div>
+                    </a>
+                </li>
                 <li class="menu-item">
                     <a href="{% url 'product-list' %}" class="menu-link">
-                        <div>Просмотр товаров</div>
+                        <div>Каталог</div>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="{% url 'product-create' %}" class="menu-link">
-                        <div>Добавление товара</div>
+                        <div>Добавить</div>
                     </a>
                 </li>
                 <li class="menu-item">
@@ -87,21 +85,21 @@
                 </li>
                 <li class="menu-item">
                     <a href="{% url 'product-income' %}" class="menu-link">
-                        <div>Поставка</div>
+                        <div>Поставки</div>
                     </a>
                 </li>
             </ul>
         </li>
-
+    
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon bx bx-history"></i>
-                <div>История операций</div>
+                <i class="menu-icon bx bx-archive"></i>
+                <div>История</div>
             </a>
             <ul class="menu-sub">
                 <li class="menu-item">
-                    <a href="{% url 'history' %}" class="menu-link">
-                        <div>Общие операции</div>
+                    <a href="{% url 'total' %}" class="menu-link">
+                        <div>Общая</div>
                     </a>
                 </li>
                 <li class="menu-item">
@@ -116,38 +114,51 @@
                 </li>
             </ul>
         </li>
-
+    
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon bx bx-user"></i>
-                <div>Сотрудники</div>
+                <i class="menu-icon bx bx-group"></i>
+                <div>Персонал</div>
             </a>
             <ul class="menu-sub">
                 <li class="menu-item">
                     <a href="{% url 'user-list' %}" class="menu-link">
-                        <div>Список сотрудников</div>
+                        <div>Сотрудники</div>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="{% url 'user-create' %}" class="menu-link">
-                        <div>Новый сотрудник</div>
+                        <div>Добавить</div>
                     </a>
                 </li>
             </ul>
         </li>
+    
+        <li class="menu-header small">
+            <span class="menu-header-text">Онлайн</span>
+        </li>
+        <li class="menu-item">
+            <a href="{% url 'shop-index' request.user.shop.id %}" class="menu-link">
+                <i class="menu-icon bx bx-cart"></i>
+                <div>Магазин</div>
+            </a>
+        </li>
 
+        <li class="menu-header small">
+            <span class="menu-header-text">Настройки</span>
+        </li>
         <li class="menu-item">
             <a href="{% url 'settings' %}" class="menu-link">
                 <i class="menu-icon bx bx-cog"></i>
-                <div>Настройки</div>
+                <div>Система</div>
             </a>
         </li>
-
         <li class="menu-item">
-            <a href="" class="menu-link">
-                <i class="menu-icon bx bx-help-circle"></i>
-                <div>Поддержка</div>
+            <a href="#" class="menu-link">
+                <i class="menu-icon bx bx-support"></i>
+                <div>Помощь</div>
             </a>
         </li>
     </ul>
+    
 </aside>

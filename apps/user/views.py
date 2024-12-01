@@ -44,9 +44,6 @@ def list(request):
     return render(request, 'user/list.html', {'users': users})
 
 
-
-
-
 def create(request):
     form = CreateUserForm()
 
@@ -62,3 +59,19 @@ def create(request):
     }
     return render(request, 'user/create.html', context)
 
+
+def profile(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    form = UserProfileForm(instance=user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', pk=user.pk)
+
+    context = {
+        'user': user,
+        'form': form
+    }
+    return render(request, 'user/profile.html', {'user': user})

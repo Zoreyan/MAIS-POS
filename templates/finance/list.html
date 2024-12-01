@@ -1,56 +1,117 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 
-<div class="card m-3">
-    <div class="row">
-        <div class="col-12">
-            <div class="card h-100">
-                <h5 class="card-header">График прибыли, продаж и расходов</h5>
-                <div class="card-body">
-                    <div id="chart2" class="apex-charts"></div>
-                </div>
+<div class="card">
+    <div class="card-header">
+      <h5 class="card-title">Фильтр</h5>
+      <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
+        <div class="col-md-3 product_status"><select id="ProductStatus" class="form-select text-capitalize"><option value="">Тип</option><option value="Scheduled">Scheduled</option><option value="Publish">Publish</option><option value="Inactive">Inactive</option></select></div>
+        <div class="col-md-3 product_stock"><select id="ProductStock" class="form-select text-capitalize"><option value=""> Ответственный </option><option value="Out_of_Stock">Out of Stock</option><option value="In_Stock">In Stock</option></select></div>
+        <div class="col-md-3 product_category"><input type="date" class="form-control" placeholder="Дата"></div>
+        <div class="col-md-3">
+            <div class="btn-group d-flex mb-sm-0 gy-3">
+                <!-- Кнопка фильтрации -->
+                <button class="btn btn-success d-flex align-items-center">
+                    <i class="bx bx-filter-alt me-1"></i>
+                    <span>Фильтр</span>
+                </button>
+            
+                <!-- Кнопка добавления -->
+                <a href="{% url 'finance-create' %}" class="btn btn-primary ms-2 d-flex align-items-center">
+                    <i class="bx bx-plus me-1"></i>
+                    <span>Добавить</span>
+                </a>
             </div>
-        </div>      
+        </div>
     </div>
-
-    
-
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-<script>
-    $.ajax({
-    type: "GET",
-    url: "{% url 'get-chart-data-finance' %}",
-    success: function (data) {
-        console.log(data);  // Для отладки
-        var options = {
-            chart: { height: 500, type: "area" },
-            dataLabels: { enabled: false },
-            series: [
-                { name: "Прибыль", data: data.profit },
-                { name: "Сумма продаж", data: data.sales },
-                { name: "Расходы", data: data.expenses }
-            ],
-            fill: {
-                type: "gradient",
-                gradient: {
-                    shadeIntensity: 0.5,  // Меньше интенсивности, чтобы видеть цвета
-                    opacityFrom: 0.6,    // Увеличиваем непрозрачность
-                    opacityTo: 0.5,
-                    stops: [0, 100]
-                }
-            },
-            colors: ['#28a745', '#007bff', '#dc3545'],  // Зеленый для прибыли, синий для продаж, красный для расходов
-            xaxis: { categories: data.months },
-        };
-        var chart1 = new ApexCharts(document.querySelector("#chart2"), options);
-        chart1.render();
-    },
-    error: function (xhr, status, error) {
-        console.log("Error:", status, error); // Для отладки
-    }
-});
-</script>
-
-
+    </div>
+    <div class="table-responsive">
+      <table class="datatables-products table">
+        <thead class="border-top">
+          <tr>
+            <th>Тип</th>
+            <th>Дата</th>
+            <th>Сумма</th>
+            <th>Метод оплаты</th>
+            <th>Ответственный</th>
+            <th>Комментарий</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.bar_code }}</td>
+                <td>
+                    <div class="d-flex justify-content-start align-items-center product-name">
+                        <div class="avatar-wrapper">
+                            <div class="avatar avatar me-4 rounded-2 bg-label-secondary">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" class="rounded-2" alt="" style="object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'assets/images/products/product-3.jpg' %}" class="rounded-2" alt="" style="object-fit: cover;">
+                            {% endif %}
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <h6 class="text-nowrap mb-0">{{ product.name }}</h6>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.stock }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.sale_price }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.unit }}</td>
+                <td>
+                    <div class="d-inline-block text-nowrap"><button
+                            class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light"><i
+                                class="bx bx-edit bx-sm"></i></button><button
+                            class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"
+                            data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-vertical bx-sm"></i></button>
+                        <div class="dropdown-menu dropdown-menu-end m-0" style=""><a href="javascript:0;"
+                                class="dropdown-item">Открыть</a><a href="javascript:0;" class="dropdown-item">Удалить</a></div>
+                    </div>
+                </td>
+            {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-end align-items-center mt-3 me-3">
+        <nav aria-label="Page navigation">
+            <ul class="pagination pagination-rounded d-flex align-items-center">
+              <li class="page-item first">
+                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-left bx-sm"></i></a>
+              </li>
+              <li class="page-item prev">
+                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-left bx-sm"></i></a>
+              </li>
+              <li class="page-item">
+                <a class="page-link waves-effect" href="javascript:void(0);">1</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link waves-effect" href="javascript:void(0);">2</a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link waves-effect" href="javascript:void(0);">3</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link waves-effect" href="javascript:void(0);">4</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link waves-effect" href="javascript:void(0);">5</a>
+              </li>
+              <li class="page-item next">
+                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-right bx-sm"></i></a>
+              </li>
+              <li class="page-item last">
+                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-right bx-sm"></i></a>
+              </li>
+            </ul>
+          </nav>
+    </div>
+  </div>
 
 {% endblock %}

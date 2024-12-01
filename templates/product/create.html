@@ -2,98 +2,99 @@
 
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-6 row-gap-4">
+    <div class="text-center text-md-start">
+      <h4 class="mb-1">Добавить новый продукт</h4>
+      <p class="mb-0">Заказы, оформленные в вашем магазине</p>
+    </div>
+    <div class="d-flex flex-wrap gap-4">
+      <div class="d-flex gap-4">
+        <button class="btn btn-label-secondary">Отменить</button>
+        <button class="btn btn-label-primary">Сохранить как черновик</button>
+      </div>
+      <button type="submit" class="btn btn-primary">Опубликовать продукт</button>
+    </div>
+</div>
 
-            <div class="card">
-                <h3 class="card-header">
-                        Добавить продукт
-                </h3>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" class="row g-3">
-                        {% csrf_token %}
-                        {% if messages %}
-                        <div class="row justify-content-center">
-                            <div class="col-5">
-                                <span class="badge bg-info p-2">
-                                    {% for message in messages %}
-                                        {{ message }}
-                                    {% endfor %}
-                                </span>
-                            </div>
-                        </div>
-                        {% endif %}
-                        <div class="col-md-6">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}<span class="text-danger">*</span></label>
-                            <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" 
-                                   class="form-control {% if form.name.errors %}is-invalid{% endif %}" 
-                                   value="{{ form.name.value|default_if_none:'' }}">
-                            {% if form.name.errors %}
-                                <div class="invalid-feedback">{{ form.name.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-                        <div class="col-md-6">
-                            <label for="{{ form.bar_code.id_for_label }}" class="form-label">{{ form.bar_code.label }}</label>
-                            {{ form.bar_code }}
-                            {% if form.bar_code.errors %}
-                                <div class="invalid-feedback">{{ form.bar_code.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-                        <div class="col-md-6">
-                            <label for="{{ form.price.id_for_label }}" class="form-label">{{ form.price.label }}<span class="text-danger">*</span></label>
-                            {{ form.price }}
-                            {% if form.price.errors %}
-                                <div class="invalid-feedback">{{ form.price.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-                        <div class="col-md-6">
-                            <label for="{{ form.sale_price.id_for_label }}" class="form-label">{{ form.sale_price.label }}<span class="text-danger">*</span></label>
-                            {{ form.sale_price }}
-                            {% if form.sale_price.errors %}
-                                <div class="invalid-feedback">{{ form.sale_price.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-                        <div class="col-md-6">
-                            <label for="{{ form.quantity.id_for_label }}" class="form-label">{{ form.quantity.label }}</label>
-                            {{ form.quantity }}
-                            {% if form.quantity.errors %}
-                                <div class="invalid-feedback">{{ form.quantity.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.quantity.id_for_label }}" class="form-label">{{ form.unit.label }}</label>
-                            {{ form.unit }}
-                            {% if form.unit.errors %}
-                                <div class="invalid-feedback">{{ form.unit.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-                        <div class="col-md-6">
-                            <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
-                            <input type="file" name="{{ form.image.name }}" id="{{ form.image.id_for_label }}" 
-                                   class="form-control" 
-                                   value="{{ form.image.value|default_if_none:'' }}">
-                            {% if form.image.errors %}
-                                <div class="invalid-feedback">{{ form.image.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-        
-                        <div class="col-12 text-center">
-                            <button type="submit" class="btn btn-primary product-create-btn">Сохранить</button>
-                        </div>
-                    </form>
+<div class="row">
+    <!-- Первая колонка -->
+    <div class="col-12 col-lg-8">
+        <div class="card mb-6 h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Информация о продукте</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-6">
+                        <label class="form-label" for="product-name">Название</label>
+                        <input type="text" class="form-control" id="product-name" placeholder="Название продукта" name="productTitle">
+                    </div>
+                    <div class="col-6 mb-6">
+                        <label class="form-label" for="product-image">Изображение</label>
+                        <input type="file" class="form-control" id="product-image" name="productImage">
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <div class="col">
+                        <label class="form-label mb-1" for="unit-select">Единица измерения</label>
+                        <select id="unit-select" class="select2 form-select">
+                            <option value="">Выберите единицу измерения</option>
+                            <option value="шт">Шт</option>
+                            <option value="кг">Кг</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="product-barcode">Штрихкод</label>
+                        <input type="text" class="form-control" id="product-barcode" placeholder="0123-4567" name="productBarcode">
+                    </div>
+                </div>
+                <div>
+                    <label class="mb-1" for="product-description">Описание (необязательно)</label>
+                    <textarea class="form-control" id="product-description" name="productDescription"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вторая колонка -->
+    <div class="col-12 col-lg-4">
+        <div class="card mb-6 h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Цены</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-6">
+                    <label class="form-label" for="product-price">Базовая цена</label>
+                    <input type="number" class="form-control" id="product-price" placeholder="Цена" name="productPrice">
+                </div>
+                <div class="mb-6">
+                    <label class="form-label" for="product-discount-price">Цена со скидкой (необязательно)</label>
+                    <input type="number" class="form-control" id="product-discount-price" placeholder="Цена со скидкой" name="productDiscountPrice">
+                </div>
+                <div class="mb-6">
+                    <label class="form-label" for="product-quantity">Количество</label>
+                    <input type="number" class="form-control" id="product-quantity" placeholder="Количество" name="productQuantity">
+                </div>
+                <div>
+                    <label class="form-label mb-1" for="category-select">Категория</label>
+                    <select id="category-select" class="select2 form-select">
+                        <option value="">Выберите категорию</option>
+                        <option value="Бытовые товары">Бытовые товары</option>
+                        <option value="Управление">Управление</option>
+                        <option value="Электроника">Электроника</option>
+                        <option value="Офис">Офис</option>
+                        <option value="Автомобильные товары">Автомобильные товары</option>
+                    </select>
+                </div>
+                <div class="d-flex justify-content-between align-items-center border-top pt-2">
+                    <span class="mb-0">В наличии</span>
+                    <div class="form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="product-available" name="productAvailable">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
 {% endblock %}

@@ -5,10 +5,15 @@
 <div class="col-12">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">История поставок</h4>
+          <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+            <div>
+              <div id="DataTables_Table_0_filter" class="dataTables_filter ms-n3 mb-0 mb-md-6"><label><input type="search"
+                    class="form-control" placeholder="Поиск поставок" aria-controls="DataTables_Table_0"></label></div>
+            </div>
+          </div>
             <div class="table-responsive">
                 <table class="table table-centered w-100" id="products-datatable">
-                  <thead class="table-light">
+                  <thead>
                     <tr>
                       <th>Товар</th>
                       <th>Штрих код</th>
@@ -29,8 +34,7 @@
                         <td>{{ income.total_sum }}</td>
                         <td>{{ income.created }}</td>
                         <td>
-                        
-                          <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                          <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                           data-bs-target="#deleteModal"><i class="mdi mdi-cart me-1"></i>Удалить</button>
                       <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog"
                           aria-hidden="true">
@@ -42,11 +46,11 @@
                                       <form class="ps-3 pe-3" method="POST">
                                           {% csrf_token %}
                                           <p>Вы действительно хотите удалить поставку?</p>
-
-
                                           <div class="mb-3 text-center">
-                                              <a class="btn btn-danger"
-                                                  href="{% url 'income-history-delete' income.id %}">Удалить</a>
+                                              <a class="btn btn-danger btn-sm"
+                                                  href="{% url 'income-history-delete' income.id %}">
+                                                  Удалить
+                                              </a>
                                           </div>
 
                                       </form>

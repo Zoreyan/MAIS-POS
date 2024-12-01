@@ -7,7 +7,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     # История
-    path('history/', history, name='history'),
+    path('total/', total, name='total'),
     path('sold-history/', sales, name='sold-history'),
     path('income-history/', incomes, name='income-history'),
     path('sold-history-delete/<int:pk>/', sales_delete, name='sold-history-delete'),

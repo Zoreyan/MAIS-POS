@@ -4,14 +4,14 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 
 @login_required
-def history(request):
+def total(request):
     orders = OrderHistory.objects.filter(shop=request.user.shop).order_by('-created')
 
     context = {
         'orders': orders,
     }
 
-    return render(request, 'history/history.html', context)
+    return render(request, 'history/total.html', context)
 
 
 def sales(request):
@@ -53,7 +53,7 @@ def order_delete(request, pk):
         product.quantity += i.quantity
         product.save()
     order.delete()
-    return redirect('history')
+    return redirect('total')
 
 def income_delete(request, pk):
     income = Income.objects.get(id=pk)
@@ -62,4 +62,4 @@ def income_delete(request, pk):
         product.quantity -= i.quantity
         product.save()
     income.delete()
-    return redirect('history')
+    return redirect('total')

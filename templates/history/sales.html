@@ -5,10 +5,15 @@
 <div class="col-12">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">История продаж</h4>
+          <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+            <div>
+              <div id="DataTables_Table_0_filter" class="dataTables_filter ms-n3 mb-0 mb-md-6"><label><input type="search"
+                    class="form-control" placeholder="Поиск продаж" aria-controls="DataTables_Table_0"></label></div>
+            </div>
+          </div>
             <div class="table-responsive">
                 <table class="table table-centered w-100" id="products-datatable">
-                  <thead class="table-light">
+                  <thead>
                     <tr>
                       <th>Ордер</th>
                       <th>Товар</th>
@@ -32,7 +37,7 @@
                         <td>{{ sale.created }}</td>
                         <td>
                         
-                          <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                          <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                           data-bs-target="#deleteModal"><i class="mdi mdi-cart me-1"></i>Удалить</button>
                       <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog"
                           aria-hidden="true">
@@ -45,9 +50,8 @@
                                           {% csrf_token %}
                                           <p>Вы действительно хотите удалить поставку?</p>
 
-
-                                          <div class="mb-3 text-center">
-                                              <a class="btn btn-danger"
+                                          <div class="mb-3 text-end">
+                                              <a class="btn btn-danger btn-sm"
                                                   href="{% url 'sold-history-delete' sale.id %}">Удалить</a>
                                           </div>
 
@@ -63,7 +67,40 @@
                   </tbody>
                 </table>
               </div>
-        </div>
+            </div>
+            <div class="d-flex justify-content-end align-items-center me-3">
+              <nav aria-label="Page navigation">
+                  <ul class="pagination pagination-rounded d-flex align-items-center">
+                    <li class="page-item first">
+                      <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-left bx-sm"></i></a>
+                    </li>
+                    <li class="page-item prev">
+                      <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-left bx-sm"></i></a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link waves-effect" href="javascript:void(0);">1</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link waves-effect" href="javascript:void(0);">2</a>
+                    </li>
+                    <li class="page-item active">
+                      <a class="page-link waves-effect" href="javascript:void(0);">3</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link waves-effect" href="javascript:void(0);">4</a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link waves-effect" href="javascript:void(0);">5</a>
+                    </li>
+                    <li class="page-item next">
+                      <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-right bx-sm"></i></a>
+                    </li>
+                    <li class="page-item last">
+                      <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-right bx-sm"></i></a>
+                    </li>
+                  </ul>
+                </nav>
+          </div>
     </div>
 </div>
 
