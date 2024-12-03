@@ -8,7 +8,7 @@
             <h2 class="mb-4 text-center">
                 Добавить продукт
             </h2>
-            <img src="{{ request.user.shop.image.url }}" alt="" class="img-fluid mb-3 rounded" width="300" height="300">
+            <img alt="" class="img-fluid mb-3 rounded" width="300" height="300">
             <form method="post" enctype="multipart/form-data" class="row g-3">
                 {% csrf_token %}
                 {% if messages %}
@@ -57,6 +57,12 @@
                 </div>
             </form>
         </div>
+        <form class="col-md-4" method="post" action="{% url 'update_items_per_page' %}">
+            {% csrf_token %}
+            <label for="items_per_page">Количество товаров на странице:</label>
+            <input class="form-control w-50" type="number" name="items_per_page" id="items_per_page" value="{{ request.session.items_per_page|default:10 }}">
+            <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
+        </form>
     </div>
 </div>
 

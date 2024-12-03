@@ -153,3 +153,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'muhammadazizmadakimov06@gmail.com'
 EMAIL_HOST_PASSWORD = 'dwfj njfq nlvh elui'
+
+ITEMS_PER_PAGE = 10

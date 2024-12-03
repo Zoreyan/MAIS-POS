@@ -12,6 +12,7 @@ from django.utils.timezone import now
 from apps.user.models import User
 from backend import settings
 from django.db.models import F
+from django.core.paginator import Paginator
 
 
 def check_inventory_levels(products):
@@ -52,6 +53,16 @@ def log_low_stock_notification(product):
         created_at=now()
     )
 
+def update_items_per_page(request):
+    if request.method == "POST":
+        try:
+            items_per_page = int(request.POST.get("items_per_page", 10))
+            if items_per_page > 0:
+                request.session['items_per_page'] = items_per_page
+        except ValueError:
+            request.session['items_per_page'] = 10  # Устанавливаем значение по умолчанию
+    return redirect('settings') 
+
 
 def list_(request):
     search_query = request.GET.get('search', '')
@@ -78,8 +89,23 @@ def list_(request):
     elif in_stock == "no":
         products = products.filter(quantity=0)
 
+    #для пагинации
+    items_per_page = request.session.get('items_per_page', 10)
+    paginator = Paginator(products, items_per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    # Ограничение отображаемых страниц
+    current_page = page_obj.number
+    total_pages = paginator.num_pages
+    delta = 3  # Количество страниц до и после текущей
+
+    start_page = max(current_page - delta, 1)
+    end_page = min(current_page + delta, total_pages)
+    visible_pages = range(start_page, end_page + 1)
+
     context = {
-        'products': products
+        'visible_pages': visible_pages,
+        'page_obj': page_obj,
     }
     return render(request, 'product/list.html', context)
 
