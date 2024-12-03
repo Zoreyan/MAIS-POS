@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body table-responsive">
+        <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+            <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
+                <div>
+                    <div id="DataTables_Table_0_filter" class="dataTables_filter ms-n3 mb-0 mb-md-6">
+                        <label><input type="search" class="form-control" placeholder="Поиск заказа" aria-controls="DataTables_Table_0"></label>
+                    </div>
+                </div>
+            </div>
+            <table class="datatables-order table border-top dataTable no-footer dtr-column collapsed" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" style="width: 1397px;">
+                <thead>
+                    <tr>
+                        <th>ИД</th>
+                        <th class="sorting sorting_asc" aria-sort="ascending">Дата</th>
+                        <th class="sorting">Клиенты</th>
+                        <th class="sorting">Оплата</th>
+                        <th class="sorting dtr-hidden" style="display: none;">Статус</th>
+                        <th class="sorting dtr-hidden" style="display: none;">Метод</th>
+                        <th class="sorting_disabled">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="odd">
+                        <td><a href="app-ecommerce-order-details.html"><span>#6979</span></a></td>
+                        <td class="sorting_1"><span class="text-nowrap">15 Апр 2023, 10:21</span></td>
+                        <td>
+                            <div class="d-flex justify-content-start align-items-center order-name text-nowrap">
+                                <div class="avatar-wrapper">
+                                    <div class="avatar avatar-sm me-3">
+                                        <img src="../../assets/img/avatars/3.png" alt="Аватар" class="rounded-circle">
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <h6 class="m-0"><a href="pages-profile-user.html" class="text-heading">Кристина Исом</a></h6>
+                                    <small>ceasomw@theguardian.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <h6 class="mb-0 align-items-center d-flex w-px-100 text-warning">
+                                <i class="ti ti-circle-filled fs-tiny me-1"></i>В ожидании
+                            </h6>
+                        </td>
+                        <td class="dtr-hidden" style="display: none;">
+                            <span class="badge px-2 bg-label-success">Доставлено</span>
+                        </td>
+                        <td class="dtr-hidden" style="display: none;">
+                            <div class="d-flex align-items-center text-nowrap">
+                                <img src="../../assets/img/icons/payments/mastercard-cc.png" alt="mastercard-cc" width="29">
+                                <span><i class="ti ti-dots me-1 mt-1"></i>2356</span>
+                            </div>
+                        </td>
+                        <td class="dtr-hidden" style="display: none;">
+                            <div class="d-flex justify-content-sm-start align-items-sm-center">
+                                <button class="btn btn-icon btn-text-secondary waves-effect waves-light rounded-pill dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                    <i class="ti ti-dots-vertical"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end m-0">
+                                    <a href="app-ecommerce-order-details.html" class="dropdown-item">Просмотр</a>
+                                    <a href="javascript:0;" class="dropdown-item delete-record">Удалить</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

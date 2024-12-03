@@ -1,21 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
-<!-- Main Content -->
 <div class="container mt-5">
     <div class="row">
-        <div class="col-12">
-            <div class="card">
+        <div class="col-8">
+            <div class="card h-100">
                 <div class="card-body">
                     <div class="row mb-2 align-items-center justify-content-between">
                         <div class="col-sm-auto d-flex align-items-center gap-2">
                             <input type="number" placeholder="Штрих код" maxlength="8" class="form-control barcode me-2" name="barcode" autofocus>
                             <input type="number" placeholder="Сумма оплаты" maxlength="8" class="form-control amount" name="amount">
-                            <input type="number" placeholder="Скидка" maxlength="8" class="form-control discount" name="discount">
-                            <input type="search" placeholder="Добавить по названию" class="form-control search" name="search">
                         </div>
                         <div class="col-sm-auto">
-                            <button type="button" class="btn btn-success d-flex align-items-center sell">
-                                <i class="bx bx-plus-circle me-2"></i>Отправить
+                            <button type="button" class="btn btn-primary d-flex align-items-center sell">
+                                <i class="bx bx-plus-circle me-2"></i>
+                                Отправить
                             </button>
                         </div>
                     </div>
@@ -25,21 +23,19 @@
                         <div class="col-sm-12">
                             <div class="product-search-results" style="display: none; max-height: 400px; overflow-y: auto;">
                                 <div class="row" id="search-results">
-                                    <!-- Dynamic Product Cards will be inserted here -->
+
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Product Information -->
                     <div class="row mb-2">
                         <div class="col-sm-4 product-info"></div>
                     </div>
 
-                    <!-- Product Table -->
                     <div class="table-responsive">
                         <table class="table table-centered w-100" id="products-datatable">
-                            <thead class="table-light">
+                            <thead>
                                 <tr>
                                     <th>Товар</th>
                                     <th>Штрих код</th>
@@ -49,19 +45,31 @@
                                 </tr>
                             </thead>
                             <tbody id="product-table-body">
-                                <!-- Data will be inserted dynamically -->
+
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- Summary Section -->
-                    <div id="total-sum" class="fs-5 fw-semibold">Итоговая сумма: 0</div>
-                    <span class="d-flex align-items-center change fs-5 fw-semibold">Сдача: 0</span>
-                </div> <!-- end card-body-->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
-    </div> <!-- end row -->
-</div> <!-- end container -->
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card">
+                <h4 class="card-header fw-bold">Цена</h4>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <span>Итоговая сумма: </span>
+                        <h1 id="total-sum" class="fw-semibold">0</h1>
+                    </div>
+                    <div class="mb-3">
+                        <span>Сдача: </span>
+                        <h2 class="change fw-semibold">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <script>
@@ -70,53 +78,7 @@
         let totalSum = 0;
         let discountedSum = 0;
 
-        // Product Search
-        $('.search').on('input', function () {
-            let searchQuery = $(this).val().toLowerCase();
-            if (searchQuery.length >= 2) {
-                $.ajax({
-                    url: "{% url 'search-product' %}",
-                    type: "GET",
-                    data: { query: searchQuery },
-                    success: function (data) {
-                        $('#search-results').empty();
-                        $('.product-search-results').show();
 
-                        if (data.length > 0) {
-                            data.forEach(function (product) {
-                                $('#search-results').append(`
-                                    <div class="col-sm-2 mb-0">
-                                        <div class="card">
-                                            <div class="card-body text-center p-2">
-                                                <img src="${product.image}" alt="${product.name}" class="img-fluid mb-2" style="max-height: 50px;">
-                                                <h5 class="card-title">${product.name}</h5>
-                                                <p class="card-text">${product.bar_code}</p>
-                                                <p class="card-text">Кол: ${product.quantity}</p>
-                                                <button class="btn btn-primary add-product" data-barcode="${product.bar_code}">Добавить</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `);
-                            });
-                        } else {
-                            $('#search-results').append('<div class="col-sm-12">Товары не найдены.</div>');
-                        }
-                    },
-                    error: function () {
-                        $('#search-results').append('<div class="col-sm-12">Ошибка поиска товара.</div>');
-                    }
-                });
-            } else {
-                $('.product-search-results').hide();
-            }
-        });
-
-        // Add Product to Cart
-        $(document).on('click', '.add-product', function () {
-            let barcode = $(this).data('barcode');
-            $('.barcode').val(barcode).trigger('keyup');
-            $('.product-search-results').hide();
-        });
 
         // Barcode Input Handler
         $('.barcode').on('keyup', function () {
@@ -197,26 +159,13 @@
         // Update Total and Change
         function updateTotal() {
             totalSum = productList.reduce((sum, product) => sum + product.price * product.quantity, 0);
-            applyDiscount();
-            updateDisplay();
         }
 
-        // Apply Discount
-        function applyDiscount() {
-            const discount = parseFloat($('.discount').val()) || 0;
-            discountedSum = Math.max(totalSum - discount, 0);
-        }
-
-        // Update Display (Total and Change)
-        function updateDisplay() {
-            $('#total-sum').text('Итоговая сумма: ' + discountedSum.toFixed(2));
-            updateChange();
-        }
 
         // Update Change
         function updateChange() {
             let amount = parseFloat($('.amount').val()) || 0;
-            $('.change').text('Сдача: ' + (amount - discountedSum).toFixed(2));
+            $('.change').text((amount - discountedSum).toFixed(2));
         }
 
         // Handle Amount and Discount Changes

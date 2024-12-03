@@ -46,7 +46,7 @@
             <tr>
                 <td>{{ product.bar_code }}</td>
                 <td>
-                    <div class="d-flex justify-content-start align-items-center product-name">
+                    <a href="{% url 'product-details' product.id %}" class="d-flex justify-content-start align-items-center product-name">
                         <div class="avatar-wrapper">
                             <div class="avatar avatar me-4 rounded-2 bg-label-secondary">
                             {% if product.image %}
@@ -59,7 +59,7 @@
                         <div class="d-flex flex-column">
                             <h6 class="text-nowrap mb-0">{{ product.name }}</h6>
                         </div>
-                    </div>
+                    </a>
                 </td>
                 <td>{{ product.category }}</td>
                 <td>{{ product.stock }}</td>

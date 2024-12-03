@@ -1,99 +1,112 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
 
-
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-5">
-                            <!-- Product image -->
-                            <a href="javascript: void(0);" class="text-center d-block mb-4">
-                                <img src="{{ product.image.url }}" class="img-fluid" style="max-width: 280px;"
-                                    alt="Product-img" />
-                            </a>
-
-
-                        </div> <!-- end col -->
-                        <div class="col-lg-7">
-                            <div class="ps-lg-4">
-                                <!-- Product title -->
-                                <h3 class="mt-0">{{ product.name }}<a href="javascript: void(0);" class="text-muted"><i
-                                            class="mdi mdi-square-edit-outline ms-2"></i></a> </h3>
-                                <p class="mb-1">{{ product.bar_code }}</p>
-
-
-
-
-                                <!-- Product description -->
-                                <div class="mt-4">
-                                    <h6 class="font-14">Цена:</h6>
-                                    <h3> {{ product.price }}с</h3>
-                                </div>
-                                <div class="mt-4">
-                                    <h6 class="font-14">Продажная цена:</h6>
-                                    <h3> {{ product.sale_price }}с</h3>
-                                </div>
-
-                                <!-- Quantity -->
-                                <div class="mt-4">
-                                    <h6 class="font-14">Количество:</h6>
-                                    <h3> {{ product.quantity }}{{ product.unit }}</h3>
-                                </div>
-
-
-                                <!-- Product information -->
-                                <div class="mt-4">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <h6 class="font-14">Продаж в этом месяце:</h6>
-                                            <p class="text-sm lh-150">{{ product.month_sales }}{{ product.unit }}</p>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div> <!-- end col -->
-                    </div> <!-- end row-->
-
-                    <div class="table-responsive mt-4">
-                        <h4>История поставок</h4>
-                        <table class="table table-bordered table-centered mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Количество</th>
-                                    <th>Цена</th>
-                                    <th>Сумма</th>
-                                    <th>Дата</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for income in product.incomehistory_set.all %}
-                                <tr>
-                                    <td>{{income.quantity}}</td>
-                                    <td>{{income.price}}</td>
-                                    <td>{{ income.total_sum }}</td>
-                                    <td>
-                                        {{ income.created }}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div> <!-- end table-responsive-->
-                </div> <!-- end card-body-->
-            </div> <!-- end card-->
-        </div> <!-- end col-->
+<div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCenterTitle">Добавление категории</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <label for="nameWithTitle" class="form-label">Количество</label>
+                        <input type="text" id="nameWithTitle" class="form-control" placeholder="Введите количество">
+                    </div>
+                    <div class="col-12 mb-4">
+                        <label for="nameWithTitle" class="form-label">Цена</label>
+                        <input type="text" id="nameWithTitle" class="form-control" placeholder="Введите цену">
+                    </div>
+                    
+                    <div class="col-12 mb-4">
+                        <label for="nameWithTitle" class="form-label">Дата</label>
+                        <input type="date" id="nameWithTitle" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary waves-effect"
+                    data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary waves-effect waves-light">Сохранить изменения</button>
+            </div>
+        </div>
     </div>
-    <!-- end row-->
-
 </div>
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-12 col-sm-5">
+                        <img src="{{ product.image.url }}" class="img-fluid rounded h-100" style="object-fit: cover;"
+                            alt="product-img" />
+                    </div>
+                    <div class="col-12 col-sm-7">
+                        <div class="ps-lg-4">
+                            <h2 class="mb-2 fw-bold">{{ product.name }}</h2>
+                            <div class="mb-3 d-flex align-items-center g-3">
+                                <i class='bx bx-barcode'></i>
+                                <span>{{ product.bar_code }}</span>
+                            </div>
+                            <div class="mb-4 d-flex align-items-center g-3">
+                                <i class='bx bx-money'></i>
+                                <span class="fw-bold fs-4">{{ product.sale_price }}<sup class="fs-6">с</sup></span>
+                            </div>
 
+                            <div class="mb-4">
+                                <h3>{{ product.quantity }}<sup class="fs-6">{{ product.unit }}</sup></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 ">
+                    <span class="badge bg-info">Еда</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3>История поставок</h3>
+                <div class="">
+                    <button type="button" class="btn btn-primary btn-sm waves-effect waves-light" data-bs-toggle="modal"
+                    data-bs-target="#modalCenter">
+                    <i class="bx bx-plus me-1"></i>
+                    Добавить
+                </button>
+                </div>
+
+            </div>
+            <div class="card-body">
+                <div class="table-responsive mt-4">
+                    <table class="table table-bordered table-centered mb-0">
+                        <thead>
+                            <tr>
+                                <th>Количество</th>
+                                <th>Цена</th>
+                                <th>Сумма</th>
+                                <th>Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for income in product.incomehistory_set.all %}
+                            <tr>
+                                <td>{{ income.quantity }}</td>
+                                <td>{{ income.price }}</td>
+                                <td>{{ income.total_sum }}</td>
+                                <td>{{ income.created }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

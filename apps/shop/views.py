@@ -35,3 +35,9 @@ def vacancies(request, pk):
         'shop': shop
     }
     return render(request, 'shop/vacancies.html', context)
+
+
+def order_list(request):
+    context = {
+    }
+    return render(request, 'shop/order_list.html', context)
