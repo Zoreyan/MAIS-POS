@@ -18,6 +18,7 @@ class Shop(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название')
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, verbose_name='Магазин', null=True)
+    category = models.ForeignKey('product.Category', on_delete=models.SET_NULL, verbose_name='Категория', null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
     sale_price = models.DecimalField(
         max_digits=10, decimal_places=2,
@@ -45,3 +46,24 @@ class Product(models.Model):
 
     def month_sales(self):
         return sum(i.quantity for i in self.soldhistory_set.filter(created__year=datetime.now().year, created__month=datetime.now().month))
+
+class Category(models.Model):
+    parent = models.ForeignKey(
+        'self',  # Указывает на ту же модель
+        on_delete=models.SET_NULL,  # Если родительская категория удалена, поле parent станет NULL
+        null=True,  # Родительская категория необязательна
+        blank=True,  # Разрешить оставить поле пустым в формах
+        related_name='children',  # Удобное имя для доступа к дочерним категориям
+        verbose_name='Родитель'
+    )
+    name = models.CharField(max_length=255, verbose_name='Название')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Обновлено')
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name

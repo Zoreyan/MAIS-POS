@@ -19,4 +19,8 @@ urlpatterns = [
     path('search-product/', search_product, name='search-product'),
     path('category-list/', category_list, name='category-list'),
     path('category-create/', category_create, name='category-create'),
+    path('category-delete/<int:pk>/', category_delete, name='category-delete'),
+    path('update_category/<int:pk>/', update_category, name='update-category'),
+    path('update_category_per_page', update_category_per_page, name='update_category_per_page'),
+    path('update_items_per_page', update_items_per_page, name='update_items_per_page')
 ]

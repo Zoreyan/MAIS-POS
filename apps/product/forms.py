@@ -26,3 +26,12 @@ class ShopForm(forms.ModelForm):
             'address': forms.TextInput(attrs={'class': 'form-control'}),
             'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['parent', 'name']
+        widgets = {
+            'parent': forms.Select(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Введите название категории'}),
+        }

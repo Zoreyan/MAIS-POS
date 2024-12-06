@@ -30,6 +30,8 @@ class SoldHistory(models.Model):
     shop = models.ForeignKey('product.Shop', on_delete=models.CASCADE, null=True)
     order = models.ForeignKey(OrderHistory, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey('product.Product', on_delete=models.CASCADE)
+    #Для сохранения цены продукта в момент продажи
+    price_at_sale = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     quantity = models.IntegerField()
     created = models.DateTimeField(auto_now_add=False)
 
@@ -46,10 +48,12 @@ class SoldHistory(models.Model):
 
 
 class IncomeHistory(models.Model):
+    order = models.ForeignKey(OrderHistory, on_delete=models.CASCADE, null=True)
     shop = models.ForeignKey('product.Shop', on_delete=models.CASCADE, null=True)
     product = models.ForeignKey('product.Product', on_delete=models.CASCADE)
     quantity = models.IntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    #Для сохранения цены продукта в момент поставки
+    price_at_moment = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     created = models.DateTimeField(auto_now_add=True)
 
 
@@ -58,4 +62,4 @@ class IncomeHistory(models.Model):
         verbose_name_plural = 'История поставки'
 
     def total_sum(self):
-        return self.quantity * self.price
+        return self.quantity * self.price_at_moment

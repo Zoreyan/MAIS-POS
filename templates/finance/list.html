@@ -5,113 +5,192 @@
 <div class="card">
     <div class="card-header">
       <h5 class="card-title">Фильтр</h5>
+      <form method="get">
       <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
-        <div class="col-md-3 product_status"><select id="ProductStatus" class="form-select text-capitalize"><option value="">Тип</option><option value="Scheduled">Scheduled</option><option value="Publish">Publish</option><option value="Inactive">Inactive</option></select></div>
-        <div class="col-md-3 product_stock"><select id="ProductStock" class="form-select text-capitalize"><option value=""> Ответственный </option><option value="Out_of_Stock">Out of Stock</option><option value="In_Stock">In Stock</option></select></div>
-        <div class="col-md-3 product_category"><input type="date" class="form-control" placeholder="Дата"></div>
         <div class="col-md-3">
-            <div class="btn-group d-flex mb-sm-0 gy-3">
-                <!-- Кнопка фильтрации -->
-                <button class="btn btn-success d-flex align-items-center">
+            <label for="date_from" class="form-label">Дата с</label>
+            <input type="date" id="date_from" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+        </div>
+        <div class="col-md-3">
+            <label for="date_to" class="form-label">Дата по</label>
+            <input type="date" id="date_to" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+        </div>
+        <div class="col-md-3">
+            <label for="expend_type" class="form-label">Тип</label>
+            <select id="expend_type" name="expend_type" class="form-select">
+                <option value="" {% if request.GET.expend_type == "" %}selected{% endif %}>Все типы</option>
+                {% for expend_type in expense_types %}
+                <option value="{{ expend_type }}" {% if request.GET.expend_type == expend_type %}selected{% endif %}>{{ expend_type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <div class="btn-group d-flex">
+                <button type="submit" class="btn btn-success d-flex align-items-center">
                     <i class="bx bx-filter-alt me-1"></i>
                     <span>Фильтр</span>
                 </button>
-            
-                <!-- Кнопка добавления -->
-                <a href="{% url 'finance-create' %}" class="btn btn-primary ms-2 d-flex align-items-center">
+                <button type="button" class="btn btn-primary ms-2 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#expendTypeModal">
                     <i class="bx bx-plus me-1"></i>
                     <span>Добавить</span>
-                </a>
+                </button>
+            </div>
+        </div>
+      </div>
+    </form>
+    </div>
+
+    <div class="modal fade" id="expendTypeModal" tabindex="-1" aria-labelledby="expendTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="expendTypeModalLabel">Добавить расход</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="{% url 'finance-create' %}?type=rent" class="text-dark">Аренда</a></li>
+                        <li class="list-group-item"><a href="{% url 'finance-create' %}?type=utilities" class="text-dark">Коммунальные услуги</a></li>
+                        <li class="list-group-item"><a href="{% url 'finance-create' %}?type=salaries" class="text-dark">Зарплаты</a></li>
+                        <li class="list-group-item"><a href="{% url 'finance-create' %}?type=other" class="text-dark">Другое</a></li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                </div>
             </div>
         </div>
     </div>
-    </div>
+
     <div class="table-responsive">
-      <table class="datatables-products table">
-        <thead class="border-top">
-          <tr>
-            <th>Тип</th>
-            <th>Дата</th>
-            <th>Сумма</th>
-            <th>Метод оплаты</th>
-            <th>Ответственный</th>
-            <th>Комментарий</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-            <tr>
-                <td>{{ product.bar_code }}</td>
-                <td>
-                    <div class="d-flex justify-content-start align-items-center product-name">
-                        <div class="avatar-wrapper">
-                            <div class="avatar avatar me-4 rounded-2 bg-label-secondary">
-                            {% if product.image %}
-                                <img src="{{ product.image.url }}" class="rounded-2" alt="" style="object-fit: cover;">
-                            {% else %}
-                                <img src="{% static 'assets/images/products/product-3.jpg' %}" class="rounded-2" alt="" style="object-fit: cover;">
-                            {% endif %}
+        <table class="datatables-products table">
+            <thead class="border-top">
+                <tr>
+                    <th>Описание</th>
+                    <th>Сумма</th>
+                    <th>Дата</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expend in page_obj %}
+                <tr>
+                    <td>{{ expend.description|default:"-" }}{% if expend.user %}:{{ expend.user }}{% endif %}</td>
+                    <td>{{ expend.amount }}</td>
+                    <td>{{ expend.created }}</td>
+                    <td>
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ expend.id }}">
+                            <i class='bx bx-trash text-danger fs-5'></i>
+                        </button>
+                        <div class="modal fade" id="deleteModal{{ expend.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="fs-5" id="deleteModalLabel">Вы уверены, что хотите удалить?</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ expend.description }}<br>
+                                        {{ expend.amount }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="{% url 'expense-delete' expend.id %}" class="btn btn-danger">Да</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="d-flex flex-column">
-                            <h6 class="text-nowrap mb-0">{{ product.name }}</h6>
-                        </div>
-                    </div>
-                </td>
-                <td>{{ product.category }}</td>
-                <td>{{ product.stock }}</td>
-                <td>{{ product.price }}</td>
-                <td>{{ product.sale_price }}</td>
-                <td>{{ product.quantity }}</td>
-                <td>{{ product.unit }}</td>
-                <td>
-                    <div class="d-inline-block text-nowrap"><button
-                            class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light"><i
-                                class="bx bx-edit bx-sm"></i></button><button
-                            class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"
-                            data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-vertical bx-sm"></i></button>
-                        <div class="dropdown-menu dropdown-menu-end m-0" style=""><a href="javascript:0;"
-                                class="dropdown-item">Открыть</a><a href="javascript:0;" class="dropdown-item">Удалить</a></div>
-                    </div>
-                </td>
-            {% endfor %}
-        </tbody>
-      </table>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">Нет расходов, соответствующих фильтру.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    <div class="d-flex justify-content-end align-items-center mt-3 me-3">
-        <nav aria-label="Page navigation">
-            <ul class="pagination pagination-rounded d-flex align-items-center">
-              <li class="page-item first">
-                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-left bx-sm"></i></a>
-              </li>
-              <li class="page-item prev">
-                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-left bx-sm"></i></a>
-              </li>
-              <li class="page-item">
-                <a class="page-link waves-effect" href="javascript:void(0);">1</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link waves-effect" href="javascript:void(0);">2</a>
-              </li>
-              <li class="page-item active">
-                <a class="page-link waves-effect" href="javascript:void(0);">3</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link waves-effect" href="javascript:void(0);">4</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link waves-effect" href="javascript:void(0);">5</a>
-              </li>
-              <li class="page-item next">
-                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-right bx-sm"></i></a>
-              </li>
-              <li class="page-item last">
-                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-right bx-sm"></i></a>
-              </li>
-            </ul>
+
+    <div class="d-flex justify-content-center mt-5">
+      <div class="pagination-container">
+          <nav aria-label="Пагинация">
+              <ul class="pagination justify-content-center">
+                  <!-- Кнопка "Первая" -->
+                  {% if page_obj.number > 1 %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page=1" aria-label="Первая">
+                              <span aria-hidden="true">&laquo;&laquo;</span>
+                              <span class="sr-only">Первая</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&laquo;&laquo;</span>
+                      </li>
+                  {% endif %}
+      
+                  <!-- Кнопка "Назад" -->
+                  {% if page_obj.has_previous %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
+                              <span aria-hidden="true">&laquo;</span>
+                              <span class="sr-only">Назад</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&laquo;</span>
+                      </li>
+                  {% endif %}
+      
+                  <!-- Номера страниц -->
+                  {% for page_num in visible_pages %}
+                      {% if page_num == page_obj.number %}
+                          <li class="page-item active" aria-current="page">
+                              <span class="page-link">{{ page_num }}</span>
+                          </li>
+                      {% else %}
+                          <li class="page-item">
+                              <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                          </li>
+                      {% endif %}
+                  {% endfor %}
+      
+                  <!-- Кнопка "Вперёд" -->
+                  {% if page_obj.has_next %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
+                              <span aria-hidden="true">&raquo;</span>
+                              <span class="sr-only">Вперёд</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&raquo;</span>
+                      </li>
+                  {% endif %}
+      
+                  <!-- Кнопка "Последняя" -->
+                  {% if page_obj.number < page_obj.paginator.num_pages %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
+                              <span aria-hidden="true">&raquo;&raquo;</span>
+                              <span class="sr-only">Последняя</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&raquo;&raquo;</span>
+                      </li>
+                  {% endif %}
+              </ul>
           </nav>
-    </div>
-  </div>
+          <div class="d-flex justify-content-center">
+          <span class="text-muted">
+              Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+          </span>
+          </div>
+      </div>
+
+</div>
 
 {% endblock %}
