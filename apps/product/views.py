@@ -23,13 +23,31 @@ def update_items_per_page(request):
 
 
 def list_(request):
+    categories = Category.objects.all()
+    
     search_query = request.GET.get('search', '')
 
     if search_query:
         products = Product.objects.filter(name__icontains=search_query, shop=request.user.shop)
     else:
         products = Product.objects.filter(shop=request.user.shop)
-    
+
+    # Фильтр по категории и родительской категории
+    selected_category = request.GET.get('category')
+    if selected_category:
+        # Получаем выбранную категорию
+        category = Category.objects.filter(name=selected_category).first()
+
+        # Продукты из выбранной категории
+        category_products = products.filter(category=category)
+
+        # Продукты из дочерних категорий
+        child_categories = category.children.all() if category else []
+        child_category_products = products.filter(category__in=child_categories)
+
+        # Объединяем и сортируем продукты
+        products = list(category_products) + list(child_category_products)
+
     # Фильтр по минимальной сумме
     price_min = request.GET.get('price_min')
     if price_min:
@@ -47,11 +65,12 @@ def list_(request):
     elif in_stock == "no":
         products = products.filter(quantity=0)
 
-    #для пагинации
+    # Для пагинации
     items_per_page = request.session.get('items_per_page', 10)
     paginator = Paginator(products, items_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     # Ограничение отображаемых страниц
     current_page = page_obj.number
     total_pages = paginator.num_pages
@@ -62,6 +81,7 @@ def list_(request):
     visible_pages = range(start_page, end_page + 1)
 
     context = {
+        'categories': categories,
         'visible_pages': visible_pages,
         'page_obj': page_obj,
     }
@@ -196,7 +216,7 @@ def create_sell_history(request):
                 order=order,
                 product=product,
                 quantity=quantity,
-                price_at_sale=product.sale_price  # Сохраняем цену на момент продажи
+                price_at_moment=product.sale_price
             )
 
             product_profit = (Decimal(product.sale_price) - Decimal(product.price)) * quantity
@@ -213,25 +233,25 @@ def create_sell_history(request):
         order.save()
 
         return JsonResponse({'status': 'success'})
+        
 
 def create_income_history(request):
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
         amount = request.POST.get('amount')
+        change = request.POST.get('change')
 
         # Создаем запись о поступлении
-        income = Income.objects.create(
+        order = OrderHistory.objects.create(
             amount=amount,
+            change=change,
             shop=request.user.shop
         )
-        expend = Expend.objects.create(
+        expend = Expense.objects.create(
             expend_type='supplies',
-            description='Поступление товара',
-            start_date=timezone.now(),
-            end_date=timezone.now(),
+            description='Поступление',
             amount=amount,
             shop=request.user.shop,
-            status='paid',
         )
 
         for item in products:
@@ -242,10 +262,11 @@ def create_income_history(request):
 
             
             IncomeHistory.objects.create(
-                income=income,
+                order=order,
                 product=product,
                 quantity=quantity,
-                price_at_income=price
+                price_at_moment=price,
+                shop=request.user.shop
             )
 
             # Обновляем количество и цены продукта

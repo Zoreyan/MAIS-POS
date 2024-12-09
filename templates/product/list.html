@@ -4,47 +4,50 @@
 
 <div class="card">
     <div class="card-header">
-      <h5 class="card-title">Фильтр</h5>
-      <div class="row mb-2">
-        <div class="col-sm-5">
-            <a href="{% url 'product-create' %}" class="btn btn-primary mb-2">
-                <i class="mdi mdi-plus-circle me-2"></i> Добавить товар
-            </a>
-        </div>
-        <div class="col-12">
-            <form method="get" class="row">
-              <div class="col-md-3">
-                <label for="employee" class="form-label">Категория</label>
-                <div class=""><select id="ProductCategory" class="form-select text-capitalize"><option value="">Category</option><option value="Household">Household</option><option value="Office">Office</option><option value="Electronics">Electronics</option><option value="Shoes">Shoes</option><option value="Accessories">Accessories</option><option value="Game">Game</option></select></div>
-              </div>
-              <!-- Сумма от -->
-                <div class="col-md-2">
-                    <label for="employee" class="form-label">Цена с</label>
-                    <input type="number" name="price_min" class="form-control" placeholder="Сумма от" 
-                           value="{{ request.GET.price_min }}">
-                </div>
-                <!-- Сумма по -->
-                <div class="col-md-2">
-                    <label for="employee" class="form-label">Цена по</label>
-                    <input type="number" name="price_max" class="form-control" placeholder="Сумма по" 
-                           value="{{ request.GET.price_max }}">
-                </div>
-                <!-- В наличии -->
-                <div class="col-md-2">
-                    <label for="employee" class="form-label">Доступность</label>
-                    <select name="in_stock" class="form-control">
-                        <option value="" {% if request.GET.in_stock == "" %}selected{% endif %}>Все</option>
-                        <option value="yes" {% if request.GET.in_stock == "yes" %}selected{% endif %}>В наличии</option>
-                        <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии</option>
-                    </select>
-                </div>
-                <!-- Кнопка фильтрации -->
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <h5 class="card-title">Фильтр</h5>
+                <form method="get" class="row gy-3">
+                    <div class="col-md-3">
+                        <label for="ProductCategory" class="form-label">Категория</label>
+                        <select id="ProductCategory" name="category" class="form-select text-capitalize">
+                            <option value="" {% if request.GET.category == "" %}selected{% endif %}>Все категории</option>
+                            {% for category in categories %}
+                            <option value="{{ category.name }}" {% if request.GET.category == category.name %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="price_min" class="form-label">Цена с</label>
+                        <input type="number" id="price_min" name="price_min" class="form-control" placeholder="Сумма от" value="{{ request.GET.price_min }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="price_max" class="form-label">Цена по</label>
+                        <input type="number" id="price_max" name="price_max" class="form-control" placeholder="Сумма по" value="{{ request.GET.price_max }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="in_stock" class="form-label">Доступность</label>
+                        <select id="in_stock" name="in_stock" class="form-select">
+                            <option value="" {% if request.GET.in_stock == "" %}selected{% endif %}>Все</option>
+                            <option value="yes" {% if request.GET.in_stock == "yes" %}selected{% endif %}>В наличии</option>
+                            <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-center">
+                        <button type="submit" class="btn btn-success w-100 me-2 d-flex align-items-center justify-content-center">
+                            <i class="bx bx-filter-alt me-1"></i>
+                            <span>Фильтр</span>
+                        </button>
+                        <a href="{% url 'product-create' %}" type="button" class="btn btn-primary d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#expendTypeModal">
+                            <i class="bx bx-plus me-1"></i>
+                            <span>Добавить</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>  
 
     <div class="table-responsive">
       <table class="datatables-products table">
@@ -138,7 +141,7 @@
                   {% for page_num in visible_pages %}
                       {% if page_num == page_obj.number %}
                           <li class="page-item active" aria-current="page">
-                              <span class="page-link">{{ page_num }}</span>
+                              <span class="page-link" style="color: black;">{{ page_num }}</span>
                           </li>
                       {% else %}
                           <li class="page-item">
