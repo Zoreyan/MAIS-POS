@@ -9,6 +9,7 @@ from django.forms.models import model_to_dict
 import json
 from django.core.paginator import Paginator
 from django.db.models import Count
+from django.db.models import Q
 
 
 def update_items_per_page(request):
@@ -23,15 +24,20 @@ def update_items_per_page(request):
 
 
 def list_(request):
+    products = Product.objects.all()
+
     categories = Category.objects.all()
-    
-    search_query = request.GET.get('search', '')
 
-    if search_query:
-        products = Product.objects.filter(name__icontains=search_query, shop=request.user.shop)
-    else:
-        products = Product.objects.filter(shop=request.user.shop)
+    query = request.GET.get('query', '').strip()
 
+    if query:
+        if query.isdigit():
+            products = products.filter(shop=request.user.shop, bar_code__icontains=query)
+        else:
+            products = products.filter(
+                Q(shop=request.user.shop) & 
+                (Q(name__icontains=query) | Q(category__name__icontains=query))
+            )         
     # Фильтр по категории и родительской категории
     selected_category = request.GET.get('category')
     if selected_category:
@@ -84,6 +90,7 @@ def list_(request):
         'categories': categories,
         'visible_pages': visible_pages,
         'page_obj': page_obj,
+        'query': query
     }
     return render(request, 'product/list.html', context)
 

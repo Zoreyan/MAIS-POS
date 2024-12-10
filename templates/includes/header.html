@@ -175,8 +175,17 @@
             </li>
         </ul>
     </div>
-    <div class="navbar-search-wrapper search-input-wrapper d-none">
-        <input type="text" class="form-control search-input container-xxl border-0" placeholder="Поиск..." aria-label="Search...">
-        <i class="bx bx-x search-toggler cursor-pointer"></i>
-    </div>
+    <form method="get" action="{% url 'product-list' %}">
+        <div class="navbar-search-wrapper search-input-wrapper d-none">
+            <input 
+            type="text" 
+            name="query" 
+            class="form-control search-input container-xxl border-0" 
+            placeholder="Поиск..." 
+            aria-label="Search..."
+            value="{{ request.GET.query|default:'' }}"
+        >
+            <i class="bx bx-x search-toggler cursor-pointer"></i>
+        </div>
+    </form>
 </nav>

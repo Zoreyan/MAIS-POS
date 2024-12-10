@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from apps.product.models import Shop, Product
+from apps.product.models import Shop, Product, Category
+from django.db.models import Q
 from django.core.paginator import Paginator
 
 
@@ -16,7 +17,24 @@ def update_shop_per_page(request):
 def index(request, pk):
     shop = Shop.objects.get(id=pk)
     products = Product.objects.filter(shop=shop)
+    query = request.GET.get('query', '').strip()
+    
+    categories = Category.objects.filter(parent__isnull=True)
+    category_childs = Category.objects.all()
 
+    for category in categories:
+        category_children = category_childs.filter(parent=category)
+
+    if query:
+        if query.isdigit():
+            products = products.filter(shop=shop, bar_code__icontains=query)
+        else:
+            products = products.filter(
+                Q(shop=shop) & 
+                (Q(name__icontains=query) | Q(category__name__icontains=query))
+            )
+
+    # Пагинация и другие данные
     shop_per_page = request.session.get('shop_per_page', 10)
     paginator = Paginator(products, shop_per_page)
     page_number = request.GET.get('page')
@@ -32,9 +50,12 @@ def index(request, pk):
     visible_pages = range(start_page, end_page + 1)
 
     context = {
-        'shop':shop,
-        'page_obj':page_obj,
+        'shop': shop,
+        'page_obj': page_obj,
         'visible_pages': visible_pages,
+        'query': query,
+        'categories': categories,
+        'category_children': category_children,
     }
     return render(request, 'shop/index.html', context)
 

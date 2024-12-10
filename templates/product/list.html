@@ -6,6 +6,11 @@
     <div class="card-header">
         <div class="row mb-4">
             <div class="col-12">
+                <h3>
+                {% if query %}
+                    <p>Результаты поиска для: "{{ query }}"</p>
+                {% endif %}
+                </h3>
                 <h5 class="card-title">Фильтр</h5>
                 <form method="get" class="row gy-3">
                     <div class="col-md-3">
@@ -47,7 +52,7 @@
                     </div>
                 </form>
             </div>
-        </div>  
+        </div> 
 
     <div class="table-responsive">
       <table class="datatables-products table">
