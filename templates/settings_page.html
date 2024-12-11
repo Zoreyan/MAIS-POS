@@ -53,6 +53,48 @@
                     </div>
                 </form>
             </div>
+            <form class="col-md-4" method="post" action="{% url 'update_items_per_page' %}">
+                {% csrf_token %}
+                <label for="items_per_page">Количество товаров на странице:</label>
+                <input class="form-control w-50" type="number" name="items_per_page" id="items_per_page" value="{{ request.session.items_per_page|default:10 }}">
+                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
+            </form>
+            <form class="col-md-4" method="post" action="{% url 'update_category_per_page' %}">
+                {% csrf_token %}
+                <label for="category_per_page">Количество категорий на странице:</label>
+                <input class="form-control w-50" type="number" name="category_per_page" id="category_per_page" value="{{ request.session.category_per_page|default:10 }}">
+                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
+            </form>
+            <form class="col-md-4" method="post" action="{% url 'update_finance_per_page' %}">
+                {% csrf_token %}
+                <label for="finance_per_page">Количество расходов на странице:</label>
+                <input class="form-control w-50" type="number" name="finance_per_page" id="finance_per_page" value="{{ request.session.finance_per_page|default:10 }}">
+                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
+            </form>
+            <form class="col-md-4" method="post" action="{% url 'update_orders_per_page' %}">
+                {% csrf_token %}
+                <label for="orders_per_page">Количество заказов на странице:</label>
+                <input class="form-control w-50" type="number" name="orders_per_page" id="orders_per_page" value="{{ request.session.orders_per_page|default:10 }}">
+                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
+            </form>
+            <form class="col-md-4" method="post" action="{% url 'update_sales_per_page' %}">
+                {% csrf_token %}
+                <label for="sales_per_page">Количество продаж на странице:</label>
+                <input class="form-control w-50" type="number" name="sales_per_page" id="sales_per_page" value="{{ request.session.sales_per_page|default:10 }}">
+                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
+            </form>
+            <form class="col-md-4" method="post" action="{% url 'update_incomes_per_page' %}">
+                {% csrf_token %}
+                <label for="incomes_per_page">Количество заказов на странице:</label>
+                <input class="form-control w-50" type="number" name="incomes_per_page" id="incomes_per_page" value="{{ request.session.incomes_per_page|default:10 }}">
+                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
+            </form>
+            <form class="col-md-4" method="post" action="{% url 'update_shop_per_page' %}">
+                {% csrf_token %}
+                <label for="shop_per_page">Количество товаров в магазине:</label>
+                <input class="form-control w-50" type="number" name="shop_per_page" id="shop_per_page" value="{{ request.session.shop_per_page|default:10 }}">
+                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
+            </form>
         </div>
     </div>
 </div>

@@ -7,19 +7,90 @@ from apps.history.models import *
 from apps.finance.models import *
 from django.forms.models import model_to_dict
 import json
-from .filters import *
+from django.core.paginator import Paginator
+from django.db.models import Count
+from django.db.models import Q
+
+
+def update_items_per_page(request):
+    if request.method == "POST":
+        try:
+            items_per_page = int(request.POST.get("items_per_page", 10))
+            if items_per_page > 0:
+                request.session['items_per_page'] = items_per_page
+        except ValueError:
+            request.session['items_per_page'] = 10  # Устанавливаем значение по умолчанию
+    return redirect('settings') 
+
 
 def list_(request):
-    search_query = request.GET.get('search', '')
-    if search_query:
-        products = Product.objects.filter(name__icontains=search_query, shop=request.user.shop)
-    else:
-        products = Product.objects.filter(shop=request.user.shop)
-        product_filter = ProductFilter(request.GET, queryset=Product.objects.filter(shop=request.user.shop))
+    products = Product.objects.all()
+
+    categories = Category.objects.all()
+
+    query = request.GET.get('query', '').strip()
+
+    if query:
+        if query.isdigit():
+            products = products.filter(shop=request.user.shop, bar_code__icontains=query)
+        else:
+            products = products.filter(
+                Q(shop=request.user.shop) & 
+                (Q(name__icontains=query) | Q(category__name__icontains=query))
+            )         
+    # Фильтр по категории и родительской категории
+    selected_category = request.GET.get('category')
+    if selected_category:
+        # Получаем выбранную категорию
+        category = Category.objects.filter(name=selected_category).first()
+
+        # Продукты из выбранной категории
+        category_products = products.filter(category=category)
+
+        # Продукты из дочерних категорий
+        child_categories = category.children.all() if category else []
+        child_category_products = products.filter(category__in=child_categories)
+
+        # Объединяем и сортируем продукты
+        products = list(category_products) + list(child_category_products)
+
+    # Фильтр по минимальной сумме
+    price_min = request.GET.get('price_min')
+    if price_min:
+        products = products.filter(price__gte=price_min)
+
+    # Фильтр по максимальной сумме
+    price_max = request.GET.get('price_max')
+    if price_max:
+        products = products.filter(price__lte=price_max)
+
+    # Фильтр по наличию
+    in_stock = request.GET.get('in_stock')
+    if in_stock == "yes":
+        products = products.filter(quantity__gt=0)
+    elif in_stock == "no":
+        products = products.filter(quantity=0)
+
+    # Для пагинации
+    items_per_page = request.session.get('items_per_page', 10)
+    paginator = Paginator(products, items_per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Ограничение отображаемых страниц
+    current_page = page_obj.number
+    total_pages = paginator.num_pages
+    delta = 3  # Количество страниц до и после текущей
+
+    start_page = max(current_page - delta, 1)
+    end_page = min(current_page + delta, total_pages)
+    visible_pages = range(start_page, end_page + 1)
 
     context = {
-        'products': products,
-        'filter': product_filter
+        'categories': categories,
+        'visible_pages': visible_pages,
+        'page_obj': page_obj,
+        'query': query
     }
     return render(request, 'product/list.html', context)
 
@@ -152,7 +223,7 @@ def create_sell_history(request):
                 order=order,
                 product=product,
                 quantity=quantity,
-                price_at_sale=product.sale_price  # Сохраняем цену на момент продажи
+                price_at_moment=product.sale_price
             )
 
             product_profit = (Decimal(product.sale_price) - Decimal(product.price)) * quantity
@@ -169,25 +240,25 @@ def create_sell_history(request):
         order.save()
 
         return JsonResponse({'status': 'success'})
+        
 
 def create_income_history(request):
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
         amount = request.POST.get('amount')
+        change = request.POST.get('change')
 
         # Создаем запись о поступлении
-        income = Income.objects.create(
+        order = OrderHistory.objects.create(
             amount=amount,
+            change=change,
             shop=request.user.shop
         )
-        expend = Expend.objects.create(
+        expend = Expense.objects.create(
             expend_type='supplies',
-            description='Поступление товара',
-            start_date=timezone.now(),
-            end_date=timezone.now(),
+            description='Поступление',
             amount=amount,
             shop=request.user.shop,
-            status='paid',
         )
 
         for item in products:
@@ -198,10 +269,11 @@ def create_income_history(request):
 
             
             IncomeHistory.objects.create(
-                income=income,
+                order=order,
                 product=product,
                 quantity=quantity,
-                price_at_income=price
+                price_at_moment=price,
+                shop=request.user.shop
             )
 
             # Обновляем количество и цены продукта
@@ -241,47 +313,69 @@ def search_product(request):
 
 
 
-
 def category_list(request):
-    categories = Category.objects.filter(shop=request.user.shop)
-    form = CategoryForm(shop=request.user.shop)
-    if request.method == 'POST':
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.instance.shop = request.user.shop
-            form.save()
-            return redirect('category-list')
+    categories = Category.objects.annotate(total_products=Count('product'))
+    form = CategoryForm()   
 
-    
+    # Пагинация
+    category_per_page = request.session.get('category_per_page', 10)
+    paginator = Paginator(categories, category_per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Ограничение отображаемых страниц
+    current_page = page_obj.number
+    total_pages = paginator.num_pages
+    delta = 3  # Количество страниц до и после текущей
+
+    start_page = max(current_page - delta, 1)
+    end_page = min(current_page + delta, total_pages)
+    visible_pages = range(start_page, end_page + 1)
+
     context = {
-        'categories': categories,
-        'form': form
+        'page_obj': page_obj,
+        'visible_pages': visible_pages,
+        'form': form,   
     }
     return render(request, 'product/category_list.html', context)
 
+def update_category_per_page(request):
+    if request.method == "POST":
+        try:
+            category_per_page = int(request.POST.get("category_per_page", 10))
+            if category_per_page > 0:
+                request.session['category_per_page'] = category_per_page
+        except ValueError:
+            request.session['category_per_page'] = 10
+    return redirect('settings')
 
-def category_update(request, pk):
-    category = Category.objects.get(id=pk)
-    form = CategoryForm(instance=category)
+def category_create(request):
+    form = CategoryForm()
     if request.method == 'POST':
-        form = CategoryForm(request.POST, instance=category)
+        form = CategoryForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('category-list')
 
     context = {
-        'category': category,
         'form': form
     }
-    return render(request, 'product/category_update.html', context)
-
+    return render(request, 'product/category_create.html', context)
 
 def category_delete(request, pk):
-    Category.objects.get(id=pk).delete()
-    return redirect('category-list')
+    if request.method == 'POST':
+        category = Category.objects.get(id=pk)
+        category.delete()
+        return JsonResponse({'status': 'success'})
 
+    return JsonResponse({'status': 'error'})
 
-def category_create(request):
-    context = {
-    }
-    return render(request, 'product/category_create.html', context)
+def update_category(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        category.name = request.POST.get('name')
+        parent_id = request.POST.get('parent')
+        category.parent = Category.objects.get(pk=parent_id) if parent_id else None
+        category.save()
+        return redirect('category-list')
+    return render(request, 'category_list.html', {'category': category})

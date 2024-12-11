@@ -82,12 +82,18 @@
                     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                         <ul class="navbar-nav flex-row align-items-center ms-auto">
                             <!-- Search -->
-                            <li class="nav-item navbar-search-wrapper">
-                                <a class="nav-link btn btn-text-secondary btn-icon rounded-pill search-toggler waves-effect waves-light"
-                                    href="javascript:void(0);">
-                                    <i class="bx bx-search bx-sm"></i>
-                                </a>
+                             <form method="get" action="{% url 'shop-index' shop.id %}">
+                            <li class="nav-item">
+                                <input 
+                                type="text" 
+                                name="query" 
+                                class="form-control search-input container-xxl border-0" 
+                                placeholder="Поиск..." 
+                                aria-label="Search..."
+                                value="{{ request.GET.query|default:'' }}"
+                            > 
                             </li>
+                        </form>
                             <!-- /Search -->
                             <!-- Style Switcher -->
                             <li class="nav-item dropdown-style-switcher dropdown">

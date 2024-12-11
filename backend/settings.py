@@ -156,3 +156,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'muhammadazizmadakimov06@gmail.com'
 EMAIL_HOST_PASSWORD = 'azgh bsqt csxn ujnw'
 EMAIL_PORT = 465
+
+ITEMS_PER_PAGE = 10
