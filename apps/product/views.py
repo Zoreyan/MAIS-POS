@@ -7,18 +7,19 @@ from apps.history.models import *
 from apps.finance.models import *
 from django.forms.models import model_to_dict
 import json
-
+from .filters import *
 
 def list_(request):
     search_query = request.GET.get('search', '')
-
     if search_query:
         products = Product.objects.filter(name__icontains=search_query, shop=request.user.shop)
     else:
         products = Product.objects.filter(shop=request.user.shop)
+        product_filter = ProductFilter(request.GET, queryset=Product.objects.filter(shop=request.user.shop))
 
     context = {
-        'products': products
+        'products': products,
+        'filter': product_filter
     }
     return render(request, 'product/list.html', context)
 
@@ -242,9 +243,42 @@ def search_product(request):
 
 
 def category_list(request):
+    categories = Category.objects.filter(shop=request.user.shop)
+    form = CategoryForm(shop=request.user.shop)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.instance.shop = request.user.shop
+            form.save()
+            return redirect('category-list')
+
+    
     context = {
+        'categories': categories,
+        'form': form
     }
     return render(request, 'product/category_list.html', context)
+
+
+def category_update(request, pk):
+    category = Category.objects.get(id=pk)
+    form = CategoryForm(instance=category)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('category-list')
+
+    context = {
+        'category': category,
+        'form': form
+    }
+    return render(request, 'product/category_update.html', context)
+
+
+def category_delete(request, pk):
+    Category.objects.get(id=pk).delete()
+    return redirect('category-list')
 
 
 def category_create(request):

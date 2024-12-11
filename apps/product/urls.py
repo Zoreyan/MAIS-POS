@@ -18,5 +18,6 @@ urlpatterns = [
     path('find-product/', find_product, name='find-product'),
     path('search-product/', search_product, name='search-product'),
     path('category-list/', category_list, name='category-list'),
-    path('category-create/', category_create, name='category-create'),
+    path('category-update/<int:pk>/', category_update, name='category-update'),
+    path('category-delete/<int:pk>/', category_delete, name='category-delete'),
 ]

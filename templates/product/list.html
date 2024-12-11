@@ -3,117 +3,138 @@
 {% block content %}
 
 <div class="card">
-    <div class="card-header">
-      <h5 class="card-title">Фильтр</h5>
-      <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
-        <div class="col-md-3 product_status"><select id="ProductStatus" class="form-select text-capitalize"><option value="">Status</option><option value="Scheduled">Scheduled</option><option value="Publish">Publish</option><option value="Inactive">Inactive</option></select></div>
-        <div class="col-md-3 product_category"><select id="ProductCategory" class="form-select text-capitalize"><option value="">Category</option><option value="Household">Household</option><option value="Office">Office</option><option value="Electronics">Electronics</option><option value="Shoes">Shoes</option><option value="Accessories">Accessories</option><option value="Game">Game</option></select></div>
-        <div class="col-md-3 product_stock"><select id="ProductStock" class="form-select text-capitalize"><option value=""> Stock </option><option value="Out_of_Stock">Out of Stock</option><option value="In_Stock">In Stock</option></select></div>
+  <div class="card-header">
+    <h5 class="card-title">Фильтр</h5>
+    <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
+      <form method="get" class="row w-100">
         <div class="col-md-3">
-            <div class="btn-group flex-wrap d-flex mb-sm-0">
-                <!-- Кнопка фильтрации -->
-                <button class="btn btn-success d-flex align-items-center">
-                    <i class="bx bx-filter-alt me-1"></i>
-                    <span>Фильтр</span>
-                </button>
-            
-                <!-- Кнопка добавления -->
-                <a href="{% url 'product-create' %}" class="btn btn-primary ms-2 d-flex align-items-center">
-                    <i class="bx bx-plus me-1"></i>
-                    <span>Добавить</span>
-                </a>
+          <div class="row">
+            <div class="col-6">
+              {{ filter.form.price_min }}
             </div>
+            <div class="col-6">
+              {{ filter.form.price_max }}
+            </div>
+          </div>
         </div>
-    </div>
-    </div>
-    <div class="table-responsive">
-      <table class="datatables-products table">
-        <thead class="border-top">
-          <tr>
-            <th>Баркод</th>
-            <th>Название</th>
-            <th>Категория</th>
-            <th>В наличии</th>
-            <th>Цена</th>
-            <th>Цена для продажи</th>
-            <th>Кол-во</th>
-            <th>Единица измерения</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-            <tr>
-                <td>{{ product.bar_code }}</td>
-                <td>
-                    <a href="{% url 'product-details' product.id %}" class="d-flex justify-content-start align-items-center product-name">
-                        <div class="avatar-wrapper">
-                            <div class="avatar avatar me-4 rounded-2 bg-label-secondary">
-                            {% if product.image %}
-                                <img src="{{ product.image.url }}" class="rounded-2" alt="" style="object-fit: cover;">
-                            {% else %}
-                                <img src="{% static 'assets/images/products/product-3.jpg' %}" class="rounded-2" alt="" style="object-fit: cover;">
-                            {% endif %}
-                            </div>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <h6 class="text-nowrap mb-0">{{ product.name }}</h6>
-                        </div>
-                    </a>
-                </td>
-                <td>{{ product.category }}</td>
-                <td>{{ product.stock }}</td>
-                <td>{{ product.price }}</td>
-                <td>{{ product.sale_price }}</td>
-                <td>{{ product.quantity }}</td>
-                <td>{{ product.unit }}</td>
-                <td>
-                    <div class="d-inline-block text-nowrap"><button
-                            class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light"><i
-                                class="bx bx-edit bx-sm"></i></button><button
-                            class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"
-                            data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-vertical bx-sm"></i></button>
-                        <div class="dropdown-menu dropdown-menu-end m-0" style=""><a href="javascript:0;"
-                                class="dropdown-item">Открыть</a><a href="javascript:0;" class="dropdown-item">Удалить</a></div>
-                    </div>
-                </td>
-            {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <div class="d-flex justify-content-end align-items-center mt-3 me-3">
-        <nav aria-label="Page navigation">
-            <ul class="pagination pagination-rounded d-flex align-items-center">
-              <li class="page-item first">
-                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-left bx-sm"></i></a>
-              </li>
-              <li class="page-item prev">
-                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-left bx-sm"></i></a>
-              </li>
-              <li class="page-item">
-                <a class="page-link waves-effect" href="javascript:void(0);">1</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link waves-effect" href="javascript:void(0);">2</a>
-              </li>
-              <li class="page-item active">
-                <a class="page-link waves-effect" href="javascript:void(0);">3</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link waves-effect" href="javascript:void(0);">4</a>
-              </li>
-              <li class="page-item">
-                <a class="page-link waves-effect" href="javascript:void(0);">5</a>
-              </li>
-              <li class="page-item next">
-                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-right bx-sm"></i></a>
-              </li>
-              <li class="page-item last">
-                <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-right bx-sm"></i></a>
-              </li>
-            </ul>
-          </nav>
+        <div class="col-md-3">
+          {{ filter.form.category }}
+        </div>
+        <div class="col-md-3">
+          <div class="row">
+            <div class="col-6">
+              {{ filter.form.quantity_min }}
+            </div>
+            <div class="col-6">
+              {{ filter.form.quantity_max }}
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="btn-group flex-wrap d-flex mb-sm-0">
+            <button type="submit" class="btn btn-success d-flex align-items-center">
+              <i class="bx bx-filter-alt me-1"></i>
+              <span>Фильтр</span>
+            </button>
+            <a href="{% url 'product-create' %}" class="btn btn-primary ms-2 d-flex align-items-center">
+              <i class="bx bx-plus me-1"></i>
+              <span>Добавить</span>
+            </a>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
+  <div class="table-responsive">
+    <table class="datatables-products table">
+      <thead class="border-top">
+        <tr>
+          <th>Баркод</th>
+          <th>Название</th>
+          <th>Категория</th>
+          <th>В наличии</th>
+          <th>Цена</th>
+          <th>Цена для продажи</th>
+          <th>Кол-во</th>
+          <th>Единица измерения</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in filter.qs %}
+        <tr>
+          <td>{{ product.bar_code }}</td>
+          <td>
+            <a href="{% url 'product-details' product.id %}"
+              class="d-flex justify-content-start align-items-center product-name">
+              <div class="avatar-wrapper">
+                <div class="avatar avatar me-4 rounded-2 bg-label-secondary">
+                  {% if product.image %}
+                  <img src="{{ product.image.url }}" class="rounded-2" alt="" style="object-fit: cover;">
+                  {% else %}
+                  <img src="{% static 'assets/images/products/product-3.jpg' %}" class="rounded-2" alt=""
+                    style="object-fit: cover;">
+                  {% endif %}
+                </div>
+              </div>
+              <div class="d-flex flex-column">
+                <h6 class="text-nowrap mb-0">{{ product.name }}</h6>
+              </div>
+            </a>
+          </td>
+          <td>{{ product.category }}</td>
+          <td>{{ product.stock }}</td>
+          <td>{{ product.price }}</td>
+          <td>{{ product.sale_price }}</td>
+          <td>{{ product.quantity }}</td>
+          <td>{{ product.unit }}</td>
+          <td>
+            <div class="d-inline-block text-nowrap"><button
+                class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light"><i
+                  class="bx bx-edit bx-sm"></i></button><button
+                class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"
+                data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-vertical bx-sm"></i></button>
+              <div class="dropdown-menu dropdown-menu-end m-0" style=""><a href="javascript:0;"
+                  class="dropdown-item">Открыть</a><a href="javascript:0;" class="dropdown-item">Удалить</a></div>
+            </div>
+          </td>
+          {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="d-flex justify-content-end align-items-center mt-3 me-3">
+    <nav aria-label="Page navigation">
+      <ul class="pagination pagination-rounded d-flex align-items-center">
+        <li class="page-item first">
+          <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-left bx-sm"></i></a>
+        </li>
+        <li class="page-item prev">
+          <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-left bx-sm"></i></a>
+        </li>
+        <li class="page-item">
+          <a class="page-link waves-effect" href="javascript:void(0);">1</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link waves-effect" href="javascript:void(0);">2</a>
+        </li>
+        <li class="page-item active">
+          <a class="page-link waves-effect" href="javascript:void(0);">3</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link waves-effect" href="javascript:void(0);">4</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link waves-effect" href="javascript:void(0);">5</a>
+        </li>
+        <li class="page-item next">
+          <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-right bx-sm"></i></a>
+        </li>
+        <li class="page-item last">
+          <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-right bx-sm"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
 
 {% endblock %}

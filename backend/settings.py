@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'apps.client',
     'apps.finance',
     'apps.shop',
+    'mptt',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

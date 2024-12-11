@@ -6,13 +6,14 @@
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
             <h5 class="card-title">Категории</h5>
-            <div class="btn-group flex-wrap d-flex mb-sm-0">
+            <div class="flex-wrap d-flex mb-sm-0">
                 <!-- Кнопка добавления -->
                 <button type="button" class="btn btn-primary waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#modalCenter">
                     <i class="bx bx-plus me-1"></i>
                     Добавить
                 </button>
-                <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+                <form method="post" class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+                    {% csrf_token %}
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -22,27 +23,22 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col-12 mb-4">
-                                        <label for="nameWithTitle" class="form-label">Родитель (необязательно)</label>
-                                        <select class="form-select">
-                                            <option selected>Выберите родителя</option>
-                                            <option value="1">One</option>
-                                            <option value="2">Two</option>
-                                            <option value="3">Three</option>
-                                        </select>
+                                        <label for="parentWithTitle" class="form-label">Родитель (необязательно)</label>
+                                        {{ form.parent }}
                                     </div>
                                     <div class="col-12 mb-4">
                                         <label for="nameWithTitle" class="form-label">Название</label>
-                                        <input type="text" id="nameWithTitle" class="form-control" placeholder="Введите название">
+                                        {{ form.name }}
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
-                                <button type="button" class="btn btn-primary waves-effect waves-light">Сохранить изменения</button>
+                                <button type="submit" class="btn btn-primary waves-effect waves-light">Сохранить изменения</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -59,19 +55,42 @@
             <tbody>
                 {% for category in categories %}
                 <tr>
-                    <td>-</td>
-                    <td>-</td>
+                    <td>{{ category.name }}</td>
+                    <td>
+                        {% if category.parent %}
+                        {{ category.parent.name }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ category.product_set.count }}
+                    </td>
                     <td>
                         <div class="d-inline-block text-nowrap">
-                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
+                            <a href="{% url 'category-update' category.id %}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
                                 <i class="bx bx-edit bx-sm"></i>
+                            </a>
+                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"  data-bs-toggle="modal" data-bs-target="#modalDelete{{ category.id }}">
+                                <i class="bx bx-trash bx-sm"></i>
                             </button>
-                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                <i class="bx bx-dots-vertical bx-sm"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end m-0">
-                                <a href="javascript:void(0);" class="dropdown-item">Открыть</a>
-                                <a href="javascript:void(0);" class="dropdown-item">Удалить</a>
+                            <div method="post" class="modal fade" id="modalDelete{{ category.id }}" tabindex="-1" aria-hidden="true">
+                                {% csrf_token %}
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalCenterTitle">Удаление категории</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Вы уверены, что хотите удалить категорию?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                                            <a href="{% url 'category-delete' category.id %}" class="btn btn-danger waves-effect waves-light">Удалить</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </td>

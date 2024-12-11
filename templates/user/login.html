@@ -1,97 +1,115 @@
 {% load static %}
-<html lang="ru" data-bs-theme="light" data-layout-mode="fluid" data-menu-color="dark" data-topbar-color="light" data-layout-position="fixed" data-sidenav-size="condensed">
+<html lang="ru" class="light-style layout-navbar-fixed layout-menu-fixed layout-compact " dir="ltr"
+  data-theme="theme-default" data-assets-path="{% static 'assets/' %}" data-template="vertical-menu-template">
+
 <head>
-  <meta charset="utf-8">
-  <title>Вход | Hyper - Адаптивная админ-панель Bootstrap 5</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta content="Полнофункциональная админ-тема, которую можно использовать для создания CRM, CMS и других систем." name="description">
-  <meta content="Coderthemes" name="author">
-
-  <!-- Иконка сайта -->
-  <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
-
-  <!-- Конфигурация темы -->
-  <script src="{% static 'assets/js/hyper-config.js' %}"></script>
-
-  <!-- CSS поставщиков -->
-  <link href="{% static 'assets/css/vendor.min.css' %}" rel="stylesheet" type="text/css">
-
-  <!-- CSS приложения -->
-  <link href="{% static 'assets/css/app-saas.min.css' %}" rel="stylesheet" type="text/css" id="app-style">
-
-  <!-- Boxicons -->
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>Панель управления - eCommerce</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap"
+    rel="stylesheet">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{% static 'assets/vendor/libs/node-waves/node-waves.css'  %}" />
+  <link rel="stylesheet" href="{% static 'assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css'  %}" />
+
+  <link rel="stylesheet" href="{% static 'assets/vendor/css/rtl/core.css'  %}" class="template-customizer-core-css" />
+  <link rel="stylesheet" href="{% static 'assets/vendor/css/pages/page-auth.css'  %}" />
+  <link rel="stylesheet" href="{% static 'assets/vendor/css/rtl/theme-default.css'  %}"
+    class="template-customizer-theme-css" />
+  <link rel="stylesheet" href="{% static 'assets/css/demo.css'  %}" />
+
+
+  <script src="{% static 'assets/vendor/js/helpers.js'  %}"></script>
+  <script src="{% static 'assets/vendor/js/template-customizer.js'  %}"></script>
+  <script src="{% static 'assets/js/config.js'  %}"></script>
 </head>
 
 <body class="authentication-bg position-relative" cz-shortcut-listen="true">
 
-  <div class="position-absolute start-0 end-0 start-0 bottom-0 w-100 h-100">
-    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 800 800">
-      <g fill-opacity="0.22">
-        <circle style="fill: rgba(var(--ct-primary-rgb), 0.1);" cx="400" cy="400" r="600"></circle>
-        <circle style="fill: rgba(var(--ct-primary-rgb), 0.2);" cx="400" cy="400" r="500"></circle>
-        <circle style="fill: rgba(var(--ct-primary-rgb), 0.3);" cx="400" cy="400" r="300"></circle>
-        <circle style="fill: rgba(var(--ct-primary-rgb), 0.4);" cx="400" cy="400" r="200"></circle>
-        <circle style="fill: rgba(var(--ct-primary-rgb), 0.5);" cx="400" cy="400" r="100"></circle>
-      </g>
-    </svg>
-  </div>
 
-  <div class="account-pages pt-2 pt-sm-5 pb-4 pb-sm-5 position-relative">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-xxl-4 col-lg-5">
-          <div class="card">
 
+  <div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+      <div class="authentication-inner">
+        <!-- Регистрация -->
+        <div class="card px-sm-3 px-0">
+          <div class="card-body">
             <!-- Логотип -->
-            <div class="card-header py-4 text-center bg-primary">
-              <a href="index.html">
-                <span><img src="{% static 'assets/images/logo.png' %}" alt="logo" height="22"></span>
+            <div class="app-brand justify-content-center">
+              <a href="#" class="app-brand-link gap-2">
+                <span class="demo text-heading fw-bold fs-2">DEER SAP</span>
               </a>
             </div>
+            <!-- /Логотип -->
+            <h4 class="mb-1">Добро пожаловать в DEER SAP</h4>
+            <p class="mb-3">Пожалуйста, войдите в свой аккаунт</p>
 
-            <div class="card-body p-4">
-              <div class="text-center w-75 m-auto">
-                <h4 class="text-dark-50 text-center pb-0 fw-bold">Войти</h4>
-                <p class="text-muted mb-4">Введите свой логин и пароль для доступа к админ-панели.</p>
+            <form id="formAuthentication" class="mb-3 fv-plugins-bootstrap5 fv-plugins-framework"
+              method="POST" novalidate="novalidate">
+              {% csrf_token %}
+              <div class="mb-3 fv-plugins-icon-container">
+                <label for="email" class="form-label">Электронная почта</label>
+                <input type="email" class="form-control" id="email" name="email"
+                  placeholder="Введите вашу электронную почту" autofocus="">
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
               </div>
-
-              <form action="" method="post">
-                {% csrf_token %}
-                <div class="mb-3">
-                  <label for="username" class="form-label">Логин</label>
-                  <input class="form-control" name="username" type="text" id="username" required="" placeholder="Введите ваш логин">
+              <div class="mb-3 form-password-toggle fv-plugins-icon-container">
+                <label class="form-label" for="password">Пароль</label>
+                <div class="input-group input-group-merge has-validation">
+                  <input type="password" id="password" class="form-control" name="password" placeholder="············">
+                  <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                 </div>
-
-                <div class="mb-3">
-                  <label for="password" class="form-label">Пароль</label>
-                  <div class="input-group input-group-merge">
-                    <input type="password" id="password" class="form-control" name="password" placeholder="Введите ваш пароль">
-                    <div class="input-group-text" data-password="false">
-                      <i class='bx bx-show' id="togglePassword"></i>
-                    </div>
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+              </div>
+              <div class="mb-2">
+                <div class="d-flex justify-content-between mt-4">
+                  <div class="form-check mb-0 ms-2">
+                    <input class="form-check-input" type="checkbox" id="remember-me">
+                    <label class="form-check-label" for="remember-me">
+                      Запомнить меня
+                    </label>
                   </div>
+                  <a href="auth-forgot-password-basic.html">
+                    <span>Забыли пароль?</span>
+                  </a>
                 </div>
+              </div>
+              <div class="mb-3">
+                <button class="btn btn-primary d-grid w-100" type="submit">Войти</button>
+              </div>
+              <input type="hidden">
+            </form>
+            <div class="divider my-3">
+              <div class="divider-text">или</div>
+            </div>
 
-                <div class="mb-3 text-center">
-                  <button class="btn btn-primary" type="submit">Войти</button>
-                </div>
-              </form>
+            <div class="d-flex justify-content-center">
+              <a href="javascript:;" class="btn btn-sm btn-icon rounded-circle btn-text-facebook me-1_5">
+                <i class="bx bxl-facebook-circle"></i>
+              </a>
+
+              <a href="javascript:;" class="btn btn-sm btn-icon rounded-circle btn-text-twitter me-1_5">
+                <i class="tf-icons bx bxl-twitter"></i>
+              </a>
+
+              <a href="javascript:;" class="btn btn-sm btn-icon rounded-circle btn-text-github me-1_5">
+                <i class="bx bxl-github"></i>
+              </a>
+
+              <a href="javascript:;" class="btn btn-sm btn-icon rounded-circle btn-text-google-plus">
+                <i class="tf-icons bx bxl-google"></i>
+              </a>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-  <footer class="footer footer-alt">
-    2018 - <script>document.write(new Date().getFullYear())</script> 2024 © Hyper - Coderthemes.com
-  </footer>
-
-  <!-- JS поставщиков -->
-  <script src="{% static 'assets/js/vendor.min.js' %}"></script>
-
-  <!-- JS приложения -->
-  <script src="{% static 'assets/js/app.min.js' %}"></script>
-
-</body></html>
+</body>
+</html>
