@@ -1,59 +1,50 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-4">
-        <div class="card">
-            <h5 class="card-header">Добавление расхода</h5>
-            <form method="POST" enctype="multipart/form-data" class="card-body">
-                {% csrf_token %}
-                
-                <!-- Поле загрузки изображения (если необходимо изображение для расходов) -->
-                <div class="mb-3">
-                    <label for="id_image" class="form-label">
-                        Изображение
-                    </label>
-                    {{ form.image }}
-                </div>
+<div class="container-fluid page-body-wrapper full-page-wrapper">
+    <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+    <div class="row mt-4 justify-content-center w-100">
+            <div class="col-12 col-md-6 col-lg-4 mx-auto p-3">
 
-                <!-- Поле названия расхода -->
-                <div class="mb-3">
-                    <label for="id_type" class="form-label">
-                        Тип расхода<span class="text-danger">*</span>
-                    </label>
-                    {{ form.type }}
+                <div class="card">
+                    <div class="card-body px-3 py-4">
+                        <form method="post" for="formAuthentication">
+                            <h3>Тип: {{ expend_display_name }}</h3>
+                            {% csrf_token %}
+                            {% if expend_type == 'other' %}
+                            <div class="form-group mb-3">
+                                <label>Опишите причину</label>
+                                {{ form.description }}
+                            </div>
+                            {% endif %}
+                            {% if expend_type == 'salaries' %}
+                            <div class="form-group mb-3">
+                                <label>Кому</label>
+                                {{ form.user }}
+                            </div>
+                            {% endif %}
+                            <div class="form-group mb-3">
+                                <label>Сумма</label>
+                                {{ form.amount }}
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Сумма</label>
+                                {{ form.image }}
+                            </div>
+                            <div class="text-center d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-block enter-btn">Сохранить</button>
+                            </div>
+                            {% if form.errors %}
+                             {% for error in form.errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ error }}
+                                </div>
+                             {% endfor %}
+                            {% endif %}
+                        </form>
+                    </div>
                 </div>
-
-                <!-- Поле суммы -->
-                <div class="mb-3">
-                    <label for="id_amount" class="form-label">
-                        Сумма<span class="text-danger">*</span>
-                    </label>
-                    {{ form.amount }}
-                </div>
-
-                <!-- Поле описания -->
-                <div class="mb-3">
-                    <label for="id_description" class="form-label">
-                        Описание
-                    </label>
-                    {{ form.description }}
-                </div>
-
-                <!-- Поле даты создания -->
-                <div class="mb-3">
-                    <label for="id_created" class="form-label">
-                        Дата создания<span class="text-danger">*</span>
-                    </label>
-                    {{ form.created }}
-                </div>
-
-                <!-- Кнопка отправки -->
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary product-create-btn waves-effect waves-light">Сохранить</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
-
 {% endblock %}

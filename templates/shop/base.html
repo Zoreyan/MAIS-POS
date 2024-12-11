@@ -1,6 +1,6 @@
 {% load static %}
 <html lang="ru" class="light-style layout-compact layout-menu-fixed" dir="ltr" data-theme="theme-default"
-    data-assets-path="{% static 'assets' %}" data-template="horizontal-menu-template-dark" data-style="-dark">
+    data-assets-path="{% static 'assets/' %}" data-template="horizontal-menu-template-dark">
 
 <head>
     <meta charset="utf-8" />
@@ -82,12 +82,18 @@
                     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                         <ul class="navbar-nav flex-row align-items-center ms-auto">
                             <!-- Search -->
-                            <li class="nav-item navbar-search-wrapper">
-                                <a class="nav-link btn btn-text-secondary btn-icon rounded-pill search-toggler waves-effect waves-light"
-                                    href="javascript:void(0);">
-                                    <i class="bx bx-search bx-sm"></i>
-                                </a>
+                             <form method="get" action="{% url 'shop-index' shop.id %}">
+                            <li class="nav-item">
+                                <input 
+                                type="text" 
+                                name="query" 
+                                class="form-control search-input container-xxl border-0" 
+                                placeholder="Поиск..." 
+                                aria-label="Search..."
+                                value="{{ request.GET.query|default:'' }}"
+                            > 
                             </li>
+                        </form>
                             <!-- /Search -->
                             <!-- Style Switcher -->
                             <li class="nav-item dropdown-style-switcher dropdown">
@@ -173,55 +179,30 @@
                                             <div>Категории</div>
                                         </a>
                                         <ul class="menu-sub">
-                                            <li class="menu-item">
-                                                <a href="javascript:void(0)" class="menu-link menu-toggle">
-                                                    <div>Категория 1</div>
-                                                </a>
-                                                <ul class="menu-sub">
-                                                    <li class="menu-item">
-                                                        <a href="javascript:void(0)" class="menu-link">
-                                                            <div>Подкатегория 1</div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="menu-item">
-                                                        <a href="javascript:void(0)" class="menu-link">
-                                                            <div>Подкатегория 2</div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="menu-item">
-                                                        <a href="javascript:void(0)" class="menu-link">
-                                                            <div>Подкатегория 3</div>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                            <li class="menu-item">
-                                                <a href="javascript:void(0)" class="menu-link">
-                                                    <div>Категория 2</div>
-                                                </a>
-                                            </li>
-                                            <li class="menu-item">
-                                                <a href="javascript:void(0)" class="menu-link menu-toggle">
-                                                    <div>Категория 3</div>
-                                                </a>
-                                                <ul class="menu-sub">
-                                                    <li class="menu-item">
-                                                        <a href="javascript:void(0)" class="menu-link">
-                                                            <div>Подкатегория 1</div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="menu-item">
-                                                        <a href="javascript:void(0)" class="menu-link">
-                                                            <div>Подкатегория 2</div>
-                                                        </a>
-                                                    </li>
-                                                    <li class="menu-item">
-                                                        <a href="javascript:void(0)" class="menu-link">
-                                                            <div>Подкатегория 3</div>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </li>
+                                            {% for category in categories %}
+                                                {% if category.parent is None %}
+                                                <li class="menu-item">
+                                                    <a href="javascript:void(0)" class="menu-link 
+                                                    {% if category.get_children %}
+                                                    menu-toggle
+                                                    {% endif %}
+                                                    ">
+                                                        <div>{{ category.name }}</div>
+                                                    </a>
+                                                    {% if category.get_children %}
+                                                    <ul class="menu-sub">
+                                                        {% for child in category.get_children %}
+                                                        <li class="menu-item">
+                                                            <a href="javascript:void(0)" class="menu-link">
+                                                                <div>{{ child.name }}</div>
+                                                            </a>
+                                                        </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                    {% endif %}
+                                                </li>
+                                                {% endif %}
+                                            {% endfor %}
                                         </ul>
                                     </li>
                                     <li class="menu-item active">

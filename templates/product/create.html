@@ -2,7 +2,7 @@
 
 
 {% block content %}
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-6 row-gap-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 row-gap-4">
     <div class="text-center text-md-start">
       <h4 class="mb-1">Добавить новый продукт</h4>
       <p class="mb-0">Заказы, оформленные в вашем магазине</p>
@@ -19,22 +19,22 @@
 <div class="row gy-3">
     <!-- Первая колонка -->
     <div class="col-12 col-lg-8">
-        <div class="card mb-6 h-100">
+        <div class="card mb-3 h-100">
             <div class="card-header">
                 <h5 class="card-title mb-0">Информация о продукте</h5>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-6 mb-6">
+                    <div class="col-6 mb-3">
                         <label class="form-label" for="product-name">Название</label>
                         <input type="text" class="form-control" id="product-name" placeholder="Название продукта" name="productTitle">
                     </div>
-                    <div class="col-6 mb-6">
+                    <div class="col-6 mb-3">
                         <label class="form-label" for="product-image">Изображение</label>
                         <input type="file" class="form-control" id="product-image" name="productImage">
                     </div>
                 </div>
-                <div class="row mb-6">
+                <div class="row mb-3">
                     <div class="col">
                         <label class="form-label mb-1" for="unit-select">Единица измерения</label>
                         <select id="unit-select" class="select2 form-select">
@@ -58,20 +58,20 @@
 
     <!-- Вторая колонка -->
     <div class="col-12 col-lg-4">
-        <div class="card mb-6 h-100">
+        <div class="card mb-3 h-100">
             <div class="card-header">
                 <h5 class="card-title mb-0">Цены</h5>
             </div>
             <div class="card-body">
-                <div class="mb-6">
+                <div class="mb-3">
                     <label class="form-label" for="product-price">Базовая цена</label>
                     <input type="number" class="form-control" id="product-price" placeholder="Цена" name="productPrice">
                 </div>
-                <div class="mb-6">
+                <div class="mb-3">
                     <label class="form-label" for="product-discount-price">Цена со скидкой (необязательно)</label>
                     <input type="number" class="form-control" id="product-discount-price" placeholder="Цена со скидкой" name="productDiscountPrice">
                 </div>
-                <div class="mb-6">
+                <div class="mb-3">
                     <label class="form-label" for="product-quantity">Количество</label>
                     <input type="number" class="form-control" id="product-quantity" placeholder="Количество" name="productQuantity">
                 </div>

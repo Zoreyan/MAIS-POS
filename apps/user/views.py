@@ -12,18 +12,15 @@ def login_page(request):
         return redirect('dashboard')
 
     if request.method == 'POST':
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
-
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
             messages.success(request, 'Вы вошли в систему')
             return redirect('dashboard')
-               
         else:
             messages.error(request, 'Неверное имя пользователя или пароль')
-
     return render(request, 'user/login.html')
 
 

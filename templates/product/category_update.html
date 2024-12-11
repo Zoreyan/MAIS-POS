@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <h5 class="card-header">Изменение категории</h5>
+                <form method="POST" class="card-body">
+                    {% csrf_token %}
+                    
+                    <!-- Поле названия категории -->
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">
+                            {{ form.name.label }}<span class="text-danger">*</span>
+                        </label>
+                        <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" 
+                               class="form-control {% if form.name.errors %}is-invalid{% endif %}" 
+                               value="{{ form.name.value|default_if_none:'' }}">
+                        {% if form.name.errors %}
+                            <div class="invalid-feedback">{{ form.name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Поле родительской категории -->
+                    <div class="mb-3">
+                        <label for="{{ form.parent.id_for_label }}" class="form-label">
+                            {{ form.parent.label }}
+                        </label>
+                        <select name="{{ form.parent.name }}" id="{{ form.parent.id_for_label }}" 
+                                class="form-select {% if form.parent.errors %}is-invalid{% endif %}">
+                            <option value="" selected>Выберите категорию</option>
+                            {% for category in form.parent.field.queryset %}
+                                <option value="{{ category.id }}" 
+                                        {% if form.parent.value == category.id %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        {% if form.parent.errors %}
+                            <div class="invalid-feedback">{{ form.parent.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Кнопка отправки -->
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
