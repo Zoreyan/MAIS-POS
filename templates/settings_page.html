@@ -1,121 +1,150 @@
+<<<<<<< HEAD
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <h5 class="card-header">Настройки</h5>
-                <form method="POST" enctype="multipart/form-data" class="card-body">
-                    {% csrf_token %}
-                    
-                    <!-- Поле загрузки изображения -->
-                    <div class="mb-3">
-                        <label for="{{ form.image.id_for_label }}" class="form-label d-block text-center">
-                            <img src="{{ request.user.shop.image.url }}" alt="Изображение магазина" class="img-fluid mb-3 rounded">
-                        </label>
-                        <input type="file" name="{{ form.image.name }}" id="{{ form.image.id_for_label }}" 
-                               class="form-control {% if form.image.errors %}is-invalid{% endif %}" 
-                               value="{{ form.image.value|default_if_none:'' }}" style="display: none;">
-                        {% if form.image.errors %}
-                            <div class="invalid-feedback">{{ form.image.errors }}</div>
-                        {% endif %}
-                    </div>
+<div class="container-fluid mt-4">
+    <div class="row">
 
-                    <!-- Поле названия -->
-                    <div class="mb-3">
-                        <label for="{{ form.name.id_for_label }}" class="form-label">
-                            {{ form.name.label }}<span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" 
-                               class="form-control {% if form.name.errors %}is-invalid{% endif %}" 
-                               value="{{ form.name.value|default_if_none:'' }}">
-                        {% if form.name.errors %}
-                            <div class="invalid-feedback">{{ form.name.errors }}</div>
-                        {% endif %}
+        <div class="col-4">
+            <div class="card position-fixed" style="top: 15%; width: 25%; max-height: 85vh; padding: 10px;">
+                <div class="card-body text-center" style="padding: 10px;">
+                    <img src="{{ shop.image.url }}" alt="Изображение магазина" class="img-fluid rounded mb-2" style="max-height: 150px;">
+                    <h4 class="card-title" style="margin-bottom: 10px;">{{ shop.name }}</h4>
+                    <ul class="list-group" style="padding: 0;">
+                        <li class="list-group-item" style="padding: 5px 10px;">Товары: {{ shop_stats.total_products }} — на сумму {{ shop_stats.total_products_cost }}</li>
+                        <li class="list-group-item" style="padding: 5px 10px;">Продажи: {{ shop_stats.total_sales }} — на сумму {{ shop_stats.total_sales_cost }}</li>
+                        <li class="list-group-item" style="padding: 5px 10px;">Поставки: {{ shop_stats.total_incomes }} — на сумму {{ shop_stats.total_incomes_cost }}</li>
+                    </ul>
+                </div>
+                <div class="card-footer" style="padding: 5px;">
+                    <div id="shop-map" style="height: 100%;">
+                        {{ map_html|safe }}
                     </div>
-
-                    <!-- Поле адреса -->
-                    <div class="mb-3">
-                        <label for="{{ form.address.id_for_label }}" class="form-label">
-                            {{ form.address.label }}
-                        </label>
-                        {{ form.address }}
-                        {% if form.address.errors %}
-                            <div class="invalid-feedback">{{ form.address.errors }}</div>
-                        {% endif %}
-                    </div>
-                    <div id="editor" class="mb-3 ql-toolbar ql-snow ">
-                    </div>
-                    <!-- Кнопка отправки -->
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary product-create-btn">Сохранить</button>
-                    </div>
-                </form>
+                </div>
             </div>
-            <form class="col-md-4" method="post" action="{% url 'update_product_per_page' %}">
+        </div>
+        
+
+        <div class="col-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Данные магазина</h4>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShopModal">
+                        Изменить
+                    </button>
+                </div>
+                <div class="card-body">
+                    <p class="fs-5"><strong>Название:</strong> {{ shop.name }}</p>
+                    <p class="fs-5"><strong>Адрес:</strong> {{ shop.address }}</p>
+                    <p class="fs-5"><strong>Координаты:</strong> {{ shop.coordinates }}</p>
+                    <p class="fs-5"><strong>Контакты:</strong> {{ shop.contacts }}</p>
+                    <p class="fs-5"><strong>О нас:</strong> {{ shop.about }}</p>
+                    <p class="fs-5"><strong>Часы работы:</strong> {{ shop.opening_hours }}</p>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Настройки</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#paginationSettings" aria-expanded="false" aria-controls="paginationSettings">
+                        Настройки пагинации
+                    </button>
+
+                    <div class="collapse mt-3" id="paginationSettings">
+                        <form class="d-flex align-items-center mb-2" method="post" action="{% url 'update_product_per_page' %}">
+                            {% csrf_token %}
+                            <label for="items_per_page" class="me-2">Количество товаров на странице:</label>
+                            <input class="form-control w-auto me-2" type="number" name="items_per_page" id="items_per_page" value="{{ request.session.items_per_page|default:10 }}">
+                            <button class="btn btn-primary" type="submit">Изменить</button>
+                        </form>
+                        <form class="d-flex align-items-center mb-2" method="post" action="{% url 'update_category_per_page' %}">
+                            {% csrf_token %}
+                            <label for="category_per_page" class="me-2">Количество категорий на странице:</label>
+                            <input class="form-control w-auto me-2" type="number" name="category_per_page" id="category_per_page" value="{{ request.session.category_per_page|default:10 }}">
+                            <button class="btn btn-primary" type="submit">Изменить</button>
+                        </form>
+                        <form class="d-flex align-items-center mb-2" method="post" action="{% url 'update_finance_per_page' %}">
+                            {% csrf_token %}
+                            <label for="finance_per_page" class="me-2">Количество расходов на странице:</label>
+                            <input class="form-control w-auto me-2" type="number" name="finance_per_page" id="finance_per_page" value="{{ request.session.finance_per_page|default:10 }}">
+                            <button class="btn btn-primary" type="submit">Изменить</button>
+                        </form>
+                        <form class="d-flex align-items-center mb-2" method="post" action="{% url 'update_orders_per_page' %}">
+                            {% csrf_token %}
+                            <label for="orders_per_page" class="me-2">Количество заказов на странице:</label>
+                            <input class="form-control w-auto me-2" type="number" name="orders_per_page" id="orders_per_page" value="{{ request.session.orders_per_page|default:10 }}">
+                            <button class="btn btn-primary" type="submit">Изменить</button>
+                        </form>
+                        <form class="d-flex align-items-center mb-2" method="post" action="{% url 'update_sales_per_page' %}">
+                            {% csrf_token %}
+                            <label for="sales_per_page" class="me-2">Количество продаж на странице:</label>
+                            <input class="form-control w-auto me-2" type="number" name="sales_per_page" id="sales_per_page" value="{{ request.session.sales_per_page|default:10 }}">
+                            <button class="btn btn-primary" type="submit">Изменить</button>
+                        </form>
+                        <form class="d-flex align-items-center mb-2" method="post" action="{% url 'update_incomes_per_page' %}">
+                            {% csrf_token %}
+                            <label for="incomes_per_page" class="me-2">Количество доходов на странице:</label>
+                            <input class="form-control w-auto me-2" type="number" name="incomes_per_page" id="incomes_per_page" value="{{ request.session.incomes_per_page|default:10 }}">
+                            <button class="btn btn-primary" type="submit">Изменить</button>
+                        </form>
+                        <form class="d-flex align-items-center mb-2" method="post" action="{% url 'update_shop_per_page' %}">
+                            {% csrf_token %}
+                            <label for="shop_per_page" class="me-2">Количество товаров в магазине:</label>
+                            <input class="form-control w-auto me-2" type="number" name="shop_per_page" id="shop_per_page" value="{{ request.session.shop_per_page|default:10 }}">
+                            <button class="btn btn-primary" type="submit">Изменить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для изменения данных магазина -->
+<div class="modal fade" id="editShopModal" tabindex="-1" aria-labelledby="editShopModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editShopModalLabel">Изменить данные магазина</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <label for="items_per_page">Количество товаров на странице:</label>
-                <input class="form-control w-50" type="number" name="items_per_page" id="items_per_page" value="{{ request.session.items_per_page|default:10 }}">
-                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
-            </form>
-            <form class="col-md-4" method="post" action="{% url 'update_category_per_page' %}">
-                {% csrf_token %}
-                <label for="category_per_page">Количество категорий на странице:</label>
-                <input class="form-control w-50" type="number" name="category_per_page" id="category_per_page" value="{{ request.session.category_per_page|default:10 }}">
-                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
-            </form>
-            <form class="col-md-4" method="post" action="{% url 'update_finance_per_page' %}">
-                {% csrf_token %}
-                <label for="finance_per_page">Количество расходов на странице:</label>
-                <input class="form-control w-50" type="number" name="finance_per_page" id="finance_per_page" value="{{ request.session.finance_per_page|default:10 }}">
-                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
-            </form>
-            <form class="col-md-4" method="post" action="{% url 'update_orders_per_page' %}">
-                {% csrf_token %}
-                <label for="orders_per_page">Количество заказов на странице:</label>
-                <input class="form-control w-50" type="number" name="orders_per_page" id="orders_per_page" value="{{ request.session.orders_per_page|default:10 }}">
-                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
-            </form>
-            <form class="col-md-4" method="post" action="{% url 'update_sales_per_page' %}">
-                {% csrf_token %}
-                <label for="sales_per_page">Количество продаж на странице:</label>
-                <input class="form-control w-50" type="number" name="sales_per_page" id="sales_per_page" value="{{ request.session.sales_per_page|default:10 }}">
-                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
-            </form>
-            <form class="col-md-4" method="post" action="{% url 'update_incomes_per_page' %}">
-                {% csrf_token %}
-                <label for="incomes_per_page">Количество заказов на странице:</label>
-                <input class="form-control w-50" type="number" name="incomes_per_page" id="incomes_per_page" value="{{ request.session.incomes_per_page|default:10 }}">
-                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
-            </form>
-            <form class="col-md-4" method="post" action="{% url 'update_shop_per_page' %}">
-                {% csrf_token %}
-                <label for="shop_per_page">Количество товаров в магазине:</label>
-                <input class="form-control w-50" type="number" name="shop_per_page" id="shop_per_page" value="{{ request.session.shop_per_page|default:10 }}">
-                <button class="btn btn-primary mt-1" type="submit">Сохранить</button>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="shopName" class="form-label">Название</label>
+                        <input type="text" class="form-control" id="shopName" name="name" value="{{ shop.name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="shopAddress" class="form-label">Адрес</label>
+                        <input type="text" class="form-control" id="shopAddress" name="address" value="{{ shop.address }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="shopCoordinates" class="form-label">Координаты</label>
+                        <input type="text" class="form-control" id="shopCoordinates" name="coordinates" value="{{ shop.coordinates }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="shopContacts" class="form-label">Контакты</label>
+                        <textarea class="form-control" id="shopContacts" name="contacts">{{ shop.contacts }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="shopAbout" class="form-label">О нас</label>
+                        <textarea class="form-control" id="shopAbout" name="about">{{ shop.about }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="shopHours" class="form-label">Часы работы</label>
+                        <input type="text" class="form-control" id="shopHours" name="opening_hours" value="{{ shop.opening_hours }}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                </div>
             </form>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-
-<script>
-    const quill = new Quill('#editor', {
-      theme: 'snow',
-      modules: {
-        toolbar: [
-          [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-          ['bold', 'italic', 'underline', 'strike'],
-          ['link', 'blockquote'],
-          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-          [{ 'script': 'sub' }, { 'script': 'super' }],
-          [{ 'color': [] }, { 'background': [] }],
-          [{ 'align': [] }],
-          ['clean'],
-          ['image']
-        ],
-      },
-    });
-  </script>
 {% endblock %}
+

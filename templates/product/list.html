@@ -89,7 +89,17 @@
             </a>
           </td>
           <td>{{ product.category }}</td>
-          <td>{{ product.stock }}</td>
+          <td>
+            {% if product.quantity == 0 %}
+                <span class="badge bg-label-danger">Нет в наличии</span>
+            {% else %}
+                {% if product.quantity < product.min_quantity %}
+                    <span class="badge bg-label-warning">Малый остаток</span>
+                {% else %}
+                    <span class="badge bg-label-success">В наличии</span>
+                {% endif %}
+            {% endif %}
+        </td>
           <td>{{ product.price }}</td>
           <td>{{ product.sale_price }}</td>
           <td>{{ product.quantity }}</td>
