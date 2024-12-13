@@ -58,8 +58,9 @@
             <tbody>
                 {% for category in page_obj %}
                 <tr>
-                    <td> </td>
-                    <td>-</td>
+                    <td>{{ category.name }}</td>
+                    <td>{% if category.parent %}{{ category.parent.name }}{% else %}Нет{% endif %}</td>
+                    <td>{{ category.total_products }}</td>
                     <td>
                         <div class="d-inline-block text-nowrap">
                             <a href="{% url 'category-update' category.id %}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">

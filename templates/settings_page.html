@@ -53,7 +53,7 @@
                     </div>
                 </form>
             </div>
-            <form class="col-md-4" method="post" action="{% url 'update_items_per_page' %}">
+            <form class="col-md-4" method="post" action="{% url 'update_product_per_page' %}">
                 {% csrf_token %}
                 <label for="items_per_page">Количество товаров на странице:</label>
                 <input class="form-control w-50" type="number" name="items_per_page" id="items_per_page" value="{{ request.session.items_per_page|default:10 }}">

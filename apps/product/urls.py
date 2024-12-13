@@ -20,4 +20,7 @@ urlpatterns = [
     path('category-list/', category_list, name='category-list'),
     path('category-update/<int:pk>/', category_update, name='category-update'),
     path('category-delete/<int:pk>/', category_delete, name='category-delete'),
+    path('category-create', category_create, name='category-create'),
+    path('update_product_per_page', update_product_per_page, name='update_product_per_page'),
+    path('update_category_per_page', update_category_per_page, name='update_category_per_page'),
 ]

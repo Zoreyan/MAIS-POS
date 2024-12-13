@@ -4,46 +4,52 @@
 
 <div class="card">
   <div class="card-header">
-    <h5 class="card-title">Фильтр</h5>
-    <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
-      <form method="get" class="row w-100">
-        <div class="col-md-3">
-          <div class="row">
-            <div class="col-6">
-              {{ filter.form.price_min }}
-            </div>
-            <div class="col-6">
-              {{ filter.form.price_max }}
-            </div>
+
+    <div class="row mb-4">
+      <div class="col-12">
+          <h5 class="card-title">Фильтр</h5>
+          <form method="get" class="row gy-3">
+            <div class="col-md-3">
+              <label for="ProductCategory" class="form-label">Категория</label>
+              <select id="ProductCategory" name="category" class="form-select text-capitalize">
+                  <option value="" {% if request.GET.category == "" %}selected{% endif %}>Все категории</option>
+                  {% for category in categories %}
+                  <option value="{{ category.name }}" {% if request.GET.category == category.name %}selected{% endif %}>
+                      {{ category.name }}
+                  </option>
+                  {% endfor %}
+              </select>
           </div>
-        </div>
-        <div class="col-md-3">
-          {{ filter.form.category }}
-        </div>
-        <div class="col-md-3">
-          <div class="row">
-            <div class="col-6">
-              {{ filter.form.quantity_min }}
-            </div>
-            <div class="col-6">
-              {{ filter.form.quantity_max }}
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="btn-group flex-wrap d-flex mb-sm-0">
-            <button type="submit" class="btn btn-success d-flex align-items-center">
-              <i class="bx bx-filter-alt me-1"></i>
-              <span>Фильтр</span>
-            </button>
-            <a href="{% url 'product-create' %}" class="btn btn-primary ms-2 d-flex align-items-center">
-              <i class="bx bx-plus me-1"></i>
-              <span>Добавить</span>
-            </a>
-          </div>
-        </div>
-      </form>
-    </div>
+              <div class="col-md-2">
+                  <label for="price_min" class="form-label">Цена с</label>
+                  <input type="number" id="price_min" name="price_min" class="form-control" placeholder="Сумма от" value="{{ request.GET.price_min }}">
+              </div>
+              <div class="col-md-2">
+                  <label for="price_max" class="form-label">Цена по</label>
+                  <input type="number" id="price_max" name="price_max" class="form-control" placeholder="Сумма по" value="{{ request.GET.price_max }}">
+              </div>
+              <div class="col-md-2">
+                  <label for="in_stock" class="form-label">Доступность</label>
+                  <select id="in_stock" name="in_stock" class="form-select">
+                      <option value="" {% if request.GET.in_stock == "" %}selected{% endif %}>Все</option>
+                      <option value="yes" {% if request.GET.in_stock == "yes" %}selected{% endif %}>В наличии</option>
+                      <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии</option>
+                  </select>
+              </div>
+              <div class="col-md-3 d-flex align-items-center">
+                  <button type="submit" class="btn btn-success w-100 me-2 d-flex align-items-center justify-content-center">
+                      <i class="bx bx-filter-alt me-1"></i>
+                      <span>Фильтр</span>
+                  </button>
+                  <a href="{% url 'product-create' %}" type="button" class="btn btn-primary d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#expendTypeModal">
+                      <i class="bx bx-plus me-1"></i>
+                      <span>Добавить</span>
+                  </a>
+              </div>
+          </form>
+      </div>
+  </div>  
+
   </div>
   <div class="table-responsive">
     <table class="datatables-products table">
@@ -61,7 +67,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for product in filter.qs %}
+        {% for product in page_obj %}
         <tr>
           <td>{{ product.bar_code }}</td>
           <td>
@@ -102,39 +108,87 @@
       </tbody>
     </table>
   </div>
-  <div class="d-flex justify-content-end align-items-center mt-3 me-3">
-    <nav aria-label="Page navigation">
-      <ul class="pagination pagination-rounded d-flex align-items-center">
-        <li class="page-item first">
-          <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-left bx-sm"></i></a>
-        </li>
-        <li class="page-item prev">
-          <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-left bx-sm"></i></a>
-        </li>
-        <li class="page-item">
-          <a class="page-link waves-effect" href="javascript:void(0);">1</a>
-        </li>
-        <li class="page-item">
-          <a class="page-link waves-effect" href="javascript:void(0);">2</a>
-        </li>
-        <li class="page-item active">
-          <a class="page-link waves-effect" href="javascript:void(0);">3</a>
-        </li>
-        <li class="page-item">
-          <a class="page-link waves-effect" href="javascript:void(0);">4</a>
-        </li>
-        <li class="page-item">
-          <a class="page-link waves-effect" href="javascript:void(0);">5</a>
-        </li>
-        <li class="page-item next">
-          <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevron-right bx-sm"></i></a>
-        </li>
-        <li class="page-item last">
-          <a class="page-link waves-effect" href="javascript:void(0);"><i class="bx bx-chevrons-right bx-sm"></i></a>
-        </li>
-      </ul>
-    </nav>
+  <div class="d-flex justify-content-center mt-5">
+    <div class="pagination-container">
+        <nav aria-label="Пагинация">
+            <ul class="pagination justify-content-center">
+                <!-- Кнопка "Первая" -->
+                {% if page_obj.number > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="Первая">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                            <span class="sr-only">Первая</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo;&laquo;</span>
+                    </li>
+                {% endif %}
+    
+                <!-- Кнопка "Назад" -->
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Назад</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo;</span>
+                    </li>
+                {% endif %}
+    
+                <!-- Номера страниц -->
+                {% for page_num in visible_pages %}
+                    {% if page_num == page_obj.number %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link" style="color: black;">{{ page_num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+    
+                <!-- Кнопка "Вперёд" -->
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Вперёд</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&raquo;</span>
+                    </li>
+                {% endif %}
+    
+                <!-- Кнопка "Последняя" -->
+                {% if page_obj.number < page_obj.paginator.num_pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                            <span class="sr-only">Последняя</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&raquo;&raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
   </div>
+        <div class="d-flex justify-content-center">
+        <span class="text-muted">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+        </span>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
