@@ -121,88 +121,84 @@
           {% endfor %}
       </tbody>
     </table>
+    <div class="d-flex justify-content-end me-3 mt-5">
+      <div class="pagination-container">
+          <nav aria-label="Пагинация">
+              <ul class="pagination justify-content-center">
+                  <!-- Кнопка "Первая" -->
+                  {% if page_obj.number > 1 %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page=1" aria-label="Первая">
+                              <span aria-hidden="true">&laquo;&laquo;</span>
+                              <span class="sr-only">Первая</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&laquo;&laquo;</span>
+                      </li>
+                  {% endif %}
+      
+                  <!-- Кнопка "Назад" -->
+                  {% if page_obj.has_previous %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
+                              <span aria-hidden="true">&laquo;</span>
+                              <span class="sr-only">Назад</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&laquo;</span>
+                      </li>
+                  {% endif %}
+      
+                  <!-- Номера страниц -->
+                  {% for page_num in visible_pages %}
+                      {% if page_num == page_obj.number %}
+                          <li class="page-item active" aria-current="page">
+                              <span class="page-link" style="color: black;">{{ page_num }}</span>
+                          </li>
+                      {% else %}
+                          <li class="page-item">
+                              <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                          </li>
+                      {% endif %}
+                  {% endfor %}
+      
+                  <!-- Кнопка "Вперёд" -->
+                  {% if page_obj.has_next %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
+                              <span aria-hidden="true">&raquo;</span>
+                              <span class="sr-only">Вперёд</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&raquo;</span>
+                      </li>
+                  {% endif %}
+      
+                  <!-- Кнопка "Последняя" -->
+                  {% if page_obj.number < page_obj.paginator.num_pages %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
+                              <span aria-hidden="true">&raquo;&raquo;</span>
+                              <span class="sr-only">Последняя</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&raquo;&raquo;</span>
+                      </li>
+                  {% endif %}
+              </ul>
+          </nav>
+      </div>
+          
+      </div>
   </div>
-  <div class="d-flex justify-content-center mt-5">
-    <div class="pagination-container">
-        <nav aria-label="Пагинация">
-            <ul class="pagination justify-content-center">
-                <!-- Кнопка "Первая" -->
-                {% if page_obj.number > 1 %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1" aria-label="Первая">
-                            <span aria-hidden="true">&laquo;&laquo;</span>
-                            <span class="sr-only">Первая</span>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">&laquo;&laquo;</span>
-                    </li>
-                {% endif %}
-    
-                <!-- Кнопка "Назад" -->
-                {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">Назад</span>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">&laquo;</span>
-                    </li>
-                {% endif %}
-    
-                <!-- Номера страниц -->
-                {% for page_num in visible_pages %}
-                    {% if page_num == page_obj.number %}
-                        <li class="page-item active" aria-current="page">
-                            <span class="page-link" style="color: black;">{{ page_num }}</span>
-                        </li>
-                    {% else %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                        </li>
-                    {% endif %}
-                {% endfor %}
-    
-                <!-- Кнопка "Вперёд" -->
-                {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
-                            <span aria-hidden="true">&raquo;</span>
-                            <span class="sr-only">Вперёд</span>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">&raquo;</span>
-                    </li>
-                {% endif %}
-    
-                <!-- Кнопка "Последняя" -->
-                {% if page_obj.number < page_obj.paginator.num_pages %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
-                            <span aria-hidden="true">&raquo;&raquo;</span>
-                            <span class="sr-only">Последняя</span>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">&raquo;&raquo;</span>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-  </div>
-        <div class="d-flex justify-content-center">
-        <span class="text-muted">
-            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
-        </span>
-        </div>
-    </div>
 </div>
 
 {% endblock %}
