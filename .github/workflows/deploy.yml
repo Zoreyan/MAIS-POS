@@ -42,6 +42,4 @@ jobs:
           target: deer/public_html
       - name: Restart server
         run: |
-          ssh -i ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}
-          source venv/bin/activate
-          systemctl restart gunicorn
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd deer/public_html && systemctl restart 0"
