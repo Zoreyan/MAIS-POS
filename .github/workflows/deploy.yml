@@ -32,17 +32,17 @@ jobs:
           source venv/bin/activate
           python manage.py migrate
 
-      - name: Deploy to server (replace with your deployment method)
+      - name: Deploy to server
         # Example: Deploy to a server using SSH
         uses: appleboy/scp-action@v0.2.1
           with:
-            host: ${{ vars.SERVER_HOST }}
-            username: ${{ vars.SERVER_USER }}
+            host: ${{ secrets.SERVER_HOST }}
+            username: ${{ secrets.SERVER_USER }}
             key: ${{ secrets.SSH_PRIVATE_KEY }}
-            source: home/c/cl17008/deer/
-            target: home/c/cl17008/deer/public_html
+            source: ./
+            target: /home/c/cl17008/deer/public_html
 
       - name: Restart server (replace with your server restart command)
         # Example: Restart Gunicorn server with systemd
         run: |
-          ssh ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} 'sudo systemctl restart gunicorn'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'sudo systemctl restart gunicorn'
