@@ -40,7 +40,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ./
           target: deer/public_html
-
       - name: Restart server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'source venv/bin/activate && systemctl restart gunicorn'
