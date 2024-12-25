@@ -42,4 +42,4 @@ jobs:
           target: /home/c/${{ secrets.SERVER_USER }}/deer
       - name: Restart server
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd deer/public_html && systemctl restart 0"
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "cd /home/c/${{ secrets.SERVER_USER }}/deer/public_html && systemctl restart gunicorn"
