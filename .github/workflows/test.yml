@@ -24,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+      - name: Activate virtual environment
+        run: |
+          source venv/bin/activate
       - name: Apply migrations
         run: |
             python manage.py migrate
