@@ -19,17 +19,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          source ~/deer/venv/bin/activate
+          python -m venv venv
+          source venv/bin/activate
           pip install -r requirements.txt
 
       - name: Collect static files
         run: |
-          source ~/deer/venv/bin/activate
+          source venv/bin/activate
           python manage.py collectstatic --noinput
 
       - name: Migrate database
         run: |
-          source ~/deer/venv/bin/activate
+          source venv/bin/activate
           python manage.py migrate  # Миграция базы данных
 
       - name: Deploy to server
@@ -39,8 +40,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ./
-          target: ~/deer/public_html
+          target: deer/public_html
 
       - name: Restart server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'source ~/deer/venv/bin/activate && sudo systemctl restart gunicorn'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'source venv/bin/activate && sudo systemctl restart gunicorn'
