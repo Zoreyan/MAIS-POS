@@ -20,19 +20,11 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'  # Версия Python
-      
-      # 3. Установка зависимостей
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
 
-      # 4. Сбор статических файлов
       - name: Collect static files
         run: |
           python manage.py collectstatic --noinput
 
-      # 5. Настройка SSH ключа
       - name: Set up SSH key
         uses: webfactory/ssh-agent@v0.7.0
         with:
@@ -41,7 +33,7 @@ jobs:
       # 6. Подключение к серверу и деплой
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no -p 21 cl17008@vh426.timeweb.ru << 'EOF'
+          ssh -o StrictHostKeyChecking=no -p 21 ${{ secrets.SERVER_USER }}@SERVER_HOST << 'EOF'
             cd /home/cl17008/deer/public_html
             git pull origin main
             source /home/cl17008/deer/venv/bin/activate
@@ -49,4 +41,3 @@ jobs:
             python manage.py migrate
             python manage.py collectstatic --noinput
             systemctl restart your-django-app
-          EOF
