@@ -27,7 +27,7 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no -p 21 ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} << 'EOF'
-            cd /home/c/cl17008/deer/public_html
+            cd /home/c/cl17008/deer/public_html/
             git pull origin main
             source /home/c/cl17008/deer/venv/bin/activate
             pip install -r requirements.txt
@@ -35,3 +35,52 @@ jobs:
             python manage.py collectstatic --noinput
             systemctl restart backend
           EOF
+
+name: Django Deploy
+
+on:
+  push:
+    branches:
+      - main  # Deploy on pushes to the 'main' branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'  # Specify your desired Python version
+
+      - name: Install dependencies
+        run: |
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Collect static files
+        run: |
+          source venv/bin/activate
+          python manage.py collectstatic --noinput
+
+      - name: Migrate database
+        run: |
+          source venv/bin/activate
+          python manage.py migrate
+
+      - name: Deploy to server (replace with your deployment method)
+        # Example: Deploy to a server using SSH
+        uses: appleboy/scp-action@v0.2.1
+          with:
+            host: ${{ vars.SERVER_HOST }}
+            username: ${{ vars.SERVER_USER }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            source: home/c/cl17008/deer/
+            target: home/c/cl17008/deer/public_html
+
+      - name: Restart server (replace with your server restart command)
+        # Example: Restart Gunicorn server with systemd
+        run: |
+          ssh ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} 'sudo systemctl restart gunicorn'
