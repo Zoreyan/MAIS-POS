@@ -13,19 +13,21 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.7.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: Deploy to Server
+    - name: Set up SSH
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
-        cd /home/c/cl17008/deer
+        mkdir -p ~/.ssh
+        echo "${{ secrets.TIMEWEB_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H vh426.timeweb.ru >> ~/.ssh/known_hosts
+
+    - name: Deploy to Timeweb
+      run: |
+        ssh cl17008@vh426.timeweb.r << 'EOF'
+        cd /home/deer/public_html/
         git pull origin main
-        # Зависимости, миграции и рестарт сервера, если нужно:
-        source venv/bin/activate
+        source /home/deer/venv/bin/activate  # Если используете виртуальное окружение
         pip install -r requirements.txt
         python manage.py migrate
-        systemctl restart your-service
+        python manage.py collectstatic --noinput
+        systemctl restart your-service  # Перезапуск вашего приложения
         EOF
