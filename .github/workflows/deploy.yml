@@ -27,7 +27,7 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no -p 21 ${{ secrets.SERVER_USER }}@SERVER_HOST
+          ssh -o StrictHostKeyChecking=no -p 21 ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} << EOF
             cd /home/cl17008/deer/public_html
             git pull origin main
             source /home/cl17008/deer/venv/bin/activate
@@ -35,3 +35,4 @@ jobs:
             python manage.py migrate
             python manage.py collectstatic --noinput
             systemctl restart your-django-app
+            EOF
