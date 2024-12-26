@@ -41,7 +41,7 @@ jobs:
 
       - name: Deploy
         run: |
-          cd /home/c/cl17008/deer/public_html
+          cd ~/deer/public_html
           git pull origin main  # Pull the latest code
           source venv/bin/activate  # Activate your virtual environment
           python manage.py migrate  # Run migrations
