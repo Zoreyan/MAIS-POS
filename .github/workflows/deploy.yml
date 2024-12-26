@@ -42,5 +42,5 @@ jobs:
           target: /home/c/${{ secrets.SERVER_USER }}/deer
       - name: Restart server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}
+          ssh -tt -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}
           systemctl restart gunicorn
