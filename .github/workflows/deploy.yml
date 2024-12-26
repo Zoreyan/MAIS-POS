@@ -30,6 +30,7 @@ jobs:
       - name: Migrate database
         run: |
           source venv/bin/activate
+          python manage.py makemigrations
           python manage.py migrate  # Миграция базы данных
 
       - name: Deploy to server
