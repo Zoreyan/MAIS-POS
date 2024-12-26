@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'cl17008_deer',
         'USER': 'cl17008_deer',
         'PASSWORD': 'Knyaz999',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
         
     }
