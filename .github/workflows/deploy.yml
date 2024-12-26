@@ -46,4 +46,3 @@ jobs:
           source venv/bin/activate  # Activate your virtual environment
           python manage.py migrate  # Run migrations
           python manage.py collectstatic --noinput
-
