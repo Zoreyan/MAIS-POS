@@ -43,7 +43,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
             cd ~/deer/public_html
             git pull origin main
-            source venv/bin/activate
+            source ~/deer/venv/bin/activate
             pip install -r requirements.txt
             python manage.py migrate
             python manage.py collectstatic --noinput
