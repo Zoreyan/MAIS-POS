@@ -39,9 +39,9 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/c/${{ secrets.SERVER_USER }}/deer  # Change to your project directory
+            cd /home/c/${{ secrets.SERVER_USER }}/deer
             git pull origin main  # Pull the latest code
             source venv/bin/activate  # Activate your virtual environment
             python manage.py migrate  # Run migrations
-            python manage.py collectstatic --noinput  # Collect static files
-            sudo systemctl restart gunicorn  # Restart your Gunicorn service
+            python manage.py collectstatic --noinput
+            systemctl restart gunicorn
