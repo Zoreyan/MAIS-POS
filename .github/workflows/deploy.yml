@@ -39,10 +39,9 @@ jobs:
           SSH_USER: ${{ secrets.SERVER_USER }}
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy
-        run: |
-          cd ~/deer/public_html
-          git pull origin main  # Pull the latest code
-          source venv/bin/activate  # Activate your virtual environment
-          python manage.py migrate  # Run migrations
-          python manage.py collectstatic --noinput
+          run: |
+            cd ~/deer/public_html
+            git pull origin main  # Pull the latest code
+            source venv/bin/activate  # Activate your virtual environment
+            python manage.py migrate  # Run migrations
+            python manage.py collectstatic --noinput
