@@ -38,8 +38,6 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: ./
-          target: /home/c/${{ secrets.SERVER_USER }}/deer
           script: |
             cd /home/c/${{ secrets.SERVER_USER }}/deer  # Change to your project directory
             git pull origin main  # Pull the latest code
