@@ -3,7 +3,7 @@ name: Django Deploy
 on:
   push:
     branches:
-      - main  # Триггер на пуши в ветку 'main'
+      - main
 
 jobs:
   build-and-deploy:
@@ -19,17 +19,17 @@ jobs:
       - name: Install dependencies
         run: |
           python -m venv venv
-          source venv/bin/activate
+          source ~/deer/venv/bin/activate
           pip install -r requirements.txt
 
       - name: Collect static files
         run: |
-          source venv/bin/activate
+          source ~/deer/venv/bin/activate
           python manage.py collectstatic --noinput
 
       - name: Migrate database
         run: |
-          source venv/bin/activate
+          source ~/deer/venv/bin/activate
           python manage.py migrate  # Миграция базы данных
 
       - name: Deploy to server
@@ -39,9 +39,9 @@ jobs:
           SSH_USER: ${{ secrets.SERVER_USER }}
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/c/${{ secrets.SERVER_USER }}/deer
+            cd ~/deer/public_html
             git pull origin main  # Pull the latest code
-            source venv/bin/activate  # Activate your virtual environment
+            source ~/deer/venv/bin/activate  # Activate your virtual environment
             python manage.py migrate  # Run migrations
             python manage.py collectstatic --noinput
 
