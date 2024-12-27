@@ -43,6 +43,7 @@ jobs:
           chmod 600 ssh_key
           ssh -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
           git pull origin main
+          echo pwd
           source venv/bin/activate
           python manage.py migrate
           python manage.py collectstatic --noinput
