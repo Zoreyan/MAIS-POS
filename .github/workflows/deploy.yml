@@ -42,7 +42,7 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > ssh_key
           chmod 600 ssh_key
-          ssh -t -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
+          ssh -T -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
           cd deer
           pwd
           ls
