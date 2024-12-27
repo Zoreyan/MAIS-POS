@@ -9,9 +9,9 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
     steps:
-      -name: Show path
-      run: |
-        pwd
+      - name: Show path
+        run: |
+          pwd
       - name: Checkout code
         uses: actions/checkout@v3
 
