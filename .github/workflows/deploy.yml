@@ -19,18 +19,18 @@ jobs:
           python-version: '3.10'
       - name: Install dependencies
         run: |
-          cd ~/deer
+          python -m venv venv
           source venv/bin/activate
           pip install -r requirements.txt
 
       - name: Collect static files
         run: |
-          
+          source venv/bin/activate
           python manage.py collectstatic --noinput
 
       - name: Migrate database
         run: |
-
+          source venv/bin/activate
           python manage.py migrate  # Миграция базы данных
 
       - name: Deploy to server
@@ -42,8 +42,8 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ssh_key
           chmod 600 ssh_key
           ssh -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
-          cd ~/deer/public_html
           git pull origin main
+          source venv/bin/activate
           python manage.py migrate
           python manage.py collectstatic --noinput
           EOF
