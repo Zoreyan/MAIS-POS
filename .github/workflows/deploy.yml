@@ -42,10 +42,11 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > ssh_key
           chmod 600 ssh_key
-          ssh -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
-          cd /home/c/cl17008/deer  # Переход в нужную директорию
-          git pull origin main
-          source venv/bin/activate
-          python manage.py migrate
-          python manage.py collectstatic --noinput
+          ssh -t -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
+          pwd
+          ls
+          # git pull origin main
+          # source venv/bin/activate
+          # python manage.py migrate
+          # python manage.py collectstatic --noinput
           EOF
