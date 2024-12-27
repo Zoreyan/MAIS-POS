@@ -48,4 +48,5 @@ jobs:
           python manage.py migrate
           python manage.py collectstatic --noinput
           EOF
+          
         shell: bash
