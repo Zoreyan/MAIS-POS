@@ -19,7 +19,7 @@ jobs:
           python-version: '3.10'
       - name: Install dependencies
         run: |
-          cd /home/c/cl17008/deer
+          cd ~/deer
           source venv/bin/activate
           pip install -r requirements.txt
 
@@ -42,7 +42,7 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ssh_key
           chmod 600 ssh_key
           ssh -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
-          cd /home/c/cl17008/deer/public_html
+          cd ~/deer/public_html
           git pull origin main
           python manage.py migrate
           python manage.py collectstatic --noinput
