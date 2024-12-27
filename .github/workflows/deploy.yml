@@ -44,8 +44,8 @@ jobs:
           chmod 600 ssh_key
           ssh -T -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
           cd deer
-
           source venv/bin/activate
+          cd public_html
           git pull origin main
           pip install -r requirements.txt
           python manage.py migrate
