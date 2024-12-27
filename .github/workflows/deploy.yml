@@ -43,10 +43,9 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > ssh_key
           chmod 600 ssh_key
           ssh -t -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
-          pwd
-          ls
-          # git pull origin main
-          # source venv/bin/activate
-          # python manage.py migrate
-          # python manage.py collectstatic --noinput
+          cd deer
+          git pull origin main
+          source venv/bin/activate
+          python manage.py migrate
+          python manage.py collectstatic --noinput
           EOF
