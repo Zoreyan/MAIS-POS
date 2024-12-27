@@ -39,14 +39,14 @@ jobs:
           HOST: ${{ secrets.SERVER_HOST }}
           USER: ${{ secrets.SERVER_USER }}
         run: |
-          echo "$SSH_PRIVATE_KEY" > ssh_key
+          echo "$SSH_PRIVATE_KEY" > ssh_key << EOF
           chmod 600 ssh_key
-          ssh -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST << EOF
+          ssh -o StrictHostKeyChecking=no -i ssh_key $USER@$HOST
           git pull origin main
           echo pwd
           source venv/bin/activate
           python manage.py migrate
           python manage.py collectstatic --noinput
           EOF
-          
+
         shell: bash
