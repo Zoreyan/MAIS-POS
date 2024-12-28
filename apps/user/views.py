@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
+from .utils import generate_password
 from .models import *
 from django.contrib import messages
 from .forms import *
@@ -11,6 +12,7 @@ def sign_up(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
+            form.instance.username = generate_password()
             form.instance.role = 'owner'
             form.save()
             return redirect('dashboard')
@@ -75,10 +77,10 @@ def profile(request, pk):
         form = UserProfileForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
-            return redirect('profile', pk=user.pk)
+            return redirect('user-profile', pk=user.id)
 
     context = {
         'user': user,
         'form': form
     }
-    return render(request, 'user/profile.html', {'user': user})
+    return render(request, 'user/profile.html', context)

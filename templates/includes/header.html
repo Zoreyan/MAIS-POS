@@ -19,7 +19,12 @@
             </div>
         </div>
         <ul class="navbar-nav flex-row align-items-center ms-auto">
-
+            <li class="nav-item me-2">
+                <a class="nav-link fw-bold d-flex align-items-center" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>0сом</span>" aria-describedby="tooltip725089">
+                    <i class="bx bx-wallet"></i>
+                    <span class="d-none d-sm-block ms-1">0c</span>
+                </a>
+            </li>
             <li class="nav-item dropdown-style-switcher dropdown">
                 <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <i class="bx bx-sun bx-sm"></i>
@@ -42,96 +47,14 @@
                     </li>
                 </ul>
             </li>
-            <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-2">
-                <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                    <span class="position-relative">
-                        <i class="bx bx-bell bx-sm"></i>
-                    </span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end p-0">
-                    <li class="dropdown-menu-header border-bottom">
-                        <div class="dropdown-header d-flex align-items-center py-3">
-                            <h6 class="mb-0 me-auto">Уведомления</h6>
-                            <div class="d-flex align-items-center h6 mb-0">
-                                <span class="badge bg-label-primary me-2">8 новых</span>
-                                <a href="javascript:void(0)" class="btn btn-text-secondary rounded-pill btn-icon dropdown-notifications-all" data-bs-toggle="tooltip" data-bs-placement="top" title="Пометить все как прочитанные"><i class="bx bx-envelope-open text-heading"></i></a>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="dropdown-notifications-list scrollable-container">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0 me-3">
-                                        <div class="avatar">
-                                            <img src="../../assets/img/avatars/1.png" alt class="rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="small mb-1">Поздравляем, Летти 🎉</h6>
-                                        <small class="mb-1 d-block text-body">Завоевала золотой значок лучшего продавца месяца</small>
-                                        <small class="text-muted">1 час назад</small>
-                                    </div>
-                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0 me-3">
-                                        <div class="avatar">
-                                            <span class="avatar-initial rounded-circle bg-label-danger">CF</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1 small">Чарльз Франклин</h6>
-                                        <small class="mb-1 d-block text-body">Принял ваше приглашение в друзья</small>
-                                        <small class="text-muted">12 часов назад</small>
-                                    </div>
-                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0 me-3">
-                                        <div class="avatar">
-                                            <img src="../../assets/img/avatars/2.png" alt class="rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1 small">Новое сообщение ✉️</h6>
-                                        <small class="mb-1 d-block text-body">Вы получили новое сообщение от Натали</small>
-                                        <small class="text-muted">1 час назад</small>
-                                    </div>
-                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                        <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
-                                        <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="bx bx-x"></span></a>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="border-top">
-                        <div class="d-grid p-4">
-                            <a class="btn btn-primary btn-sm d-flex" href="javascript:void(0);">
-                                <small class="align-middle">Просмотреть все уведомления</small>
-                            </a>
-                        </div>
-                    </li>
-                </ul>
-            </li>
+            
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
                         {% if request.user.image %}
                             <img src="{{ request.user.image.url }}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                         {% else %}
-                            <img src="{% static 'assets/images/avatars/1.png' %}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
+                            <img src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                         {% endif %}
                     </div>
                 </a>
@@ -144,7 +67,7 @@
                                         {% if request.user.image %}
                                             <img src="{{ request.user.image.url }}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                                         {% else %}
-                                            <img src="{% static 'assets/images/avatars/1.png' %}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
+                                            <img src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                                         {% endif %}
                                     </div>
                                 </div>
@@ -158,9 +81,9 @@
                     <li>
                         <div class="dropdown-divider my-1 mx-n2"></div>
                     </li>
-                    <a href="{% url 'password_change' %}" class="dropdown-item">
-                        <i class="bx bx-edit me-1"></i>
-                        <span>Изменение пароля</span>
+                    <a href="#" class="dropdown-item">
+                        <i class="bx bx-bell me-1"></i>
+                        <span>Уведомления</span>
                     </a>
                     <li>
                         <div class="dropdown-divider my-1 mx-n2"></div>

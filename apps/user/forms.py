@@ -62,27 +62,32 @@ class CreateUserForm(UserCreationForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'role', 'first_name', 'last_name', 'image', 'phone']
+        fields = ['username', 'first_name', 'last_name', 'image', 'phone', 'email']
         
         
         widgets = {
-            'role': forms.Select(attrs={
-                'class':'form-control'
+           'email': forms.EmailInput(attrs={
+                'class':'form-control',
+                'id':'email'
             }),
             'first_name': forms.TextInput(attrs={
-                'class':'form-control'
+                'class':'form-control',
+                'id':'first_name'
             }),
             'last_name': forms.TextInput(attrs={
-                'class':'form-control'
+                'class':'form-control',
+                'id':'last_name'
             }),
             'username': forms.TextInput(attrs={
-                'class':'form-control'
+                'class':'form-control',
+                'id':'username'
             }),
             'phone': forms.TextInput(attrs={
-                'class':'form-control'
+                'class':'form-control',
+                'id':'phone'
             }),
-            'image': forms.ClearableFileInput(attrs={
-                'class':'form-control'
+            'image': forms.FileInput(attrs={
+                'class': 'd-none',
+                'id': 'upload'
             })
         }
-

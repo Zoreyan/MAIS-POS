@@ -5,8 +5,7 @@
 <div class="card">
     <div class="card-header">
         <h5 class="card-title">Фильтр</h5>
-        <form method="get">
-            <div class="row gy-3 gx-3 pt-4">
+            <div class="row gy-3 gx-3 pt-2 align-items-end" method="get">
                 <div class="col-12 col-md-3">
                     <label for="date_from" class="form-label">Дата с</label>
                     <input type="date" id="date_from" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
@@ -24,8 +23,8 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-12 col-md-3">
-                    <div class="d-flex flex-wrap gap-2">
+                <div class="col-12 col-md-3 ">
+                    <div class="d-flex btn-group">
                         <button type="submit" class="btn btn-success d-flex align-items-center">
                             <i class="bx bx-filter-alt me-1"></i>
                             <span>Фильтр</span>
@@ -37,7 +36,6 @@
                     </div>
                 </div>
             </div>
-        </form>
     </div>
 
     <div class="modal fade" id="expendTypeModal" tabindex="-1" aria-labelledby="expendTypeModalLabel" aria-hidden="true">
