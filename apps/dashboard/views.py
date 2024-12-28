@@ -99,8 +99,8 @@ def settings_page(request):
 
 
     # Получаем объект магазина
-    shop = Shop.objects.get(id=request.user.shop.id)
-    coordinates = shop.coordinates  # Доступ к координатам
+    shop = Shop.objects.get(id=request.user.shop.id) if request.user.shop else None
+    coordinates = shop.coordinates if shop else None
 
     # Проверяем наличие координат
     if coordinates:

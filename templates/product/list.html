@@ -4,7 +4,6 @@
 
 <div class="card">
   <div class="card-header">
-
     <div class="row mb-4">
       <div class="col-12">
           <h5 class="card-title">Фильтр</h5>
@@ -36,8 +35,8 @@
                       <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии</option>
                   </select>
               </div>
-              <div class="col-md-3 d-flex align-items-center">
-                  <button type="submit" class="btn btn-success w-100 me-2 d-flex align-items-center justify-content-center">
+              <div class="col-md-3 btn-group col-sm-12 d-flex align-items-center">
+                  <button type="submit" class="btn btn-success w-100 d-flex align-items-center justify-content-center">
                       <i class="bx bx-filter-alt me-1"></i>
                       <span>Фильтр</span>
                   </button>
@@ -49,8 +48,8 @@
           </form>
       </div>
   </div>  
-
   </div>
+
   <div class="table-responsive">
     <table class="datatables-products table">
       <thead class="border-top">
@@ -72,15 +71,13 @@
         <tr>
           <td>{{ product.bar_code }}</td>
           <td>
-            <a href="{% url 'product-details' product.id %}"
-              class="d-flex justify-content-start align-items-center product-name">
+            <a href="{% url 'product-details' product.id %}" class="d-flex justify-content-start align-items-center product-name">
               <div class="avatar-wrapper">
                 <div class="avatar avatar me-4 rounded-2 bg-label-secondary">
                   {% if product.image %}
                   <img src="{{ product.image.url }}" class="rounded-2" alt="" style="object-fit: cover;">
                   {% else %}
-                  <img src="{% static 'assets/images/products/product-3.jpg' %}" class="rounded-2" alt=""
-                    style="object-fit: cover;">
+                  <img src="{% static 'assets/images/products/product-3.jpg' %}" class="rounded-2" alt="" style="object-fit: cover;">
                   {% endif %}
                 </div>
               </div>
@@ -108,29 +105,43 @@
           <td>{{ product.unit }}</td>
           <td>
             <div class="d-inline-block text-nowrap">
-                <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
-                    <a href="{% url 'product-update' product.id %}"><i class="bx bx-edit bx-sm"></i></a>
-                </button>
-                <button
-                class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"
-                data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-vertical bx-sm"></i></button>
-              <div class="dropdown-menu dropdown-menu-end m-0" style=""><a href="javascript:0;"
-                  class="dropdown-item">Открыть</a><a href="{% url 'product-delete' product.id %}" class="dropdown-item">Удалить</a></div>
+                <a class="btn btn-sm btn-icon rounded-pill" href="{% url 'product-update' product.id %}">
+                    <i class="bx bx-edit bx-sm"></i>
+                </a>
+                <button type="button" class="btn btn-sm btn-icon rounded-pill" data-bs-toggle="modal" data-bs-target="#modalDelete{{ product.id }}">
+                    <i class="bx bx-trash bx-sm"></i>
+                  </button>
+                  <div class="modal fade" id="modalDelete{{ product.id }}" tabindex="-1" style="display: none;" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="modalCenterTitle">Удаление продукта</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p>Вы уверены, что хотите удалить продукт?</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                          <a href="{% url 'product-delete' product.id %}" class="btn btn-danger">Удалить</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
             </div>
           </td>
-          {% endfor %}
+        {% endfor %}
       </tbody>
     </table>
+
     <div class="d-flex justify-content-end me-3 mt-5">
       <div class="pagination-container">
           <nav aria-label="Пагинация">
               <ul class="pagination justify-content-center">
-                  <!-- Кнопка "Первая" -->
                   {% if page_obj.number > 1 %}
                       <li class="page-item">
                           <a class="page-link" href="?page=1" aria-label="Первая">
                               <span aria-hidden="true">&laquo;&laquo;</span>
-                              <span class="sr-only">Первая</span>
                           </a>
                       </li>
                   {% else %}
@@ -138,13 +149,11 @@
                           <span class="page-link">&laquo;&laquo;</span>
                       </li>
                   {% endif %}
-      
-                  <!-- Кнопка "Назад" -->
+
                   {% if page_obj.has_previous %}
                       <li class="page-item">
                           <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
                               <span aria-hidden="true">&laquo;</span>
-                              <span class="sr-only">Назад</span>
                           </a>
                       </li>
                   {% else %}
@@ -152,8 +161,7 @@
                           <span class="page-link">&laquo;</span>
                       </li>
                   {% endif %}
-      
-                  <!-- Номера страниц -->
+
                   {% for page_num in visible_pages %}
                       {% if page_num == page_obj.number %}
                           <li class="page-item active" aria-current="page">
@@ -165,13 +173,11 @@
                           </li>
                       {% endif %}
                   {% endfor %}
-      
-                  <!-- Кнопка "Вперёд" -->
+
                   {% if page_obj.has_next %}
                       <li class="page-item">
                           <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
                               <span aria-hidden="true">&raquo;</span>
-                              <span class="sr-only">Вперёд</span>
                           </a>
                       </li>
                   {% else %}
@@ -179,13 +185,11 @@
                           <span class="page-link">&raquo;</span>
                       </li>
                   {% endif %}
-      
-                  <!-- Кнопка "Последняя" -->
+
                   {% if page_obj.number < page_obj.paginator.num_pages %}
                       <li class="page-item">
                           <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
                               <span aria-hidden="true">&raquo;&raquo;</span>
-                              <span class="sr-only">Последняя</span>
                           </a>
                       </li>
                   {% else %}
@@ -196,8 +200,7 @@
               </ul>
           </nav>
       </div>
-          
-      </div>
+    </div>
   </div>
 </div>
 

@@ -7,10 +7,12 @@ from apps.history.models import *
 from apps.finance.models import *
 from django.forms.models import model_to_dict
 import json
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count
 from django.db.models import Q
 
+@login_required
 def update_product_per_page(request):
     if request.method == "POST":
         try:
@@ -21,11 +23,11 @@ def update_product_per_page(request):
             request.session['items_per_page'] = 10  # Устанавливаем значение по умолчанию
     return redirect('settings') 
 
-
+@login_required
 def list_(request):
-    products = Product.objects.all()
+    products = Product.objects.filter(shop=request.user.shop)
 
-    categories = Category.objects.all()
+    categories = Category.objects.filter(shop=request.user.shop)
 
     query = request.GET.get('query', '').strip()
 
@@ -41,7 +43,7 @@ def list_(request):
     selected_category = request.GET.get('category')
     if selected_category:
         # Получаем выбранную категорию
-        category = Category.objects.filter(name=selected_category).first()
+        category = Category.objects.filter(name=selected_category, shop=request.user.shop).first()
 
         # Продукты из выбранной категории
         category_products = products.filter(category=category)
@@ -93,7 +95,7 @@ def list_(request):
     }
     return render(request, 'product/list.html', context)
 
-
+@login_required
 def create(request):
     form = ProductForm()
     if request.method == 'POST':
@@ -107,6 +109,7 @@ def create(request):
             messages.error(request, 'Ошибка при создании товара')
     return render(request, 'product/create.html', {'form': form})
 
+@login_required
 def product_create(request):
     # Проверяем, что запрос является AJAX и имеет метод POST
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -132,7 +135,7 @@ def product_create(request):
     
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
-
+@login_required
 def details(request, pk):
     product = Product.objects.get(id=pk)
 
@@ -141,7 +144,7 @@ def details(request, pk):
     }
     return render(request, 'product/details.html', context)
 
-
+@login_required
 def update(request, pk):
     product = Product.objects.get(id=pk)
     form = ProductForm(instance=product)
@@ -157,19 +160,19 @@ def update(request, pk):
     }
     return render(request, 'product/update.html', context)
 
-
+@login_required
 def delete(request, pk):
     Product.objects.get(id=pk).delete()
     return redirect('product-list')
 
-
+@login_required
 def sale(request):
     return render(request, 'product/sale.html')
-
+@login_required
 def income(request):
     return render(request, 'product/income.html')
 
-
+@login_required
 def get_product(request):
     bar_code = request.GET.get('bar_code')
     product = get_object_or_404(Product, bar_code=bar_code)
@@ -186,7 +189,7 @@ def get_product(request):
 
     return JsonResponse(product, safe=False)
 
-
+@login_required
 def create_sell_history(request):
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
@@ -241,7 +244,7 @@ def create_sell_history(request):
         return JsonResponse({'status': 'success'})
         
         
-
+@login_required
 def create_income_history(request):
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
@@ -285,7 +288,7 @@ def create_income_history(request):
 
         return JsonResponse({'status': 'success'})
 
-
+@login_required
 def update_quantity(request):
     if request.method == 'POST':
         product_id = request.POST.get('product_id')
@@ -297,7 +300,7 @@ def update_quantity(request):
 
         return JsonResponse({'status': 'success'})
 
-
+@login_required
 def find_product(request):
     barcode = request.GET.get('barcode')
     try:
@@ -306,17 +309,24 @@ def find_product(request):
     except Product.DoesNotExist:
         return JsonResponse({'error': 'Product not found'}, status=404)
 
-
+@login_required
 def search_product(request):
     query = request.GET.get('query', '')
     products = Product.objects.filter(name__icontains=query).values('bar_code', 'name', 'quantity')
     return JsonResponse(list(products), safe=False)
 
 
-
+@login_required
 def category_list(request):
-    categories = Category.objects.annotate(total_products=Count('product'))
-    form = CategoryForm()   
+    categories = Category.objects.annotate(total_products=Count('product')).filter(shop=request.user.shop)
+    form = CategoryForm(shop=request.user.shop)   
+
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.instance.shop = request.user.shop
+            form.save()
+            return redirect('category-list')
 
     # Пагинация
     category_per_page = request.session.get('category_per_page', 10)
@@ -340,6 +350,7 @@ def category_list(request):
     }
     return render(request, 'product/category_list.html', context)
 
+@login_required
 def update_category_per_page(request):
     if request.method == "POST":
         try:
@@ -350,27 +361,14 @@ def update_category_per_page(request):
             request.session['category_per_page'] = 10
     return redirect('settings')
 
-def category_create(request):
-    form = CategoryForm()
-    if request.method == 'POST':
-        form = CategoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('category-list')
 
-    context = {
-        'form': form
-    }
-    return render(request, 'product/category_create.html', context)
-
+@login_required
 def category_delete(request, pk):
-    if request.method == 'POST':
-        category = Category.objects.get(id=pk)
-        category.delete()
-        return JsonResponse({'status': 'success'})
+    category = Category.objects.get(id=pk)
+    category.delete()
+    return redirect('category-list')
 
-    return JsonResponse({'status': 'error'})
-
+@login_required
 def category_update(request, pk):
     category = Category.objects.get(id=pk)
     form = CategoryForm(instance=category)
@@ -384,3 +382,4 @@ def category_update(request, pk):
         'category': category,
         'form': form
     }
+    return render(request, 'product/category_update.html', context)

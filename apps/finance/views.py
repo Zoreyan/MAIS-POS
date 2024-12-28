@@ -13,7 +13,7 @@ import json
 from django.core.paginator import Paginator
 
 
-
+@login_required
 def finance_list(request):
     expenses = Expense.objects.filter(shop=request.user.shop).order_by('-created')
     expense_types = ['rent', 'utilities', 'salaries', 'supplies', 'other']
@@ -54,6 +54,7 @@ def finance_list(request):
     
     return render(request, 'finance/list.html', context)
 
+@login_required
 def update_finance_per_page(request):
     if request.method == "POST":
         try:
@@ -64,6 +65,7 @@ def update_finance_per_page(request):
             request.session['finance_per_page'] = 10
     return redirect('settings')
 
+@login_required
 def create(request):
     expend_type = request.GET.get('type')
     expend_display_name = dict(Expense.CHOICES).get(expend_type)
@@ -91,6 +93,7 @@ def create(request):
     }
     return render(request, 'finance/create.html', context)
 
+@login_required
 def expense_delete(request, pk):
     expend = get_object_or_404(Expense, id=pk)
     expend.delete()

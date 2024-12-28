@@ -1,0 +1,112 @@
+{% load static %}
+<html lang="ru" class="light-style layout-navbar-fixed layout-menu-fixed layout-compact " dir="ltr"
+  data-theme="theme-default" data-assets-path="{% static 'assets/' %}" data-template="vertical-menu-template">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+  <title>DEER - Регистрация</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap"
+    rel="stylesheet">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+
+  <link rel="shortcut icon" href="{% static 'assets/img/logo/logo.svg' %}" type="image/x-icon">
+
+  <link rel="stylesheet" href="{% static 'assets/vendor/libs/node-waves/node-waves.css'  %}" />
+  <link rel="stylesheet" href="{% static 'assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css'  %}" />
+
+  <link rel="stylesheet" href="{% static 'assets/vendor/css/rtl/core.css'  %}" class="template-customizer-core-css" />
+  <link rel="stylesheet" href="{% static 'assets/vendor/css/pages/page-auth.css'  %}" />
+  <link rel="stylesheet" href="{% static 'assets/vendor/css/rtl/theme-default.css'  %}"
+    class="template-customizer-theme-css" />
+  <link rel="stylesheet" href="{% static 'assets/css/demo.css'  %}" />
+
+
+  <script src="{% static 'assets/vendor/js/helpers.js'  %}"></script>
+  <script src="{% static 'assets/vendor/js/template-customizer.js'  %}"></script>
+  <script src="{% static 'assets/js/config.js'  %}"></script>
+</head>
+
+<body class="authentication-bg position-relative" cz-shortcut-listen="true">
+
+
+
+  <div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+      <div class="authentication-inner">
+        <!-- Регистрация -->
+        <div class="card px-sm-3 px-0">
+          <div class="card-body">
+            <!-- Логотип -->
+            <div class="app-brand justify-content-center">
+              <a href="#" class="app-brand-link gap-2">
+                <span class="demo text-heading fw-bold fs-2">DEER SAP</span>
+              </a>
+            </div>
+            <!-- /Логотип -->
+            <h4 class="mb-1">Добро пожаловать в DEER SAP</h4>
+            <p class="mb-3">Пожалуйста, создайте свой аккаунт</p>
+
+            <form id="formAuthentication" class="mb-3 fv-plugins-bootstrap5 fv-plugins-framework"
+              method="POST" novalidate="novalidate">
+              {% csrf_token %}
+              <div class="mb-3 fv-plugins-icon-container">
+                <label for="email" class="form-label">Электронная почта</label>
+                {{ form.email }}
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+              </div>
+              <div class="mb-3 form-password-toggle fv-plugins-icon-container">
+                <label class="form-label" for="password1">Пароль</label>
+                {{ form.password1 }}
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+              </div>
+              <div class="mb-3 form-password-toggle fv-plugins-icon-container">
+                <label class="form-label" for="password2">Подтвердите пароль</label>
+                {{ form.password2 }}
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+              </div>
+              <div class="mb-2">
+                <div class="d-flex justify-content-between mt-4">
+                  <a href="{% url 'login' %}">
+                    <span>Уже есть аккаунт?</span>
+                  </a>
+                </div>
+              </div>
+              <div class="mb-3">
+                <button class="btn btn-primary d-grid w-100" type="submit">Создать аккаунт</button>
+              </div>
+              <input type="hidden">
+            </form>
+            <!-- <div class="divider my-3">
+              <div class="divider-text">или</div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+              <a href="javascript:;" class="btn btn-sm btn-icon rounded-circle btn-text-facebook me-1_5">
+                <i class="bx bxl-facebook-circle"></i>
+              </a>
+
+              <a href="javascript:;" class="btn btn-sm btn-icon rounded-circle btn-text-twitter me-1_5">
+                <i class="tf-icons bx bxl-twitter"></i>
+              </a>
+
+              <a href="javascript:;" class="btn btn-sm btn-icon rounded-circle btn-text-github me-1_5">
+                <i class="bx bxl-github"></i>
+              </a>
+
+              <a href="javascript:;" class="btn btn-sm btn-icon rounded-circle btn-text-google-plus">
+                <i class="tf-icons bx bxl-google"></i>
+              </a> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

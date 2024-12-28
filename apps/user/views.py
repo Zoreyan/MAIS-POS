@@ -6,6 +6,16 @@ from .models import *
 from django.contrib import messages
 from .forms import *
 
+def sign_up(request):
+    form = SignUpForm()
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.instance.role = 'owner'
+            form.save()
+            return redirect('dashboard')
+    return render(request, 'user/sign_up.html', {'form': form})
+
 
 def login_page(request):
     if request.user.is_authenticated:
@@ -26,9 +36,9 @@ def login_page(request):
 
 def logout_user(request):
     logout(request)
-    return redirect('schedule')
+    return redirect('login')
 
-
+@login_required
 def list(request):
     users = User.objects.filter(shop=request.user.shop)
 
@@ -40,7 +50,7 @@ def list(request):
         
     return render(request, 'user/list.html', {'users': users})
 
-
+@login_required
 def create(request):
     form = CreateUserForm()
 
@@ -56,7 +66,7 @@ def create(request):
     }
     return render(request, 'user/create.html', context)
 
-
+@login_required
 def profile(request, pk):
     user = get_object_or_404(User, pk=pk)
     form = UserProfileForm(instance=user)

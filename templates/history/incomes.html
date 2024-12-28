@@ -1,34 +1,30 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <div class="row justify-content-center mt-5">
-
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-                <div class="card-header py-0 d-flex flex-column flex-md-row align-items-center">
-                    <div class="row mb-2">
-                        <div class="col-sm-5">
-                            <h4 class="card-title">История поставок</h4>
-                        </div>
-                        <div class="col-sm-7">
-                            <form method="get">
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <label for="date_from" class="form-label">Дата с</label>
-                                        <input type="date" id="date_from" name="date_from" class="form-control"
-                                            value="{{ date_from }}">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label for="date_to" class="form-label">Дата по</label>
-                                        <input type="date" id="date_to" name="date_to" class="form-control"
-                                            value="{{ date_to }}">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary">Фильтровать</button>
-                                    </div>
+                <div class="card-header ">
+                    <h4 class="card-title text-md-start">История поставок</h4>
+                    <div class="">
+                        <form method="get">
+                            <div class="row g-2">
+                                <div class="col-6 col-md-4">
+                                    <label for="date_from" class="form-label">Дата с</label>
+                                    <input type="date" id="date_from" name="date_from" class="form-control"
+                                        value="{{ date_from }}">
                                 </div>
-                            </form>
-                        </div>
+                                <div class="col-6 col-md-4">
+                                    <label for="date_to" class="form-label">Дата по</label>
+                                    <input type="date" id="date_to" name="date_to" class="form-control"
+                                        value="{{ date_to }}">
+                                </div>
+                                <div class="col-12 col-md-4 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -56,123 +52,92 @@
                                 <td>{{ income.total_sum }}</td>
                                 <td>{{ income.created }}</td>
                                 <td>
-
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal"><i class="mdi mdi-cart me-1"></i>Удалить</button>
-                                    <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog"
+                                    <button type="button" class="btn btn-danger btn-sm w-100" data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal{{ income.id }}"><i class="mdi mdi-cart me-1"></i>Удалить</button>
+                                    <!-- Modal -->
+                                    <div id="deleteModal{{ income.id }}" class="modal fade" tabindex="-1" role="dialog"
                                         aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
-
                                                 <div class="modal-body">
-
                                                     <form class="ps-3 pe-3" method="POST">
                                                         {% csrf_token %}
-                                                        <p>Вы действительно хотите удалить поставку?</p>
-
-
-                                                        <div class="mb-3 text-center">
-                                                            <a class="btn btn-danger"
+                                                        <p>Вы действительно хотите удалить поставку?</p>
+                                                        <div class="text-center">
+                                                            <a class="btn btn-danger w-50"
                                                                 href="{% url 'income-history-delete' income.id %}">Удалить</a>
                                                         </div>
-
                                                     </form>
-
                                                 </div>
-                                            </div><!-- /.modal-content -->
-                                        </div><!-- /.modal-dialog -->
-                                    </div><!-- /.modal -->
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
-
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-                    <div class="d-flex justify-content-end me-3 mt-5">
-                        <div class="pagination-container">
-                            <nav aria-label="Пагинация">
-                                <ul class="pagination justify-content-center">
-                                    <!-- Кнопка "Первая" -->
-                                    {% if page_obj.number > 1 %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=1" aria-label="Первая">
-                                            <span aria-hidden="true">&laquo;&laquo;</span>
-                                            <span class="sr-only">Первая</span>
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled">
-                                        <span class="page-link">&laquo;&laquo;</span>
-                                    </li>
-                                    {% endif %}
-    
-                                    <!-- Кнопка "Назад" -->
-                                    {% if page_obj.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}"
-                                            aria-label="Назад">
-                                            <span aria-hidden="true">&laquo;</span>
-                                            <span class="sr-only">Назад</span>
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled">
-                                        <span class="page-link">&laquo;</span>
-                                    </li>
-                                    {% endif %}
-    
-                                    <!-- Номера страниц -->
-                                    {% for page_num in visible_pages %}
-                                    {% if page_num == page_obj.number %}
-                                    <li class="page-item active" aria-current="page">
-                                        <span class="page-link" style="color: black;">{{ page_num }}</span>
+                    <div class="d-flex justify-content-center mt-4">
+                        <nav aria-label="Пагинация">
+                            <ul class="pagination">
+                                {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1" aria-label="Первая">
+                                        <i class="mdi mdi-chevron-double-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Предыдущая">
+                                        <i class="mdi mdi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="mdi mdi-chevron-double-left"></i></span>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="mdi mdi-chevron-left"></i></span>
+                                </li>
+                                {% endif %}
+
+                                {% for num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == num %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ num }}</span>
                                     </li>
                                     {% else %}
                                     <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
                                     </li>
                                     {% endif %}
-                                    {% endfor %}
-    
-                                    <!-- Кнопка "Вперёд" -->
-                                    {% if page_obj.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}"
-                                            aria-label="Вперёд">
-                                            <span aria-hidden="true">&raquo;</span>
-                                            <span class="sr-only">Вперёд</span>
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled">
-                                        <span class="page-link">&raquo;</span>
-                                    </li>
-                                    {% endif %}
-    
-                                    <!-- Кнопка "Последняя" -->
-                                    {% if page_obj.number < page_obj.paginator.num_pages %} <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}"
-                                            aria-label="Последняя">
-                                            <span aria-hidden="true">&raquo;&raquo;</span>
-                                            <span class="sr-only">Последняя</span>
-                                        </a>
-                                        </li>
-                                        {% else %}
-                                        <li class="page-item disabled">
-                                            <span class="page-link">&raquo;&raquo;</span>
-                                        </li>
-                                        {% endif %}
-                                </ul>
-                            </nav>
-    
-                        </div>
-    
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Следующая">
+                                        <i class="mdi mdi-chevron-right"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
+                                        <i class="mdi mdi-chevron-double-right"></i>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="mdi mdi-chevron-right"></i></span>
+                                </li>
+                                <li class="page-item disabled">
+                                    <span class="page-link"><i class="mdi mdi-chevron-double-right"></i></span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
                     </div>
                 </div>
-
             </div>
         </div>
-
-
     </div>
-    {% endblock %}
+</div>
+
+{% endblock %}

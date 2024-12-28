@@ -30,6 +30,9 @@ class User(AbstractUser):
         ('manager', 'Менеджер'),
         ('admin', 'Администратор'),
         ('cashier', 'Кассир'),
+        ('client', 'Клиент'),
+        ('owner', 'Владелец'),
+
     ]
     role = models.CharField(
         max_length=10,

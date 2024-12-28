@@ -127,10 +127,17 @@
             <span class="menu-header-text">Онлайн</span>
         </li>
         <li class="menu-item">
+            {% if request.user.shop %}
             <a href="{% url 'shop-index' request.user.shop.id %}" class="menu-link">
                 <i class="menu-icon bx bx-cart"></i>
                 <div>Магазин</div>
             </a>
+            {% else %}
+            <a href="{% url 'settings' %}" class="menu-link">
+                <i class="menu-icon bx bx-cart"></i>
+                <div>Магазин</div>
+            </a>
+            {% endif %}
         </li>
         <li class="menu-item {% if url_name == 'shop-order-list' %} active {% endif %}">
             <a href="{% url 'shop-order-list' %}" class="menu-link">

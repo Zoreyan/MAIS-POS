@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-  <title>Панель управления - eCommerce</title>
+  <title>DEER - Вход</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -14,6 +14,8 @@
     rel="stylesheet">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+
+  <link rel="shortcut icon" href="{% static 'assets/img/logo/logo.svg' %}" type="image/x-icon">
 
   <link rel="stylesheet" href="{% static 'assets/vendor/libs/node-waves/node-waves.css'  %}" />
   <link rel="stylesheet" href="{% static 'assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css'  %}" />
@@ -47,7 +49,7 @@
               </a>
             </div>
             <!-- /Логотип -->
-            <h4 class="mb-1">Добро пожаловать в DEER SAP</h4>
+            <h4 class="mb-1">С возвращением в DEER SAP</h4>
             <p class="mb-3">Пожалуйста, войдите в свой аккаунт</p>
 
             <form id="formAuthentication" class="mb-3 fv-plugins-bootstrap5 fv-plugins-framework"
@@ -69,14 +71,8 @@
               </div>
               <div class="mb-2">
                 <div class="d-flex justify-content-between mt-4">
-                  <div class="form-check mb-0 ms-2">
-                    <input class="form-check-input" type="checkbox" id="remember-me">
-                    <label class="form-check-label" for="remember-me">
-                      Запомнить меня
-                    </label>
-                  </div>
-                  <a href="auth-forgot-password-basic.html">
-                    <span>Забыли пароль?</span>
+                  <a href="{% url 'sign-up' %}">
+                    <span>Еще нет аккаунта?</span>
                   </a>
                 </div>
               </div>
@@ -85,7 +81,7 @@
               </div>
               <input type="hidden">
             </form>
-            <div class="divider my-3">
+            <!-- <div class="divider my-3">
               <div class="divider-text">или</div>
             </div>
 
@@ -104,7 +100,7 @@
 
               <a href="javascript:;" class="btn btn-sm btn-icon rounded-circle btn-text-google-plus">
                 <i class="tf-icons bx bxl-google"></i>
-              </a>
+              </a> -->
             </div>
           </div>
         </div>
