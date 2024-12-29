@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
@@ -13,12 +12,10 @@
                     <i class="bx bx-plus me-1"></i>
                     Добавить
                 </button>
-                <form method="post" class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+                <form method="post" action="{% url 'category-create' %}" class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
                     {% csrf_token %}
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
-                            <form method="post" action="{% url 'category-create' %}">
-                                {% csrf_token %}
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="modalCenterTitle">Добавление категории</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
@@ -39,7 +36,6 @@
                                     <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
                                     <button type="submit" class="btn btn-primary waves-effect waves-light">Сохранить изменения</button>
                                 </div>
-                            </form>
                         </div>
                     </div>
                 </form>
@@ -58,49 +54,86 @@
             </thead>
             <tbody>
                 {% for category in page_obj %}
-                <tr>
-                    <td>{{ category.name }}</td>
-                    <td>{% if category.parent %}{{ category.parent.name }}{% else %}Нет{% endif %}</td>
-                    <td>{{ category.total_products }}</td>
-                    <td>
-                        <div class="d-inline-block text-nowrap">
-                            <a href="{% url 'category-update' category.id %}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
-                                <i class="bx bx-edit bx-sm"></i>
-                            </a>
-                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"  data-bs-toggle="modal" data-bs-target="#modalDelete{{ category.id }}">
-                                <i class="bx bx-trash bx-sm"></i>
-                            </button>
-                            <div method="post" class="modal fade" id="modalDelete{{ category.id }}" tabindex="-1" aria-hidden="true">
-                                {% csrf_token %}
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="modalCenterTitle">Удаление категории</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>Вы уверены, что хотите удалить категорию?</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
-                                            <a href="{% url 'category-delete' category.id %}" class="btn btn-danger waves-effect waves-light">Удалить</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+<tr>
+    <td>{{ category.name }}</td>
+    <td>{% if category.parent %}{{ category.parent.name }}{% else %}Нет{% endif %}</td>
+    <td>{{ category.total_products }}</td>
+    <td>
+        <div class="d-inline-block text-nowrap">
+            <!-- Кнопка для открытия модального окна редактирования -->
+            <button 
+                class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light"
+                data-bs-toggle="modal"
+                data-bs-target="#modalEdit{{ category.id }}">
+                <i class="bx bx-edit bx-sm"></i>
+            </button>
 
+            <!-- Модальное окно для редактирования категории -->
+<form method="post" action="{% url 'category-update' category.id %}" class="modal fade" id="modalEdit{{ category.id }}" tabindex="-1" aria-hidden="true">
+    {% csrf_token %}
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Редактирование категории</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <label for="editParentCategory{{ category.id }}" class="form-label">Родитель</label>
+                        <select name="parent" id="editParentCategory{{ category.id }}" class="form-control">
+                            <option value="">Нет</option>
+                            {% for parent_category in page_obj %}
+                                <option value="{{ parent_category.id }}" 
+                                    {% if parent_category.id == category.parent_id %}selected{% endif %}>
+                                    {{ parent_category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 mb-4">
+                        <label for="editCategoryName{{ category.id }}" class="form-label">Название</label>
+                        <input type="text" name="name" id="editCategoryName{{ category.id }}" 
+                               value="{{ category.name }}" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                <button type="submit" class="btn btn-primary waves-effect waves-light">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+</form>
 
-                            <!-- Кнопка удаления -->
-                            <form method="post" action="{% url 'category-delete' category.id %}" style="display:inline;">
-                                {% csrf_token %}
-                                <button class="btn btn-sm btn-icon btn-danger rounded-pill waves-effect waves-light">
-                                    <i class="bx bx-trash bx-sm"></i>
-                                </button>
-                            </form>
+            <!-- Кнопка для удаления категории -->
+            <button 
+                class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"
+                data-bs-toggle="modal"
+                data-bs-target="#modalDelete{{ category.id }}">
+                <i class="bx bx-trash bx-sm"></i>
+            </button>
+            <div class="modal fade" id="modalDelete{{ category.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Удаление категории</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                         </div>
-                    </td>
-                </tr>
-                {% endfor %}
+                        <div class="modal-body">
+                            <p>Вы уверены, что хотите удалить категорию?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                            <a href="{% url 'category-delete' category.id %}" class="btn btn-danger waves-effect waves-light">Удалить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}        
             </tbody>
         </table>
     </div>
@@ -188,194 +221,3 @@
 </div>
 
 {% endblock %}
-=======
-{% extends 'base.html' %}
-{% load static %}
-{% block content %}
-
-<div class="card">
-    <div class="card-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title">Категории</h5>
-            <div class="flex-wrap d-flex mb-sm-0">
-                <!-- Кнопка добавления -->
-                <button type="button" class="btn btn-primary waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#modalCenter">
-                    <i class="bx bx-plus me-1"></i>
-                    Добавить
-                </button>
-                <form method="post" class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
-                    {% csrf_token %}
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <form method="post" action="{% url 'category-create' %}">
-                                {% csrf_token %}
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="modalCenterTitle">Добавление категории</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-12 mb-4">
-                                            <label for="parentCategory" class="form-label">{{ form.parent.label }}</label>
-                                            {{ form.parent }}
-                                        </div>
-                                        <div class="col-12 mb-4">
-                                            <label for="categoryName" class="form-label">{{ form.name.label }}</label>
-                                            {{ form.name }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
-                                    <button type="submit" class="btn btn-primary waves-effect waves-light">Сохранить изменения</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="table-responsive">
-        <table class="datatables-products table">
-            <thead class="border-top">
-                <tr>
-                    <th>Название</th>
-                    <th>Родитель</th>
-                    <th>Всего товаров</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for category in page_obj %}
-                <tr>
-                    <td>{{ category.name }}</td>
-                    <td>{% if category.parent %}{{ category.parent.name }}{% else %}Нет{% endif %}</td>
-                    <td>{{ category.total_products }}</td>
-                    <td>
-                        <div class="d-inline-block text-nowrap">
-                            <a href="{% url 'category-update' category.id %}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
-                                <i class="bx bx-edit bx-sm"></i>
-                            </a>
-                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"  data-bs-toggle="modal" data-bs-target="#modalDelete{{ category.id }}">
-                                <i class="bx bx-trash bx-sm"></i>
-                            </button>
-                            <div method="post" class="modal fade" id="modalDelete{{ category.id }}" tabindex="-1" aria-hidden="true">
-                                {% csrf_token %}
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="modalCenterTitle">Удаление категории</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>Вы уверены, что хотите удалить категорию?</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
-                                            <a href="{% url 'category-delete' category.id %}" class="btn btn-danger waves-effect waves-light">Удалить</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <!-- Кнопка удаления -->
-                            <form method="post" action="{% url 'category-delete' category.id %}" style="display:inline;">
-                                {% csrf_token %}
-                                <button class="btn btn-sm btn-icon btn-danger rounded-pill waves-effect waves-light">
-                                    <i class="bx bx-trash bx-sm"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="d-flex justify-content-center mt-5">
-        <div class="pagination-container">
-            <nav aria-label="Пагинация">
-                <ul class="pagination justify-content-center">
-                    <!-- Кнопка "Первая" -->
-                    {% if page_obj.number > 1 %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1" aria-label="Первая">
-                                <span aria-hidden="true">&laquo;&laquo;</span>
-                                <span class="sr-only">Первая</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">&laquo;&laquo;</span>
-                        </li>
-                    {% endif %}
-        
-                    <!-- Кнопка "Назад" -->
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">Назад</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">&laquo;</span>
-                        </li>
-                    {% endif %}
-        
-                    <!-- Номера страниц -->
-                    {% for page_num in visible_pages %}
-                        {% if page_num == page_obj.number %}
-                            <li class="page-item active" aria-current="page">
-                                <span class="page-link" style="color: black;">{{ page_num }}</span>
-                            </li>
-                        {% else %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                            </li>
-                        {% endif %}
-                    {% endfor %}
-        
-                    <!-- Кнопка "Вперёд" -->
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">Вперёд</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">&raquo;</span>
-                        </li>
-                    {% endif %}
-        
-                    <!-- Кнопка "Последняя" -->
-                    {% if page_obj.number < page_obj.paginator.num_pages %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
-                                <span aria-hidden="true">&raquo;&raquo;</span>
-                                <span class="sr-only">Последняя</span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">&raquo;&raquo;</span>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            <div class="d-flex justify-content-center">
-            <span class="text-muted">
-                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
-            </span>
-            </div>
-        </div>
-    </div>
-</div>
-
-{% endblock %}
->>>>>>> 0f5feb102b45a94eef3b618ce0c3188881e35ea1

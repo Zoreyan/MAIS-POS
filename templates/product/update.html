@@ -4,18 +4,20 @@
 {% block content %}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 row-gap-4">
     <div class="text-center text-md-start">
-      <h4 class="mb-1">Изменить продукт</h4>
+      <h4 class="mb-1">Добавить новый продукт</h4>
       <p class="mb-0">Заказы, оформленные в вашем магазине</p>
     </div>
     <div class="d-flex flex-wrap gap-4">
       <div class="d-flex gap-4">
         <button class="btn btn-label-secondary">Отменить</button>
+        <button class="btn btn-label-primary">Сохранить как черновик</button>
       </div>
-      <button type="submit" class="btn btn-primary">Сохранить продукт</button>
+      <button type="submit" class="btn btn-primary">Опубликовать продукт</button>
     </div>
 </div>
-
-<div class="row">
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+<div class="row gy-3">
     <!-- Первая колонка -->
     <div class="col-12 col-lg-8">
         <div class="card mb-3 h-100">
@@ -26,30 +28,26 @@
                 <div class="row">
                     <div class="col-6 mb-3">
                         <label class="form-label" for="product-name">Название</label>
-                        <input type="text" class="form-control" id="product-name" placeholder="Название продукта" name="productTitle">
+                        {{ form.name }}
                     </div>
                     <div class="col-6 mb-3">
                         <label class="form-label" for="product-image">Изображение</label>
-                        <input type="file" class="form-control" id="product-image" name="productImage">
+                        {{ form.image }}
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col">
                         <label class="form-label mb-1" for="unit-select">Единица измерения</label>
-                        <select id="unit-select" class="select2 form-select">
-                            <option value="">Выберите единицу измерения</option>
-                            <option value="шт">Шт</option>
-                            <option value="кг">Кг</option>
-                        </select>
+                        {{ form.unit }}
                     </div>
                     <div class="col">
                         <label class="form-label" for="product-barcode">Штрихкод</label>
-                        <input type="text" class="form-control" id="product-barcode" placeholder="0123-4567" name="productBarcode">
+                        {{ form.bar_code }}
                     </div>
                 </div>
                 <div>
                     <label class="mb-1" for="product-description">Описание (необязательно)</label>
-                    <textarea class="form-control" id="product-description" name="productDescription"></textarea>
+                    {{ form.description }}
                 </div>
             </div>
         </div>
@@ -64,36 +62,61 @@
             <div class="card-body">
                 <div class="mb-3">
                     <label class="form-label" for="product-price">Базовая цена</label>
-                    <input type="number" class="form-control" id="product-price" placeholder="Цена" name="productPrice">
+                    {{ form.price }}
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="product-discount-price">Цена со скидкой (необязательно)</label>
-                    <input type="number" class="form-control" id="product-discount-price" placeholder="Цена со скидкой" name="productDiscountPrice">
+                    <label class="form-label" for="product-discount-price">Цена для продажи</label>
+                    {{ form.sale_price }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="product-discount-price">Скидка (0-100)</label>
+                    <input type="number" name="discount" id="product-discount-price" class="form-control" min="0" max="100" value="{{ form.discount.value|default:0 }}">
+                    <small id="discount-error" class="text-danger" style="display: none;">Введите значение от 0 до 100</small>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="product-quantity">Количество</label>
-                    <input type="number" class="form-control" id="product-quantity" placeholder="Количество" name="productQuantity">
+                    {{ form.quantity }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="product-min-quantity">Минимальный остаток</label>
+                    {{ form.min_quantity }}
                 </div>
                 <div>
                     <label class="form-label mb-1" for="category-select">Категория</label>
-                    <select id="category-select" class="select2 form-select">
-                        <option value="">Выберите категорию</option>
-                        <option value="Бытовые товары">Бытовые товары</option>
-                        <option value="Управление">Управление</option>
-                        <option value="Электроника">Электроника</option>
-                        <option value="Офис">Офис</option>
-                        <option value="Автомобильные товары">Автомобильные товары</option>
-                    </select>
+                    {{ form.category }}
                 </div>
-                <div class="d-flex justify-content-between align-items-center border-top pt-2">
-                    <span class="mb-0">В наличии</span>
-                    <div class="form-check form-switch">
-                        <input type="checkbox" class="form-check-input" id="product-available" name="productAvailable">
-                    </div>
-                </div>
+                <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
             </div>
         </div>
     </div>
 </div>
+</form>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const discountInput = document.getElementById('product-discount-price');
+        const errorText = document.getElementById('discount-error');
+
+        discountInput.addEventListener('input', () => {
+            const value = parseInt(discountInput.value, 10);
+
+            if (value < 0 || value > 100) {
+                errorText.style.display = 'block';
+                discountInput.classList.add('is-invalid');
+            } else {
+                errorText.style.display = 'none';
+                discountInput.classList.remove('is-invalid');
+            }
+
+            // Автоматическая коррекция значения
+            if (value < 0) discountInput.value = 0;
+            if (value > 100) discountInput.value = 100;
+        });
+    });
+</script>
+<style>
+    .is-invalid {
+    border-color: red;
+}
+</style>
 {% endblock %}

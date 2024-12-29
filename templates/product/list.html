@@ -41,7 +41,7 @@
                       <i class="bx bx-filter-alt me-1"></i>
                       <span>Фильтр</span>
                   </button>
-                  <a href="{% url 'product-create' %}" type="button" class="btn btn-primary d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#expendTypeModal">
+                  <a href="{% url 'product-create' %}" class="btn btn-primary d-flex align-items-center justify-content-center">
                       <i class="bx bx-plus me-1"></i>
                       <span>Добавить</span>
                   </a>
@@ -69,7 +69,7 @@
       <tbody>
         {% for product in page_obj %}
         <tr>
-          <td>{{ product.bar_code }}</td>
+          <td>{% if product.bar_code %}{{ product.bar_code }}{% else %}-{% endif %}</td>
           <td>
             <a href="{% url 'product-details' product.id %}"
               class="d-flex justify-content-start align-items-center product-name">
@@ -101,17 +101,24 @@
             {% endif %}
         </td>
           <td>{{ product.price }}</td>
-          <td>{{ product.sale_price }}</td>
+          <td>
+            {{ product.discounted_price|floatformat:1 }}
+            {% if product.discount > 0 %}
+              <samp class="text-danger small">-{{ product.discount }}%</samp>
+            {% endif %}
+          </td>
           <td>{{ product.quantity }}</td>
           <td>{{ product.unit }}</td>
           <td>
-            <div class="d-inline-block text-nowrap"><button
-                class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light"><i
-                  class="bx bx-edit bx-sm"></i></button><button
+            <div class="d-inline-block text-nowrap">
+                <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light">
+                    <a href="{% url 'product-update' product.id %}"><i class="bx bx-edit bx-sm"></i></a>
+                </button>
+                <button
                 class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light dropdown-toggle hide-arrow"
                 data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-dots-vertical bx-sm"></i></button>
               <div class="dropdown-menu dropdown-menu-end m-0" style=""><a href="javascript:0;"
-                  class="dropdown-item">Открыть</a><a href="javascript:0;" class="dropdown-item">Удалить</a></div>
+                  class="dropdown-item">Открыть</a><a href="{% url 'product-delete' product.id %}" class="dropdown-item">Удалить</a></div>
             </div>
           </td>
           {% endfor %}
