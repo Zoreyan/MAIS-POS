@@ -48,14 +48,3 @@ class Product(models.Model):
     def month_sales(self):
         return sum(i.quantity for i in self.soldhistory_set.filter(created__year=datetime.now().year, created__month=datetime.now().month))
 
-class LogEntry(models.Model):
-    action = models.CharField(max_length=255)
-    message = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = 'Лог'
-        verbose_name_plural = 'Логи'
-    
-    def __str__(self):
-        return self.action

@@ -15,43 +15,43 @@ from django.db.models import F
 from django.core.paginator import Paginator
 
 
-def check_inventory_levels(products):
-    for item in products:
-        product = Product.objects.get(id=item['id'])
-        if product.quantity <= product.min_quantity:
-            send_low_stock_notification(product)
-            log_low_stock_notification(product)
+# def check_inventory_levels(products):
+#     for item in products:
+#         product = Product.objects.get(id=item['id'])
+#         if product.quantity <= product.min_quantity:
+#             send_low_stock_notification(product)
+#             log_low_stock_notification(product)
 
-def send_low_stock_notification(product):
-    # Отправка email уведомления
-    subject = f"Низкий уровень запасов: {product.name}"
-    message = f"Количество товара  '{product.name}'  на складе ниже минимального порога. Остаток: {product.quantity}."
-    from_email = settings.EMAIL_HOST_USER
+# def send_low_stock_notification(product):
+#     # Отправка email уведомления
+#     subject = f"Низкий уровень запасов: {product.name}"
+#     message = f"Количество товара  '{product.name}'  на складе ниже минимального порога. Остаток: {product.quantity}."
+#     from_email = settings.EMAIL_HOST_USER
     
-    # Получаем всех пользователей, которым нужно отправить уведомление (например, администраторы или менеджеры)
-    users = User.objects.filter(role='manager')  # или любые другие фильтры
-    for user in users:
-        if user.email:
-            send_mail(subject, message, from_email, [user.email])
-        else:
-            print(f"Пользователь {user.username} не имеет электронной почты.")
+#     # Получаем всех пользователей, которым нужно отправить уведомление (например, администраторы или менеджеры)
+#     users = User.objects.filter(role='manager')  # или любые другие фильтры
+#     for user in users:
+#         if user.email:
+#             send_mail(subject, message, from_email, [user.email])
+#         else:
+#             print(f"Пользователь {user.username} не имеет электронной почты.")
     
-    # Встроенные уведомления в системе (popup, push и т.д.)
-    send_system_notification(product)
+#     # Встроенные уведомления в системе (popup, push и т.д.)
+#     send_system_notification(product)
 
-def send_system_notification(product):
-    # Например, здесь будет код для отправки уведомления внутри системы.
-    # Реализация зависит от используемого фронтенда (например, через Django Channels для WebSockets).
-    notification_message = f"Низкий уровень запасов: {product.name}. Остаток: {product.quantity}."
-    # Здесь можно интегрировать с фронтенд системой для показа уведомлений пользователям.
+# def send_system_notification(product):
+#     # Например, здесь будет код для отправки уведомления внутри системы.
+#     # Реализация зависит от используемого фронтенда (например, через Django Channels для WebSockets).
+#     notification_message = f"Низкий уровень запасов: {product.name}. Остаток: {product.quantity}."
+#     # Здесь можно интегрировать с фронтенд системой для показа уведомлений пользователям.
 
-def log_low_stock_notification(product):
-    # Логирование отправленных уведомлений
-    LogEntry.objects.create(
-        action="low_stock_notification",
-        message=f"Товар: {product.name}, остаток: {product.quantity}",
-        created_at=now()
-    )
+# def log_low_stock_notification(product):
+#     # Логирование отправленных уведомлений
+#     LogEntry.objects.create(
+#         action="low_stock_notification",
+#         message=f"Товар: {product.name}, остаток: {product.quantity}",
+#         created_at=now()
+#     )
 
 def update_items_per_page(request):
     if request.method == "POST":
@@ -122,31 +122,6 @@ def create(request):
         else:
             messages.error(request, 'Ошибка при создании товара')
     return render(request, 'product/create.html', {'form': form})
-
-def product_create(request):
-    # Проверяем, что запрос является AJAX и имеет метод POST
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        # Преобразуем данные JSON из запроса
-        data = json.loads(request.body)
-        
-        # Создаем объект Product с полученными данными и значениями по умолчанию
-        product = Product(
-            name=data.get('name'),
-            bar_code=data.get('barcode'),
-            price=data.get('price', 0),       # Цена по умолчанию 0
-            quantity=data.get('quantity', 0), # Количество по умолчанию 0
-            sale_price=data.get('sale_price', 0), # Продажная цена по умолчанию 0
-            shop=request.user.shop
-        )
-
-        # Сохраняем объект и возвращаем ответ JSON
-        try:
-            product.save()
-            return JsonResponse({'success': True, 'barcode': product.bar_code})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
 
 
 def details(request, pk):
