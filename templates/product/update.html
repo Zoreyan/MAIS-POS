@@ -2,103 +2,121 @@
 
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-
-            <div class="card">
-                <h3 class="card-header">
-                    Изменить продукт
-                </h3>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" class="row g-3">
-                        {% csrf_token %}
-                        {% if messages %}
-                        <div class="row justify-content-center">
-                            <div class="col-5">
-                                <span class="badge bg-info p-2">
-                                    {% for message in messages %}
-                                        {{ message }}
-                                    {% endfor %}
-                                </span>
-                            </div>
-                        </div>
-                        {% endif %}
-                        <div class="col-md-6">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}<span class="text-danger">*</span></label>
-                            <input type="text" name="{{ form.name.name }}" id="{{ form.name.id_for_label }}" 
-                                   class="form-control {% if form.name.errors %}is-invalid{% endif %}" 
-                                   value="{{ form.name.value|default_if_none:'' }}">
-                            {% if form.name.errors %}
-                                <div class="invalid-feedback">{{ form.name.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-                        <div class="col-md-6">
-                            <label for="{{ form.bar_code.id_for_label }}" class="form-label">{{ form.bar_code.label }}</label>
-                            {{ form.bar_code }}
-                            {% if form.bar_code.errors %}
-                                <div class="invalid-feedback">{{ form.bar_code.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-                        <div class="col-md-6">
-                            <label for="{{ form.price.id_for_label }}" class="form-label">{{ form.price.label }}<span class="text-danger">*</span></label>
-                            {{ form.price }}
-                            {% if form.price.errors %}
-                                <div class="invalid-feedback">{{ form.price.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-                        <div class="col-md-6">
-                            <label for="{{ form.sale_price.id_for_label }}" class="form-label">{{ form.sale_price.label }}<span class="text-danger">*</span></label>
-                            {{ form.sale_price }}
-                            {% if form.sale_price.errors %}
-                                <div class="invalid-feedback">{{ form.sale_price.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-                        <div class="col-md-6">
-                            <label for="{{ form.quantity.id_for_label }}" class="form-label">{{ form.quantity.label }}</label>
-                            {{ form.quantity }}
-                            {% if form.quantity.errors %}
-                                <div class="invalid-feedback">{{ form.quantity.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.min_quantity.id_for_label }}" class="form-label">{{ form.min_quantity.label }}</label>
-                            {{ form.min_quantity }}
-                            {% if form.min_quantity.errors %}
-                                <div class="invalid-feedback">{{ form.min_quantity.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.quantity.id_for_label }}" class="form-label">{{ form.unit.label }}</label>
-                            {{ form.unit }}
-                            {% if form.unit.errors %}
-                                <div class="invalid-feedback">{{ form.unit.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.image.id_for_label }}" class="form-label">{{ form.image.label }}</label>
-                            <input type="file" name="{{ form.image.name }}" id="{{ form.image.id_for_label }}" 
-                                   class="form-control" 
-                                   value="{{ form.image.value|default_if_none:'' }}">
-                            {% if form.image.errors %}
-                                <div class="invalid-feedback">{{ form.image.errors }}</div>
-                            {% endif %}
-                        </div>
-        
-        
-                        <div class="col-12 text-center">
-                            <button type="submit" class="btn btn-primary product-create-btn">Сохранить</button>
-                        </div>
-                    </form>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 row-gap-4">
+    <div class="text-center text-md-start">
+      <h4 class="mb-1">Добавить новый продукт</h4>
+      <p class="mb-0">Заказы, оформленные в вашем магазине</p>
+    </div>
+    <div class="d-flex flex-wrap gap-4">
+      <div class="d-flex gap-4">
+        <button class="btn btn-label-secondary">Отменить</button>
+        <button class="btn btn-label-primary">Сохранить как черновик</button>
+      </div>
+      <button type="submit" class="btn btn-primary">Опубликовать продукт</button>
+    </div>
+</div>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+<div class="row gy-3">
+    <!-- Первая колонка -->
+    <div class="col-12 col-lg-8">
+        <div class="card mb-3 h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Информация о продукте</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label" for="product-name">Название</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label" for="product-image">Изображение</label>
+                        {{ form.image }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label mb-1" for="unit-select">Единица измерения</label>
+                        {{ form.unit }}
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="product-barcode">Штрихкод</label>
+                        {{ form.bar_code }}
+                    </div>
+                </div>
+                <div>
+                    <label class="mb-1" for="product-description">Описание (необязательно)</label>
+                    {{ form.description }}
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Вторая колонка -->
+    <div class="col-12 col-lg-4">
+        <div class="card mb-3 h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Цены</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label" for="product-price">Базовая цена</label>
+                    {{ form.price }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="product-discount-price">Цена для продажи</label>
+                    {{ form.sale_price }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="product-discount-price">Скидка (0-100)</label>
+                    <input type="number" name="discount" id="product-discount-price" class="form-control" min="0" max="100" value="{{ form.discount.value|default:0 }}">
+                    <small id="discount-error" class="text-danger" style="display: none;">Введите значение от 0 до 100</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="product-quantity">Количество</label>
+                    {{ form.quantity }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="product-min-quantity">Минимальный остаток</label>
+                    {{ form.min_quantity }}
+                </div>
+                <div>
+                    <label class="form-label mb-1" for="category-select">Категория</label>
+                    {{ form.category }}
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
+            </div>
+        </div>
+    </div>
 </div>
+</form>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const discountInput = document.getElementById('product-discount-price');
+        const errorText = document.getElementById('discount-error');
 
+        discountInput.addEventListener('input', () => {
+            const value = parseInt(discountInput.value, 10);
+
+            if (value < 0 || value > 100) {
+                errorText.style.display = 'block';
+                discountInput.classList.add('is-invalid');
+            } else {
+                errorText.style.display = 'none';
+                discountInput.classList.remove('is-invalid');
+            }
+
+            // Автоматическая коррекция значения
+            if (value < 0) discountInput.value = 0;
+            if (value > 100) discountInput.value = 100;
+        });
+    });
+</script>
+<style>
+    .is-invalid {
+    border-color: red;
+}
+</style>
 {% endblock %}

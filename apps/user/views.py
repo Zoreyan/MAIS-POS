@@ -12,18 +12,15 @@ def login_page(request):
         return redirect('dashboard')
 
     if request.method == 'POST':
-        username = request.POST.get('username')
+        email = request.POST.get('email')
         password = request.POST.get('password')
-
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
             messages.success(request, 'Вы вошли в систему')
             return redirect('dashboard')
-               
         else:
             messages.error(request, 'Неверное имя пользователя или пароль')
-
     return render(request, 'user/login.html')
 
 
@@ -44,9 +41,6 @@ def list(request):
     return render(request, 'user/list.html', {'users': users})
 
 
-
-
-
 def create(request):
     form = CreateUserForm()
 
@@ -62,3 +56,19 @@ def create(request):
     }
     return render(request, 'user/create.html', context)
 
+
+def profile(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    form = UserProfileForm(instance=user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', pk=user.pk)
+
+    context = {
+        'user': user,
+        'form': form
+    }
+    return render(request, 'user/profile.html', {'user': user})

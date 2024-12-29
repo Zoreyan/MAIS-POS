@@ -1,0 +1,12 @@
+from django.urls import path
+from .views import *
+
+
+urlpatterns = [
+    path('<int:pk>', index, name='shop-index'),
+    path('vacancies/<int:pk>', vacancies, name='shop-vacancies'),
+    path('about-us/<int:pk>', about_us, name='shop-about-us'),
+    path('contacts/<int:pk>', contacts, name='shop-contacts'),
+    path('order-list', order_list, name='shop-order-list'),
+    path('update_shop_per_page', update_shop_per_page, name='update_shop_per_page'),
+]

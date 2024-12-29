@@ -13,6 +13,10 @@ class User(AbstractUser):
         verbose_name='Магазин',
         null=True
     )
+    email = models.EmailField(
+        unique=True,
+        verbose_name='Почта',
+    )
     
     image = models.ImageField(
         null=True,
@@ -40,6 +44,9 @@ class User(AbstractUser):
         verbose_name='Телефон'
     )
 
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
     class Meta:
         verbose_name = 'Пользователь'

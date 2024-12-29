@@ -10,7 +10,9 @@ from django.http import JsonResponse
 from apps.product.models import Shop, Product
 from datetime import datetime
 from apps.product.forms import ShopForm
-from apps.dashboard.templatetags.tags import low_stock
+import folium
+from folium import Map, Marker
+from apps.history.models import *
 
 @login_required
 def get_top_products_data(request):
@@ -73,10 +75,6 @@ def dashboard(request):
     # Дополнительные данные для расчета роста
     growth = round((total_profit - total_income) / total_income * 100, 3) if total_income else 0
     sold_products = Product.objects.filter(shop=request.user.shop).annotate(total_quantity=Sum('soldhistory__quantity'), total_sum=Sum('soldhistory__quantity') * F('sale_price')).order_by('-total_quantity')[:5]
-    if low_stock:
-        print(low_stock())
-    else:
-        print("No low stock notifications found.")
     context = {
         'sold_products': sold_products,
         'total_profit': total_profit,
@@ -97,7 +95,49 @@ def settings_page(request):
             form.save()
             return redirect('settings')
 
+
+    # Получаем объект магазина
+    shop = Shop.objects.get(id=request.user.shop.id)
+    coordinates = shop.coordinates  # Доступ к координатам
+
+    # Проверяем наличие координат
+    if coordinates:
+        try:
+            lat, lon = map(float, coordinates.split(','))  # Разбиваем и конвертируем координаты
+            map_center = [lat, lon]  # Устанавливаем центр карты на координаты магазина
+        except ValueError:
+            map_center = [40.516018, 72.803835]  # Центр по умолчанию
+    else:
+        map_center = [40.516018, 72.803835]  # Центр по умолчанию
+
+    # Создаём карту с центром на координаты магазина или по умолчанию
+    m = Map(location=map_center, zoom_start=8)
+
+    # Если у магазина есть координаты, добавляем маркер
+    if coordinates:
+        Marker(location=[lat, lon]).add_to(m)
+
+    # Генерация HTML-кода карты
+    map_html = m._repr_html_()
+
+    products = Product.objects.filter(shop=shop) 
+    sales = OrderHistory.objects.filter(shop=shop, order_type='sale')
+    incomes = OrderHistory.objects.filter(shop=shop, order_type='income')
+    total_products_cost = sum(Decimal(p.price) * Decimal(p.quantity) for p in products)
+
+    shop_stats = {
+        'total_products': products.count(),
+        'total_products_cost': total_products_cost,
+        'total_sales': sales.count(),
+        'total_sales_cost': sum(Decimal(s.total_amount) for s in sales.all()), 
+        'total_incomes': incomes.count(),
+        'total_incomes_cost': sum(Decimal(sh.amount) for sh in incomes.all()), 
+    }           
+
     context = {
-        'form': form
+        'form': form,
+        'map_html': map_html,
+        'shop': shop,
+        'shop_stats': shop_stats
     }
     return render(request, 'settings_page.html', context)

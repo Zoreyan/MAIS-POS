@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     'apps.history',
     'apps.client',
     'apps.finance',
+    'apps.shop',
+    'mptt',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -152,6 +155,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'muhammadazizmadakimov06@gmail.com'
-EMAIL_HOST_PASSWORD = 'dwfj njfq nlvh elui'
+EMAIL_HOST_PASSWORD = 'azgh bsqt csxn ujnw'
+EMAIL_PORT = 465
 
 ITEMS_PER_PAGE = 10

@@ -1,0 +1,133 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+<div class="row">
+   
+    <div class="col-12">
+        {% if query %}
+        <h3>Результаты поиска для: "{{ query }}"</h3>
+        {% else %}
+        <h3 class="fw-bold text-center text-md-start">Каталог</h3>
+        {% endif %}
+        <div class="row gy-4 gy-md-5">
+            {% for product in page_obj %}
+            <div class="col-12 col-sm-6 col-md-3 col-lg-3">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="" class="img-fluid rounded-2 waves-effect mb-3"
+                            style="object-fit: cover; height: 255px;">
+                        {% else %}
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/330px-No-Image-Placeholder.svg.png?20200912122019"
+                            alt="" class="img-fluid rounded-pill mb-3" style="object-fit: cover; height: 255px;">
+                        {% endif %}
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h4 class="card-title fw-bold">{{ product.name }} </h4>
+                            <span class="badge bg-warning fs-6">20%</span>
+                        </div>
+                        <p class="card-text mb-2">Цена: <s>{{ product.sale_price }} руб.</s> {{ product.price }} руб.
+                        </p>
+                        <div class="mt-auto d-flex justify-content-between">
+                            <a href="#" class="btn btn-primary">Подробнее</a>
+                            <div class="d-flex align-items-center gap-1">
+                                <button class="btn rounded-pill btn-icon waves-effect waves-light">
+                                    <i class="bx bx-cart bx-sm"></i>
+                                </button>
+                                <button class="btn rounded-pill btn-icon waves-effect waves-light">
+                                    <i class="bx bx-heart bx-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-center">Товары не найдены</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="d-flex justify-content-center mt-5">
+            <div class="pagination-container">
+                <nav aria-label="Пагинация">
+                    <ul class="pagination justify-content-center">
+                        <!-- Кнопка "Первая" -->
+                        {% if page_obj.number > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1" aria-label="Первая">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                    <span class="sr-only">Первая</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;&laquo;</span>
+                            </li>
+                        {% endif %}
+            
+                        <!-- Кнопка "Назад" -->
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Назад</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
+                        {% endif %}
+            
+                        <!-- Номера страниц -->
+                        {% for page_num in visible_pages %}
+                            {% if page_num == page_obj.number %}
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link" style="color: black;">{{ page_num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+            
+                        <!-- Кнопка "Вперёд" -->
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Вперёд</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                        {% endif %}
+            
+                        <!-- Кнопка "Последняя" -->
+                        {% if page_obj.number < page_obj.paginator.num_pages %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                    <span class="sr-only">Последняя</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                <div class="d-flex justify-content-center">
+                <span class="text-muted">
+                    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                </span>
+                </div>
+            </div>
+    </div>
+    
+</div>
+{% endblock %}

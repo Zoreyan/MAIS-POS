@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="col-md-12">
+    <div class="card mb-6">
+        <!-- Аккаунт -->
+        <div class="card-body">
+            <div class="d-flex align-items-start align-items-sm-center gap-6">
+                {% if user.image and user.image.url %}
+                <img src="{{ user.image.url }}" alt="аватар пользователя" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
+                {% else %}
+                <img src="{% static 'user_images/default_user.png' %}" alt="аватар пользователя" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
+                {% endif %}
+                <div class="button-wrapper">
+                    <label for="upload" class="btn btn-primary me-3 mb-4 waves-effect waves-light" tabindex="0">
+                        <span class="d-none d-sm-block">Загрузить новое фото</span>
+                        <i class="ti ti-upload d-block d-sm-none"></i>
+                        <input type="file" id="upload" name="image" class="account-file-input" hidden accept="image/png, image/jpeg">
+                    </label>
+                    
+                    <div>Допустимые форматы JPG, GIF или PNG. Максимальный размер 800К</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body pt-4">
+            <form id="formAccountSettings" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="mb-4 col-md-6">
+                        <label for="firstName" class="form-label">Имя</label>
+                        <input class="form-control" type="text" id="firstName" name="first_name" value="{{ user.first_name }}">
+                    </div>
+                    <div class="mb-4 col-md-6">
+                        <label for="lastName" class="form-label">Фамилия</label>
+                        <input class="form-control" type="text" name="last_name" id="lastName" value="{{ user.last_name }}">
+                    </div>
+                    <div class="mb-4 col-md-6">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input class="form-control" type="email" id="email" name="email" value="{{ user.email }}">
+                    </div>
+                    <div class="mb-4 col-md-6">
+                        <label for="organization" class="form-label">Магазин</label>
+                        <input type="text" class="form-control" id="organization" name="shop" value="{{ user.shop.name }}" readonly>
+                    </div>
+                    <div class="mb-4 col-md-6">
+                        <label for="phoneNumber" class="form-label">Номер телефона</label>
+                        <input type="text" id="phoneNumber" name="phone" class="form-control" value="{{ user.phone }}" placeholder="+7 (XXX) XXX-XX-XX">
+                    </div>
+                    <div class="mb-4 col-md-6">
+                        <label for="role" class="form-label">Роль</label>
+                        <select id="role" name="role" class="form-select">
+                            {% for key, value in user.ROLE_CHOICES %}
+                            <option value="{{ key }}" {% if user.role == key %}selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mt-2">
+                        <button type="submit" class="btn btn-primary me-3">Сохранить изменения</button>
+                        <button type="reset" class="btn btn-label-secondary">Отмена</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <h5 class="card-header">Удалить аккаунт</h5>
+        <div class="card-body">
+            <p>Вы уверены, что хотите удалить аккаунт? Это действие необратимо.</p>
+            <button class="btn btn-danger">Удалить аккаунт</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

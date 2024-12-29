@@ -3,7 +3,7 @@
 
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none ">
         <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-            <i class="bx bx-menu-alt-left bx-sm"></i>
+            <i class="bx bx-menu bx-sm"></i>
         </a>
     </div>
 
@@ -21,22 +21,22 @@
 
             <li class="nav-item dropdown-style-switcher dropdown">
                 <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <i class="bx bx-cog bx-sm"></i>
+                    <i class="bx bx-sun bx-sm"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
                     <li>
                         <a class="dropdown-item" href="javascript:void(0);" data-theme="light">
-                            <span class="align-middle"><i class="bx bx-sun bx-sm me-3"></i>Светлая</span>
+                            <span class="d-flex align-items-center"><i class="bx bx-sun bx-sm me-3"></i>Светлая</span>
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="javascript:void(0);" data-theme="dark">
-                            <span class="align-middle"><i class="bx bx-moon bx-sm me-3"></i>Тёмная</span>
+                            <span class="d-flex align-items-center"><i class="bx bx-moon bx-sm me-3"></i>Тёмная</span>
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="javascript:void(0);" data-theme="system">
-                            <span class="align-middle"><i class="bx bx-device-desktop bx-sm me-3"></i>Системная</span>
+                            <span class="d-flex align-items-center"><i class="bx bx-desktop bx-sm me-3"></i>Системная</span>
                         </a>
                     </li>
                 </ul>
@@ -45,7 +45,6 @@
                 <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <span class="position-relative">
                         <i class="bx bx-bell bx-sm"></i>
-                        <span class="badge rounded-pill bg-danger badge-dot badge-notifications border"></span>
                     </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end p-0">
@@ -60,8 +59,7 @@
                     </li>
                     <li class="dropdown-notifications-list scrollable-container">
                         <ul class="list-group list-group-flush">
-                            {% low_stock as low_stock %}
-                        {% if low_stock %}
+                            <!-- 
                             <li class="list-group-item list-group-item-action dropdown-notifications-item">
                                 <div class="d-flex">
                                     <div class="flex-shrink-0 me-3">
@@ -73,7 +71,7 @@
                                         <h6 class="mb-1 small">Низкое количество товара!</h6>
                                         <small class="mb-1 d-block text-body">{{ low_stock.message }}</small>
                                         <small class="text-muted">{{ low_stock.created }}</small>
-                                        <a href="{% url 'low-stock' %}" class="btn btn-sm btn-text-primary">Просмотреть все товары ></a>
+                                        <a href="" class="btn btn-sm btn-text-primary">Просмотреть все товары ></a>
                                     </div>
                                     <div class="flex-shrink-0 dropdown-notifications-actions">
                                         <a href="javascript:void(0)" class="dropdown-notifications-read"><span class="badge badge-dot"></span></a>
@@ -81,9 +79,7 @@
                                     </div>
                                 </div>
                             </li>
-                        {% else %}
-                            <p>No low stock notifications found.</p>
-                        {% endif %} 
+                            <p>No low stock notifications found.</p>  -->
                             <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read">
                                 <div class="d-flex">
                                     <div class="flex-shrink-0 me-3">
@@ -119,20 +115,20 @@
                         {% if request.user.image %}
                             <img src="{{ request.user.image.url }}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                         {% else %}
-                            <img src="{% static 'assets/img/avatars/1.png' %}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
+                            <img src="{% static 'assets/images/avatars/1.png' %}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                         {% endif %}
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item mt-0" href="#">
+                        <a class="dropdown-item mt-0" href="{% url 'user-profile' request.user.id %}">
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-2">
                                     <div class="avatar avatar-online">
                                         {% if request.user.image %}
                                             <img src="{{ request.user.image.url }}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                                         {% else %}
-                                            <img src="{% static 'assets/img/avatars/1.png' %}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
+                                            <img src="{% static 'assets/images/avatars/1.png' %}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
                                         {% endif %}
                                     </div>
                                 </div>
@@ -163,4 +159,17 @@
             </li>
         </ul>
     </div>
+    <form method="get" action="{% url 'product-list' %}">
+        <div class="navbar-search-wrapper search-input-wrapper d-none">
+            <input 
+            type="text" 
+            name="query" 
+            class="form-control search-input container-xxl border-0" 
+            placeholder="Поиск..." 
+            aria-label="Search..."
+            value="{{ request.GET.query|default:'' }}"
+        >
+            <i class="bx bx-x search-toggler cursor-pointer"></i>
+        </div>
+    </form>
 </nav>

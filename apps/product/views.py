@@ -7,53 +7,14 @@ from apps.history.models import *
 from apps.finance.models import *
 from django.forms.models import model_to_dict
 import json
-from django.core.mail import send_mail
-from django.utils.timezone import now
-from apps.user.models import User
-from backend import settings
-from django.db.models import F
 from django.core.paginator import Paginator
+from django.db.models import Count
+from django.db.models import Q, Case, When, IntegerField
+from django.db import IntegrityError
 
 
-# def check_inventory_levels(products):
-#     for item in products:
-#         product = Product.objects.get(id=item['id'])
-#         if product.quantity <= product.min_quantity:
-#             send_low_stock_notification(product)
-#             log_low_stock_notification(product)
 
-# def send_low_stock_notification(product):
-#     # Отправка email уведомления
-#     subject = f"Низкий уровень запасов: {product.name}"
-#     message = f"Количество товара  '{product.name}'  на складе ниже минимального порога. Остаток: {product.quantity}."
-#     from_email = settings.EMAIL_HOST_USER
-    
-#     # Получаем всех пользователей, которым нужно отправить уведомление (например, администраторы или менеджеры)
-#     users = User.objects.filter(role='manager')  # или любые другие фильтры
-#     for user in users:
-#         if user.email:
-#             send_mail(subject, message, from_email, [user.email])
-#         else:
-#             print(f"Пользователь {user.username} не имеет электронной почты.")
-    
-#     # Встроенные уведомления в системе (popup, push и т.д.)
-#     send_system_notification(product)
-
-# def send_system_notification(product):
-#     # Например, здесь будет код для отправки уведомления внутри системы.
-#     # Реализация зависит от используемого фронтенда (например, через Django Channels для WebSockets).
-#     notification_message = f"Низкий уровень запасов: {product.name}. Остаток: {product.quantity}."
-#     # Здесь можно интегрировать с фронтенд системой для показа уведомлений пользователям.
-
-# def log_low_stock_notification(product):
-#     # Логирование отправленных уведомлений
-#     LogEntry.objects.create(
-#         action="low_stock_notification",
-#         message=f"Товар: {product.name}, остаток: {product.quantity}",
-#         created_at=now()
-#     )
-
-def update_items_per_page(request):
+def update_product_per_page(request):
     if request.method == "POST":
         try:
             items_per_page = int(request.POST.get("items_per_page", 10))
@@ -65,13 +26,36 @@ def update_items_per_page(request):
 
 
 def list_(request):
-    search_query = request.GET.get('search', '')
+    products = Product.objects.all()
 
-    if search_query:
-        products = Product.objects.filter(name__icontains=search_query, shop=request.user.shop)
-    else:
-        products = Product.objects.filter(shop=request.user.shop)
-    
+    categories = Category.objects.all()
+
+    query = request.GET.get('query', '').strip()
+
+    if query:
+        if query.isdigit():
+            products = products.filter(shop=request.user.shop, bar_code__icontains=query)
+        else:
+            products = products.filter(
+                Q(shop=request.user.shop) & 
+                (Q(name__icontains=query) | Q(category__name__icontains=query))
+            )         
+    # Фильтр по категории и родительской категории
+    selected_category = request.GET.get('category')
+    if selected_category:
+        # Получаем выбранную категорию
+        category = Category.objects.filter(name=selected_category).first()
+
+        # Продукты из выбранной категории
+        category_products = products.filter(category=category)
+
+        # Продукты из дочерних категорий
+        child_categories = category.children.all() if category else []
+        child_category_products = products.filter(category__in=child_categories)
+
+        # Объединяем и сортируем продукты
+        products = list(category_products) + list(child_category_products)
+
     # Фильтр по минимальной сумме
     price_min = request.GET.get('price_min')
     if price_min:
@@ -89,7 +73,7 @@ def list_(request):
     elif in_stock == "no":
         products = products.filter(quantity=0)
 
-    #для пагинации
+    # Для пагинации
     items_per_page = request.session.get('items_per_page', 10)
     paginator = Paginator(products, items_per_page)
     page_number = request.GET.get('page')
@@ -104,8 +88,10 @@ def list_(request):
     visible_pages = range(start_page, end_page + 1)
 
     context = {
+        'categories': categories,
         'visible_pages': visible_pages,
         'page_obj': page_obj,
+        'query': query,
     }
     return render(request, 'product/list.html', context)
 
@@ -163,19 +149,27 @@ def income(request):
 
 def get_product(request):
     bar_code = request.GET.get('bar_code')
-    product = get_object_or_404(Product, bar_code=bar_code)
-
-    product = {
-        'id': product.id,
+    product_id = request.GET.get('id')
+    if bar_code:
+        product = get_object_or_404(Product, bar_code=bar_code)  # Находим продукт по штрихкоду
+    elif product_id:
+        product = get_object_or_404(Product, id=product_id)  # Находим продукт по ID
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Штрихкод или ID не переданы'}, status=400)
+    
+    sale_price = product.discounted_price()
+    product_data = {
+        'id': product.id,  # Возвращаем ID продукта
         'name': product.name,
         'price': product.price,
         'sale_price': product.sale_price,
+        'd_sale_price':sale_price,
         'bar_code': product.bar_code,
         'quantity': product.quantity,
-        'status': 'success' if product is not None else 'error',
+        'image': product.image.url if product.image else None,  # Поле для изображения
+        'status': 'success'
     }
-
-    return JsonResponse(product, safe=False)
+    return JsonResponse(product_data)
 
 
 def create_sell_history(request):
@@ -213,10 +207,10 @@ def create_sell_history(request):
                 order=order,
                 product=product,
                 quantity=quantity,
-                price_at_moment=product.sale_price  # Сохраняем цену на момент продажи
+                price_at_moment=product.discounted_price(),
             )
 
-            product_profit = (Decimal(product.sale_price) - Decimal(product.price)) * quantity
+            product_profit = (product.discounted_price() - product.price) * quantity
             profit += product_profit
 
 
@@ -233,11 +227,13 @@ def create_sell_history(request):
 
         return JsonResponse({'status': 'success'})
         
+        
 
 def create_income_history(request):
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
         amount = request.POST.get('amount')
+        change = request.POST.get('change')
         change = request.POST.get('change')
 
         # Создаем запись о поступлении
@@ -264,7 +260,8 @@ def create_income_history(request):
                 order=order,
                 product=product,
                 quantity=quantity,
-                price_at_moment=price
+                price_at_moment=price,
+                shop=request.user.shop
             )
 
             # Обновляем количество и цены продукта
@@ -298,11 +295,103 @@ def find_product(request):
 
 
 def search_product(request):
-    query = request.GET.get('query', '')
-    products = Product.objects.filter(name__icontains=query).values('bar_code', 'name', 'quantity')
-    return JsonResponse(list(products), safe=False)
+    query = request.GET.get('query', '').strip()
+    results = []
+
+    if query:
+        # Разделяем запрос на отдельные слова
+        search_terms = query.split()
+
+        # Формируем базовый запрос
+        search_query = Q()
+
+        # Поиск по всем терминам
+        for term in search_terms:
+            search_query &= (
+                Q(name__icontains=term) |
+                Q(description__icontains=term) |
+                Q(category__name__icontains=term) |
+                Q(bar_code__icontains=term)
+            )
+
+        # Выполняем запрос
+        products = Product.objects.filter(search_query).annotate(
+            relevance=Case(
+                When(name__icontains=query, then=1),
+                When(bar_code__icontains=query, then=2),
+                When(category__name__icontains=query, then=3),
+                When(description__icontains=query, then=4),
+                default=5,
+                output_field=IntegerField(),
+            )
+        ).order_by('relevance', '-quantity')
+
+        # Подготавливаем результаты
+        for product in products:
+            results.append({
+                'id': product.id,
+                'name': product.name,
+                'bar_code': product.bar_code,
+                'quantity': product.quantity,
+                'image': product.image.url if product.image else 'shops/default_product.png',
+            })
+
+    return JsonResponse({'products': results})
 
 
-def low_stock(request):
-    products = Product.objects.filter(quantity__lte=F('min_quantity'), shop=request.user.shop)
-    return render(request, 'product/low_stock.html', {'products': products})
+def category_list(request):
+    categories = Category.objects.annotate(total_products=Count('product'))
+    form = CategoryForm()   
+
+    # Пагинация
+    category_per_page = request.session.get('category_per_page', 10)
+    paginator = Paginator(categories, category_per_page)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Ограничение отображаемых страниц
+    current_page = page_obj.number
+    total_pages = paginator.num_pages
+    delta = 3  # Количество страниц до и после текущей
+
+    start_page = max(current_page - delta, 1)
+    end_page = min(current_page + delta, total_pages)
+    visible_pages = range(start_page, end_page + 1)
+
+    context = {
+        'page_obj': page_obj,
+        'visible_pages': visible_pages,
+        'form': form,
+    }
+    return render(request, 'product/category_list.html', context)
+
+def update_category_per_page(request):
+    if request.method == "POST":
+        try:
+            category_per_page = int(request.POST.get("category_per_page", 10))
+            if category_per_page > 0:
+                request.session['category_per_page'] = category_per_page
+        except ValueError:
+            request.session['category_per_page'] = 10
+    return redirect('settings')
+
+def category_create(request):
+    form = CategoryForm()
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('category-list')
+
+def category_delete(request, pk):
+    category = Category.objects.get(id=pk)
+    category.delete()
+    return redirect('category-list')
+
+def category_update(request, pk):
+    if request.method == 'POST':
+        category = get_object_or_404(Category, pk=pk)
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+    return redirect('category-list')

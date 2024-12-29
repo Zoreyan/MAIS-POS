@@ -1,56 +1,196 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 
-<div class="card m-3">
-    <div class="row">
-        <div class="col-12">
-            <div class="card h-100">
-                <h5 class="card-header">График прибыли, продаж и расходов</h5>
-                <div class="card-body">
-                    <div id="chart2" class="apex-charts"></div>
-                </div>
+<div class="card">
+    <div class="card-header">
+      <h5 class="card-title">Фильтр</h5>
+      <form method="get">
+      <div class="d-flex justify-content-between align-items-center row pt-4 gap-6 gap-md-0">
+        <div class="col-md-3">
+            <label for="date_from" class="form-label">Дата с</label>
+            <input type="date" id="date_from" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+        </div>
+        <div class="col-md-3">
+            <label for="date_to" class="form-label">Дата по</label>
+            <input type="date" id="date_to" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+        </div>
+        <div class="col-md-3">
+            <label for="expend_type" class="form-label">Тип</label>
+            <select id="expend_type" name="expend_type" class="form-select">
+                <option value="" {% if request.GET.expend_type == "" %}selected{% endif %}>Все типы</option>
+                {% for expend_type in expense_types %}
+                <option value="{{ expend_type }}" {% if request.GET.expend_type == expend_type %}selected{% endif %}>{{ expend_type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <div class="btn-group d-flex">
+                <button type="submit" class="btn btn-success d-flex align-items-center">
+                    <i class="bx bx-filter-alt me-1"></i>
+                    <span>Фильтр</span>
+                </button>
+                <button type="button" class="btn btn-primary ms-2 d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#expendTypeModal">
+                    <i class="bx bx-plus me-1"></i>
+                    <span>Добавить</span>
+                </button>
             </div>
-        </div>      
+        </div>
+      </div>
+    </form>
     </div>
 
-    
+    <div class="modal fade" id="expendTypeModal" tabindex="-1" aria-labelledby="expendTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="expendTypeModalLabel">Добавить расход</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="{% url 'finance-create' %}?type=rent" class="text-dark">Аренда</a></li>
+                        <li class="list-group-item"><a href="{% url 'finance-create' %}?type=utilities" class="text-dark">Коммунальные услуги</a></li>
+                        <li class="list-group-item"><a href="{% url 'finance-create' %}?type=salaries" class="text-dark">Зарплаты</a></li>
+                        <li class="list-group-item"><a href="{% url 'finance-create' %}?type=other" class="text-dark">Другое</a></li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-<script>
-    $.ajax({
-    type: "GET",
-    url: "{% url 'get-chart-data-finance' %}",
-    success: function (data) {
-        console.log(data);  // Для отладки
-        var options = {
-            chart: { height: 500, type: "area" },
-            dataLabels: { enabled: false },
-            series: [
-                { name: "Прибыль", data: data.profit },
-                { name: "Сумма продаж", data: data.sales },
-                { name: "Расходы", data: data.expenses }
-            ],
-            fill: {
-                type: "gradient",
-                gradient: {
-                    shadeIntensity: 0.5,  // Меньше интенсивности, чтобы видеть цвета
-                    opacityFrom: 0.6,    // Увеличиваем непрозрачность
-                    opacityTo: 0.5,
-                    stops: [0, 100]
-                }
-            },
-            colors: ['#28a745', '#007bff', '#dc3545'],  // Зеленый для прибыли, синий для продаж, красный для расходов
-            xaxis: { categories: data.months },
-        };
-        var chart1 = new ApexCharts(document.querySelector("#chart2"), options);
-        chart1.render();
-    },
-    error: function (xhr, status, error) {
-        console.log("Error:", status, error); // Для отладки
-    }
-});
-</script>
+    <div class="table-responsive">
+        <table class="datatables-products table">
+            <thead class="border-top">
+                <tr>
+                    <th>Описание</th>
+                    <th>Сумма</th>
+                    <th>Дата</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expend in page_obj %}
+                <tr>
+                    <td>{{ expend.description|default:"-" }}{% if expend.user %}:{{ expend.user }}{% endif %}</td>
+                    <td>{{ expend.amount }}</td>
+                    <td>{{ expend.created }}</td>
+                    <td>
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ expend.id }}">
+                            <i class='bx bx-trash text-danger fs-5'></i>
+                        </button>
+                        <div class="modal fade" id="deleteModal{{ expend.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="fs-5" id="deleteModalLabel">Вы уверены, что хотите удалить?</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        {{ expend.description }}<br>
+                                        {{ expend.amount }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="{% url 'expense-delete' expend.id %}" class="btn btn-danger">Да</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">Нет расходов, соответствующих фильтру.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
+    <div class="d-flex justify-content-center mt-5">
+      <div class="pagination-container">
+          <nav aria-label="Пагинация">
+              <ul class="pagination justify-content-center">
+                  <!-- Кнопка "Первая" -->
+                  {% if page_obj.number > 1 %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page=1" aria-label="Первая">
+                              <span aria-hidden="true">&laquo;&laquo;</span>
+                              <span class="sr-only">Первая</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&laquo;&laquo;</span>
+                      </li>
+                  {% endif %}
+      
+                  <!-- Кнопка "Назад" -->
+                  {% if page_obj.has_previous %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
+                              <span aria-hidden="true">&laquo;</span>
+                              <span class="sr-only">Назад</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&laquo;</span>
+                      </li>
+                  {% endif %}
+      
+                  <!-- Номера страниц -->
+                  {% for page_num in visible_pages %}
+                      {% if page_num == page_obj.number %}
+                          <li class="page-item active" aria-current="page">
+                              <span class="page-link" style="color: black;">{{ page_num }}</span>
+                          </li>
+                      {% else %}
+                          <li class="page-item">
+                              <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                          </li>
+                      {% endif %}
+                  {% endfor %}
+      
+                  <!-- Кнопка "Вперёд" -->
+                  {% if page_obj.has_next %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
+                              <span aria-hidden="true">&raquo;</span>
+                              <span class="sr-only">Вперёд</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&raquo;</span>
+                      </li>
+                  {% endif %}
+      
+                  <!-- Кнопка "Последняя" -->
+                  {% if page_obj.number < page_obj.paginator.num_pages %}
+                      <li class="page-item">
+                          <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
+                              <span aria-hidden="true">&raquo;&raquo;</span>
+                              <span class="sr-only">Последняя</span>
+                          </a>
+                      </li>
+                  {% else %}
+                      <li class="page-item disabled">
+                          <span class="page-link">&raquo;&raquo;</span>
+                      </li>
+                  {% endif %}
+              </ul>
+          </nav>
+          <div class="d-flex justify-content-center">
+          <span class="text-muted">
+              Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+          </span>
+          </div>
+      </div>
 
+</div>
 
 {% endblock %}

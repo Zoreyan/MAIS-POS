@@ -6,10 +6,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', finance_list, name='finance-list'),
-    path('create/', create, name='expend-create'),
-    path('get-chart-data-finance/', get_chart_data, name='get-chart-data-finance'),
-    path('expends/', expends, name='expends'),
-    path('extends_chart/', extends_chart_data, name='extends-chart-data'),
-    path('delete/<int:pk>/', expend_delete, name='expend-delete'),
-    path('salaries/', salary_list, name='salary-list'),
+    path('create/', create, name='finance-create'),
+    path('delete/<int:pk>/', expense_delete, name='expense-delete'),
+    path('update_finance_per_page', update_finance_per_page, name='update_finance_per_page'),
 ]
