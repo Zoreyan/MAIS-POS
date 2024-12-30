@@ -67,7 +67,6 @@ def get_chart_data(request):
 # Средняя цена поставок
 
 
-
 @login_required
 def dashboard(request):
     total_profit = SoldHistory.objects.filter().aggregate(profit=Sum('quantity'))['profit'] or 0
@@ -76,7 +75,6 @@ def dashboard(request):
     # Дополнительные данные для расчета роста
     growth = round((total_profit - total_income) / total_income * 100, 3) if total_income else 0
     sold_products = Product.objects.filter(shop=request.user.shop).annotate(total_quantity=Sum('soldhistory__quantity'), total_sum=Sum('soldhistory__quantity') * F('sale_price')).order_by('-total_quantity')[:5]
-
     context = {
         'sold_products': sold_products,
         'total_profit': total_profit,

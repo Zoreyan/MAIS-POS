@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+
+<div class="col-12">
+    <div class="card">
+        <div class="card-body">
+          
+          <div class="row mb-2">
+            <div class="col-sm-5">
+              <h4 class="card-title">История очередей</h4>
+            </div>
+    
+            <div class="col-sm-7">
+              <form method="get">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="date_from" class="form-label">Дата с</label>
+                        <input type="date" id="date_from" name="date_from" class="form-control" value="{{ date_from }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="date_to" class="form-label">Дата по</label>
+                        <input type="date" id="date_to" name="date_to" class="form-control" value="{{ date_to }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="order_type" class="form-label">Тип</label>
+                        <select id="order_type" name="order_type" class="form-select">
+                            <option value="">Все</option>
+                            <option value="sale" {% if order_type == 'sale' %}selected{% endif %}>Продажа</option>
+                            <option value="income" {% if order_type == 'income' %}selected{% endif %}>Поступление</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary mt-4">Фильтровать</button>
+                    </div>
+                </div>
+            </form>
+            </div>
+          
+          </div>
+
+            <div class="table-responsive">
+                <table class="table table-centered w-100" id="products-datatable">
+                  <thead class="table-light">
+                    <tr>
+                      <th>#</th>
+                      <th>Итого</th>
+                      <th>Принято</th>
+                      <th>Скидка</th>
+                      <th>Сдача</th>
+                      <th>Дата</th>
+                      <th>Действия</th>
+                    </tr>
+                  </thead>
+                  <tbody id="product-table-body">
+                    {% for order in orders %}
+                      <tr>
+                        <td>
+
+                          <span class="text-primary" data-bs-toggle="modal"
+                          data-bs-target="#itemModal{{ order.id }}"><i class="mdi mdi-cart me-1"></i>#{{ order.id }}</span>
+                            <div id="itemModal{{ order.id }}" class="modal fade" tabindex="-1" role="dialog"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                          {% if order.soldhistory_set.exists %}
+                                          <h3>#{{ order.id }} - продажа</h3>
+                                            {% for i in order.soldhistory_set.all %}
+                                              <div class="d-flex justify-content-between">
+                                                  <p><strong>{{ forloop.counter }}. {{ i.product.name }}</strong></p>
+                                                  <div class="dotted-line"></div>
+                                                  <p>{{ i.quantity }} x {{ i.price_at_moment }} = {{ i.total_sum }}</p>
+                                              </div>
+                                              {% endfor %}
+                                          {% endif %}
+                                            
+                                          {% if order.incomehistory_set.exists %}
+                                          <h3>#{{ order.id }} - поступление</h3>
+                                              {% for i in order.incomehistory_set.all %}
+                                              <div class="d-flex justify-content-between">
+                                                  <p><strong>{{ forloop.counter }}. {{ i.product.name }}</strong></p>
+                                                  <div class="dotted-line"></div>
+                                                  <p>{{ i.quantity }} x {{ i.price_at_moment }} = {{ i.total_sum }}</p>
+                                              </div>
+                                              {% endfor %}
+                                          {% endif %}
+                                        <hr>
+                                        <div class="text-end">
+                                        {% if order.profit %}
+                                          <p>Итоговая сумма: {{ order.total_sum_without_discount }}</p>
+                                          <p>Скидка: {% if order.discount %}{{ order.discount }}{% else %}0{% endif %}</p>
+                                          <hr>
+                                          <p>Прибыль: {{ order.profit }}</p>
+                                          {% endif %}
+                                          <p>Итого: {{ order.total_sum }}</p>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                        <td>{{ order.total_sum }}</td>
+                        <td>{{ order.amount }}</td>
+                        <td>{% if order.discount %}{{ order.discount }}{% else %}-{% endif %}</td>
+                        <td>{% if order.change %}{{ order.change }}{% else %}-{% endif %}</td>
+                        <td>{{ order.created }}</td>
+                        <td style="position: relative;">
+                          <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                  data-bs-target="#deleteModal{{ order.id }}">
+                              <i class="mdi mdi-cart me-1"></i>Удалить
+                          </button>
+                            
+                          <div id="deleteModal{{ order.id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                              <div class="modal-dialog">
+                                  <div class="modal-content">
+                                      <div class="modal-body">
+                                          <form class="ps-3 pe-3" method="POST">
+                                              {% csrf_token %}
+                                              <p>Вы действительно хотите удалить ордер?{{ order.id }}</p>
+                                              <div class="mb-3 text-center">
+                                                  <a class="btn btn-danger" href="{% url 'order-history-delete' order.id %}">Удалить</a>
+                                              </div>
+                                          </form>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <!-- чтобы можно было отличить продажу и поставку -->
+                          {% if order.soldhistory_set.exists %}
+                          <div style="position: absolute; top: 5px; right: 0; width: 10px; height: 80%; background-color: blue;"></div>
+                          {% else %}
+                          <div style="position: absolute; top: 5px; right: 0; width: 10px; height: 80%; background-color: green;"></div>
+                          {% endif %}
+
+                        </td>
+                      </tr>
+                      {% empty %}
+                      <tr>
+                          <td colspan="4" class="text-center">Нет данных</td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

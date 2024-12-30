@@ -10,7 +10,10 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count
-from django.db.models import Q
+from django.db.models import Q, Case, When, IntegerField
+from django.db import IntegrityError
+
+
 
 @login_required
 def update_product_per_page(request):
@@ -77,7 +80,6 @@ def list_(request):
     paginator = Paginator(products, items_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
     # Ограничение отображаемых страниц
     current_page = page_obj.number
     total_pages = paginator.num_pages
@@ -175,19 +177,27 @@ def income(request):
 @login_required
 def get_product(request):
     bar_code = request.GET.get('bar_code')
-    product = get_object_or_404(Product, bar_code=bar_code)
-
-    product = {
-        'id': product.id,
+    product_id = request.GET.get('id')
+    if bar_code:
+        product = get_object_or_404(Product, bar_code=bar_code)  # Находим продукт по штрихкоду
+    elif product_id:
+        product = get_object_or_404(Product, id=product_id)  # Находим продукт по ID
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Штрихкод или ID не переданы'}, status=400)
+    
+    sale_price = product.discounted_price()
+    product_data = {
+        'id': product.id,  # Возвращаем ID продукта
         'name': product.name,
         'price': product.price,
         'sale_price': product.sale_price,
+        'd_sale_price':sale_price,
         'bar_code': product.bar_code,
         'quantity': product.quantity,
-        'status': 'success' if product is not None else 'error',
+        'image': product.image.url if product.image else None,  # Поле для изображения
+        'status': 'success'
     }
-
-    return JsonResponse(product, safe=False)
+    return JsonResponse(product_data)
 
 @login_required
 def create_sell_history(request):
@@ -225,10 +235,10 @@ def create_sell_history(request):
                 order=order,
                 product=product,
                 quantity=quantity,
-                price_at_moment=product.sale_price
+                price_at_moment=product.discounted_price(),
             )
 
-            product_profit = (Decimal(product.sale_price) - Decimal(product.price)) * quantity
+            product_profit = (product.discounted_price() - product.price) * quantity
             profit += product_profit
 
 
@@ -240,6 +250,8 @@ def create_sell_history(request):
 
         order.profit = profit
         order.save()
+
+        check_inventory_levels(products)
 
         return JsonResponse({'status': 'success'})
         
@@ -311,10 +323,48 @@ def find_product(request):
 
 @login_required
 def search_product(request):
-    query = request.GET.get('query', '')
-    products = Product.objects.filter(name__icontains=query).values('bar_code', 'name', 'quantity')
-    return JsonResponse(list(products), safe=False)
+    query = request.GET.get('query', '').strip()
+    results = []
 
+    if query:
+        # Разделяем запрос на отдельные слова
+        search_terms = query.split()
+
+        # Формируем базовый запрос
+        search_query = Q()
+
+        # Поиск по всем терминам
+        for term in search_terms:
+            search_query &= (
+                Q(name__icontains=term) |
+                Q(description__icontains=term) |
+                Q(category__name__icontains=term) |
+                Q(bar_code__icontains=term)
+            )
+
+        # Выполняем запрос
+        products = Product.objects.filter(search_query).annotate(
+            relevance=Case(
+                When(name__icontains=query, then=1),
+                When(bar_code__icontains=query, then=2),
+                When(category__name__icontains=query, then=3),
+                When(description__icontains=query, then=4),
+                default=5,
+                output_field=IntegerField(),
+            )
+        ).order_by('relevance', '-quantity')
+
+        # Подготавливаем результаты
+        for product in products:
+            results.append({
+                'id': product.id,
+                'name': product.name,
+                'bar_code': product.bar_code,
+                'quantity': product.quantity,
+                'image': product.image.url if product.image else 'shops/default_product.png',
+            })
+
+    return JsonResponse({'products': results})
 
 @login_required
 def category_list(request):
@@ -370,9 +420,8 @@ def category_delete(request, pk):
 
 @login_required
 def category_update(request, pk):
-    category = Category.objects.get(id=pk)
-    form = CategoryForm(instance=category)
     if request.method == 'POST':
+        category = get_object_or_404(Category, pk=pk)
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()

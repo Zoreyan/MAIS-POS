@@ -3,6 +3,7 @@
 {% block content %}
 {% if messages %}
 <div class="row justify-content-center">
+<<<<<<< HEAD
     <div class="col-12 col-md-5">
         <span class="badge bg-info p-2">
             {% for message in messages %}
@@ -23,6 +24,65 @@
         <div class="d-flex gap-2">
             <a href="{% url 'product-list' %}" class="btn btn-label-secondary">Отменить</a>
             <button type="submit" class="btn btn-primary">Опубликовать продукт</button>
+=======
+    <div class="col-5">
+        <span class="badge bg-info p-2">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </span>
+    </div>
+</div>
+{% endif %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 row-gap-4">
+    <div class="text-center text-md-start">
+      <h4 class="mb-1">Добавить новый продукт</h4>
+      <p class="mb-0">Заказы, оформленные в вашем магазине</p>
+    </div>
+    <div class="d-flex flex-wrap gap-4">
+      <div class="d-flex gap-4">
+        <button class="btn btn-label-secondary">Отменить</button>
+        <button class="btn btn-label-primary">Сохранить как черновик</button>
+      </div>
+      <button type="submit" class="btn btn-primary">Опубликовать продукт</button>
+    </div>
+</div>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+<div class="row gy-3">
+    <!-- Первая колонка -->
+    <div class="col-12 col-lg-8">
+        <div class="card mb-3 h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Информация о продукте</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label" for="product-name">Название</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label" for="product-image">Изображение</label>
+                        {{ form.image }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label mb-1" for="unit-select">Единица измерения</label>
+                        {{ form.unit }}
+                    </div>
+                    <div class="col">
+                        <label class="form-label" for="product-barcode">Штрихкод</label>
+                        {{ form.bar_code }}
+                    </div>
+                </div>
+                <div>
+                    <label class="mb-1" for="product-description">Описание (необязательно)</label>
+                    {{ form.description }}
+                </div>
+            </div>
+>>>>>>> origin/new-functions
         </div>
     </div>
 
@@ -60,6 +120,7 @@
                     </div>
                 </div>
             </div>
+<<<<<<< HEAD
         </div>
 
         <!-- Вторая колонка -->
@@ -92,10 +153,42 @@
                         <label class="form-label mb-1" for="category-select">Категория</label>
                         {{ form.category }}
                     </div>
+=======
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label" for="product-price">Базовая цена</label>
+                    {{ form.price }}
                 </div>
+                <div class="mb-3">
+                    <label class="form-label" for="product-discount-price">Цена для продажи</label>
+                    {{ form.sale_price }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="product-discount-price">Скидка (0-100)</label>
+                    <input type="number" name="discount" id="product-discount-price" class="form-control" min="0" max="100" value="{{ form.discount.value|default:0 }}">
+                    <small id="discount-error" class="text-danger" style="display: none;">Введите значение от 0 до 100</small>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="product-quantity">Количество</label>
+                    {{ form.quantity }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="product-min-quantity">Минимальный остаток</label>
+                    {{ form.min_quantity }}
+                </div>
+                <div>
+                    <label class="form-label mb-1" for="category-select">Категория</label>
+                    {{ form.category }}
+>>>>>>> origin/new-functions
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Сохранить</button>
             </div>
         </div>
     </div>
+<<<<<<< HEAD
+=======
+</div>
+>>>>>>> origin/new-functions
 </form>
 
 <script>
@@ -122,7 +215,14 @@
 </script>
 <style>
     .is-invalid {
+<<<<<<< HEAD
         border-color: red;
     }
 </style>
 {% endblock %}
+=======
+    border-color: red;
+}
+</style>
+{% endblock %}
+>>>>>>> origin/new-functions

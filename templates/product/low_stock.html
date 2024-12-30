@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    
+                    <h4 class="card-title">Товары с низким количеством</h4>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th><input type="checkbox" id="check-all"></th>
+                                        <th>Товар</th>
+                                        <th>Штрих код</th>
+                                        <th>Кол-во</th>
+                                        <th>Мин кол-во</th>
+                                        <th>В наличии</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for product in products %}
+                                    <tr>
+                                        <td><input type="checkbox" name="products" value="{{ product.id }}" class="product-checkbox"></td>
+                                        <td>
+                                            {% if product.image %}
+                                            <img src="{{ product.image.url }}" alt="product-img" title="product-img" class="rounded me-3" height="48" width="48" style="object-fit: cover;">
+                                            {% endif %}
+                                            <a href="{% url 'product-details' product.id %}">{{ product.name }}</a>
+                                        </td>
+                                        <td>{{ product.bar_code }}</td>
+                                        <td>{{ product.quantity }} шт</td>
+                                        <td>{{ product.min_quantity }}</td>
+                                        <td>{{ product.unit }}</td>
+                                        <td>
+                                            {% if product.in_stock %}
+                                            <span class="badge bg-success">В наличии</span>
+                                            {% else %}
+                                            <span class="badge bg-danger">Нет в наличии</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="8">Нет товаров с низким количеством.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-3 col-3">
+                            <button type="submit" class="btn btn-primary w-100">Заказать</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрипт для управления чекбоксами -->
+    <script>
+        document.getElementById('select-all').addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            checkboxes.forEach(checkbox => checkbox.checked = true);
+        });
+
+        document.getElementById('deselect-all').addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+        });
+
+        document.getElementById('check-all').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+        });
+    </script>
+{% endblock %}

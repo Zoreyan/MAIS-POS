@@ -84,9 +84,20 @@
                                 </div>
                             </div>
                         </div>
-                    </td>
-                </tr>
-                {% endfor %}
+                        <div class="modal-body">
+                            <p>Вы уверены, что хотите удалить категорию?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                            <a href="{% url 'category-delete' category.id %}" class="btn btn-danger waves-effect waves-light">Удалить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>
+{% endfor %}        
             </tbody>
         </table>
         <div class="d-flex justify-content-center mt-5">

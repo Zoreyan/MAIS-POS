@@ -76,7 +76,8 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
     sale_price = models.DecimalField(
         max_digits=10, decimal_places=2,
-        verbose_name='Продажная цена'
+        verbose_name='Продажная цена',
+        default=0
     )
     UNITS = [
         ('шт', 'шт'),
@@ -90,6 +91,9 @@ class Product(models.Model):
     min_quantity = models.IntegerField(default=0, verbose_name='Минимальный остаток')
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['bar_code'], name='unique_bar_code', condition=models.Q(bar_code__isnull=False))
+        ]
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
     
