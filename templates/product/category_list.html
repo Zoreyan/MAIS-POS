@@ -7,7 +7,8 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap">
             <h5 class="card-title">Категории</h5>
             <div class="flex-wrap d-flex mb-2 mb-md-0">
-                <button type="button" class="btn btn-sm btn-primary waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#modalCenter">
+                <button type="button" class="btn btn-sm btn-primary waves-effect waves-light" data-bs-toggle="modal"
+                    data-bs-target="#modalCenter">
                     <i class="bx bx-plus me-1"></i>
                     Добавить
                 </button>
@@ -35,7 +36,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-label-secondary waves-effect"
+                        data-bs-dismiss="modal">Закрыть</button>
                     <button type="submit" class="btn btn-primary waves-effect waves-light">Сохранить изменения</button>
                 </div>
             </div>
@@ -59,101 +61,100 @@
                     <td>{{ category.total_products }}</td>
                     <td>
                         <div class="d-flex justify-content-start">
-                            <a href="{% url 'category-update' category.id %}" class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light me-2">
+                            <a href="{% url 'category-update' category.id %}"
+                                class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light me-2">
                                 <i class="bx bx-edit bx-sm"></i>
                             </a>
-                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#modalDelete{{ category.id }}">
+                            <button class="btn btn-sm btn-icon btn-text-secondary rounded-pill waves-effect waves-light"
+                                data-bs-toggle="modal" data-bs-target="#modalDelete{{ category.id }}">
                                 <i class="bx bx-trash bx-sm"></i>
                             </button>
                         </div>
-                        <div method="post" class="modal fade" id="modalDelete{{ category.id }}" tabindex="-1" aria-hidden="true">
-                            {% csrf_token %}
+                        <div class="modal fade" id="modalDelete{{ category.id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="modalDeleteTitle{{ category.id }}">Удаление категории</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                                        <h5 class="modal-title" id="modalDeleteTitle{{ category.id }}">Удаление
+                                            категории</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Закрыть"></button>
                                     </div>
                                     <div class="modal-body">
                                         <p>Вы уверены, что хотите удалить категорию?</p>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
-                                        <a href="{% url 'category-delete' category.id %}" class="btn btn-danger waves-effect waves-light">Удалить</a>
+                                        <button type="button" class="btn btn-label-secondary waves-effect"
+                                            data-bs-dismiss="modal">Закрыть</button>
+                                        <a href="{% url 'category-delete' category.id %}"
+                                            class="btn btn-danger waves-effect waves-light">Удалить</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-body">
-                            <p>Вы уверены, что хотите удалить категорию?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-label-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
-                            <a href="{% url 'category-delete' category.id %}" class="btn btn-danger waves-effect waves-light">Удалить</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </td>
-</tr>
-{% endfor %}        
-            </tbody>
-        </table>
-        <div class="d-flex justify-content-center mt-5">
-            <nav aria-label="Pagination">
-                <ul class="pagination">
-                    {% if page_obj.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1" aria-label="First">
-                                &laquo;&laquo;
-                            </a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                                &laquo;
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">&laquo;&laquo;</span>
-                        </li>
-                        <li class="page-item disabled">
-                            <span class="page-link">&laquo;</span>
-                        </li>
-                    {% endif %}
 
-                    {% for page_num in visible_pages %}
-                        {% if page_num == page_obj.number %}
-                            <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
-                        {% else %}
-                            <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if page_obj.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-                                &raquo;
-                            </a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
-                                &raquo;&raquo;
-                            </a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled">
-                            <span class="page-link">&raquo;</span>
-                        </li>
-                        <li class="page-item disabled">
-                            <span class="page-link">&raquo;&raquo;</span>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
     </div>
+</div>
+</div>
+</div>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<div class="d-flex justify-content-center mt-5">
+    <nav aria-label="Pagination">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    &laquo;&laquo;
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    &laquo;
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;&laquo;</span>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;</span>
+            </li>
+            {% endif %}
+
+            {% for page_num in visible_pages %}
+            {% if page_num == page_obj.number %}
+            <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    &raquo;
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                    &raquo;&raquo;
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;</span>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;&raquo;</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+</div>
 </div>
 
 {% endblock %}

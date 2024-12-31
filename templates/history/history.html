@@ -105,7 +105,7 @@
                         <td>{{ order.amount }}</td>
                         <td>{% if order.discount %}{{ order.discount }}{% else %}-{% endif %}</td>
                         <td>{% if order.change %}{{ order.change }}{% else %}-{% endif %}</td>
-                        <td>{{ order.created }}</td>
+                        <td>{{ order.created"d.m.Y H:i" }}</td>
                         <td style="position: relative;">
                           <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                   data-bs-target="#deleteModal{{ order.id }}">

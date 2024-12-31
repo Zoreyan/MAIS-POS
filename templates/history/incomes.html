@@ -48,10 +48,10 @@
                                 <td>{{ income.quantity }}</td>
                                 <td>{{ income.price_at_moment}}</td>
                                 <td>{{ income.total_sum }}</td>
-                                <td>{{ income.created }}</td>
+                                <td>{{ income.created|date:"d.m.Y H:i" }}</td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm w-100" data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal{{ income.id }}"><i class="mdi mdi-cart me-1"></i>Удалить</button>
+                                        data-bs-target="#deleteModal{{ income.id }}"><i class="bx bx-cart me-1"></i>Удалить</button>
                                     <!-- Modal -->
                                     <div id="deleteModal{{ income.id }}" class="modal fade" tabindex="-1" role="dialog"
                                         aria-hidden="true">
@@ -81,20 +81,20 @@
                                 {% if page_obj.has_previous %}
                                 <li class="page-item">
                                     <a class="page-link" href="?page=1" aria-label="Первая">
-                                        <i class="mdi mdi-chevron-double-left"></i>
+                                        <i class="bx bx-chevron-double-left"></i>
                                     </a>
                                 </li>
                                 <li class="page-item">
                                     <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Предыдущая">
-                                        <i class="mdi mdi-chevron-left"></i>
+                                        <i class="bx bx-chevron-left"></i>
                                     </a>
                                 </li>
                                 {% else %}
                                 <li class="page-item disabled">
-                                    <span class="page-link"><i class="mdi mdi-chevron-double-left"></i></span>
+                                    <span class="page-link"><i class="bx bx-chevron-double-left"></i></span>
                                 </li>
                                 <li class="page-item disabled">
-                                    <span class="page-link"><i class="mdi mdi-chevron-left"></i></span>
+                                    <span class="page-link"><i class="bx bx-chevron-left"></i></span>
                                 </li>
                                 {% endif %}
 
@@ -113,20 +113,20 @@
                                 {% if page_obj.has_next %}
                                 <li class="page-item">
                                     <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Следующая">
-                                        <i class="mdi mdi-chevron-right"></i>
+                                        <i class="bx bx-chevron-right"></i>
                                     </a>
                                 </li>
                                 <li class="page-item">
                                     <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
-                                        <i class="mdi mdi-chevron-double-right"></i>
+                                        <i class="bx bx-chevron-double-right"></i>
                                     </a>
                                 </li>
                                 {% else %}
                                 <li class="page-item disabled">
-                                    <span class="page-link"><i class="mdi mdi-chevron-right"></i></span>
+                                    <span class="page-link"><i class="bx bx-chevron-right"></i></span>
                                 </li>
                                 <li class="page-item disabled">
-                                    <span class="page-link"><i class="mdi mdi-chevron-double-right"></i></span>
+                                    <span class="page-link"><i class="bx bx-chevron-double-right"></i></span>
                                 </li>
                                 {% endif %}
                             </ul>

@@ -47,7 +47,7 @@
                                 <td>{{ sale.quantity }}</td>
                                 <td>{{ sale.price_at_moment }}</td>
                                 <td>{{ sale.total_sum }}</td>
-                                <td>{{ sale.created }}</td>
+                                <td>{{ sale.created|date:"d.m.Y H:i" }}</td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ sale.id }}">
                                         <i class="mdi mdi-cart me-1"></i>Удалить

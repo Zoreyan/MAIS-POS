@@ -1,23 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
 <!-- Main Content -->
-<div class="container mt-5">
-  <div class="row">
-      <div class="col-8">
+  <div class="row gy-2">
+      <div class="col-lg-8 col-sm-12">
           <div class="card">
               <div class="card-body p-3">
-                <div class="row mb-2 align-items-center justify-content-between">
-                  <div class="col-sm-auto d-flex align-items-center gap-2">
+                <div class="row mb-2 align-items-center gy-2">
+                  <div class="col-lg-4 col-sm-12">
                     <input type="number" placeholder="Штрих код" maxlength="8" class="form-control  barcode me-2" name="barcode" autofocus>
+
+                  </div>
+                  <div class="col-lg-4 col-sm-12">
                     <input type="number" placeholder="Сумма оплаты" maxlength="8" class="form-control  amount" name="amount">
-                    <button type="button" class="btn btn-success form-control" data-bs-toggle="modal" data-bs-target="#createProductModal">
-                      <i class="bx bx-plus-circle me-2"></i><a href="#" id="openNewProductPopup">Создать</a>
-                  </button>
-                    <div class="col-sm-auto mt-2">
-                      <button type="button" class="btn btn-success d-flex align-items-center income">
-                        <i class="bx bx-plus-circle me-2"></i>Отправить
-                      </button>
-                    </div>
+
+                  </div>
+                  <div class="col-lg-4 col-sm-12">
+                    <button type="button" class="btn btn-success d-flex align-items-center income">
+                      <i class="bx bx-plus-circle me-2"></i>Отправить
+                    </button>
                   </div>
                 </div>
 
@@ -42,39 +42,27 @@
                     </tbody>
                   </table>
                 </div>
+                <div class="py-3">
+                  <span>Итоговая сумма: </span>
+                  <h2 id="total-sum" class="fw-semibold mb-0">0</h2>
+              </div>
+              <div class="mb-2">
+                  <span>Сдача: </span>
+                  <h3 class="change fw-semibold mb-0">0</h3>
+              </div>
               </div> <!-- end card-body-->
             </div> <!-- end card-->
       </div>
-      <div class="col-4">
-          <div class="card mb-2">
-              <h4 class="card-header fw-bold py-2">Цена</h4>
-              <div class="card-body p-2">
-                  <div class="mb-2">
-                      <span>Итоговая сумма: </span>
-                      <h2 id="total-sum" class="fw-semibold mb-0">0</h2>
-                  </div>
-                  <div class="mb-2">
-                      <span>Сдача: </span>
-                      <h3 class="change fw-semibold mb-0">0</h3>
-                  </div>
-              </div>
-          </div>
-          <div class="card">
-              <div class="card-body p-2">
-                  <div class="d-flex align-items-center gap-2">
-                      <input type="search" placeholder="добавить по названию" class="form-control search" name="search">
-                  </div>
-                  <div class="container-fluid px-0">
-                      <div class="product-search-results" style="display: none; max-height: 400px; overflow-x: auto; white-space: nowrap;">
-                          <div class="d-flex gap-0 col-12" id="search-results">
-                              <!-- Динамически добавляемые карточки товаров будут вставлены сюда -->
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
+      <div class="col-lg-4 col-sm-12">
+        <input type="search" placeholder="Добавить по названию" class="form-control search" name="search">
+
+        <div class="product-search-results mt-2">
+            <div class="row gy-2" id="search-results">
+                <!-- Динамически добавляемые карточки товаров будут вставлены сюда -->
+            </div>
+        </div>
+    </div>
+    </div>
   <script>
     document.getElementById('openNewProductPopup').addEventListener('click', function(e) {
         e.preventDefault();
@@ -84,68 +72,59 @@
 </script>
   <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
   <script>
-   document.addEventListener('DOMContentLoaded', function () {
-    // Массив для хранения выбранных продуктов
-    let productList = [];
-
-    // Обработчик ввода в поле поиска
-    document.querySelector('.search').addEventListener('input', function () {
-        let searchQuery = this.value.toLowerCase().trim();
-
-        if (searchQuery.length >= 2) {
-            fetch(`{% url 'search-product' %}?query=${encodeURIComponent(searchQuery)}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Ошибка сети');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const searchResultsContainer = document.getElementById('search-results');
-                    searchResultsContainer.innerHTML = ''; // Очищаем предыдущие результаты
-                    document.querySelector('.product-search-results').style.display = 'block';
-
-                    if (data.products && data.products.length > 0) {
-                        data.products.forEach(product => {
-                            searchResultsContainer.insertAdjacentHTML('beforeend', `
-                                <div class="card col-2 h-100" style="width: 200px; display: inline-block;">
-                                    <div class="card-body text-center p-3">
-                                        <img src="${product.image}" alt="${product.name}" class="img-fluid mb-2" style="max-height: 100px;">
-                                        <h5 class="card-title">${product.name}</h5>
-                                        <p class="card-text">${product.bar_code}</p>
-                                        <p class="card-text">Кол: ${product.quantity}</p>
-                                        <div class="d-flex justify-content-center">
-                                            <button class="btn btn-sm btn-primary add-product" data-id="${product.id}">Добавить</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            `);
-                        });
-                    } else {
-                        searchResultsContainer.innerHTML = '<div class="text-center">Товары не найдены.</div>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка поиска:', error);
-                    document.getElementById('search-results').innerHTML = '<div class="text-center">Ошибка поиска товара.</div>';
-                });
-        } else {
-            document.querySelector('.product-search-results').style.display = 'none';
-        }
-    });
-});
-$(document).ready(function () {
+  $(document).ready(function () {
     let barcodeInput = $('.barcode');
     let amountInput = $('.amount');
     let discountInput = $('.discount');
     let productList = [];
     let totalSum = 0;
+    let searchField = $('.search');
     let discountedSum = 0;
+
+    $(searchField).on('input', function () {
+            let searchQuery = this.value.trim();
+            if (searchQuery.length >= 2) {
+                $.ajax(`{% url 'search-product' %}?query=${encodeURIComponent(searchQuery)}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    success: function (response) {
+                        console.log(response);
+                        console.log(searchQuery)
+                        const searchResultsContainer = document.getElementById('search-results');
+                        searchResultsContainer.innerHTML = ''; // Очищаем предыдущие результаты
+                        document.querySelector('.product-search-results').style.display = 'block';
+
+                        if (response.products && response.products.length > 0) {
+                            response.products.forEach(product => {
+                                searchResultsContainer.insertAdjacentHTML('beforeend', `
+                                <div class="col-lg-4 col-md-4 col-sm-6 mb-2">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title mb-2 text-truncate" style="max-width: 100%;">${product.name}</h5>
+                                            <p class="card-text text-muted mb-1">${product.bar_code}</p>
+                                            <p class="card-text mb-3"><strong>Цена:</strong> ${product.sale_price}</p>
+                                            <button class="btn btn-primary btn-sm add-product" data-id="${product.id}">Добавить</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                `);
+                            });
+                        } else {
+                            searchResultsContainer.innerHTML = '<div class="text-center">Товары не найдены.</div>';
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Ошибка поиска:', error);
+                        $('#search-results').innerHTML = '<div class="text-center">Ошибка поиска товара.</div>';
+                    }
+                })
+
+            } else {
+                document.querySelector('.product-search-results').style.display = 'none';
+            }
+        });
 
     // Обработчик события для ввода штрих-кода
     barcodeInput.on('keyup', function () {
@@ -389,5 +368,4 @@ $(document).on('click', '.decrement', function () {
   </script>
   
   
-</div>
 {% endblock %}

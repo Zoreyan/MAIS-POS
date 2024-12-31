@@ -179,9 +179,9 @@ def get_product(request):
     bar_code = request.GET.get('bar_code')
     product_id = request.GET.get('id')
     if bar_code:
-        product = get_object_or_404(Product, bar_code=bar_code)  # Находим продукт по штрихкоду
+        product = get_object_or_404(Product, bar_code=bar_code, shop=request.user.shop)  # Находим продукт по штрихкоду
     elif product_id:
-        product = get_object_or_404(Product, id=product_id)  # Находим продукт по ID
+        product = get_object_or_404(Product, id=product_id, shop=request.user.shop)  # Находим продукт по ID
     else:
         return JsonResponse({'status': 'error', 'message': 'Штрихкод или ID не переданы'}, status=400)
     
@@ -251,7 +251,6 @@ def create_sell_history(request):
         order.profit = profit
         order.save()
 
-        check_inventory_levels(products)
 
         return JsonResponse({'status': 'success'})
         
@@ -323,48 +322,22 @@ def find_product(request):
 
 @login_required
 def search_product(request):
-    query = request.GET.get('query', '').strip()
-    results = []
+    query = request.GET.get('query', '')
+    products = []
 
     if query:
-        # Разделяем запрос на отдельные слова
-        search_terms = query.split()
-
-        # Формируем базовый запрос
-        search_query = Q()
-
-        # Поиск по всем терминам
-        for term in search_terms:
-            search_query &= (
-                Q(name__icontains=term) |
-                Q(description__icontains=term) |
-                Q(category__name__icontains=term) |
-                Q(bar_code__icontains=term)
+        print(query)
+        if query.isdigit():
+            products = Product.objects.filter(shop=request.user.shop, bar_code__icontains=query)
+        else:
+            products = Product.objects.filter(
+                Q(shop=request.user.shop) & 
+                (Q(name__icontains=query) | Q(category__name__icontains=query))
             )
+    print(products)
+    serialized_products = list(products.values())
 
-        # Выполняем запрос
-        products = Product.objects.filter(search_query).annotate(
-            relevance=Case(
-                When(name__icontains=query, then=1),
-                When(bar_code__icontains=query, then=2),
-                When(category__name__icontains=query, then=3),
-                When(description__icontains=query, then=4),
-                default=5,
-                output_field=IntegerField(),
-            )
-        ).order_by('relevance', '-quantity')
-
-        # Подготавливаем результаты
-        for product in products:
-            results.append({
-                'id': product.id,
-                'name': product.name,
-                'bar_code': product.bar_code,
-                'quantity': product.quantity,
-                'image': product.image.url if product.image else 'shops/default_product.png',
-            })
-
-    return JsonResponse({'products': results})
+    return JsonResponse({'products': serialized_products})
 
 @login_required
 def category_list(request):
