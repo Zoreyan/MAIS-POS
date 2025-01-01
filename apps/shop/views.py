@@ -12,7 +12,7 @@ def update_shop_per_page(request):
                 request.session['shop_per_page'] = shop_per_page
         except ValueError:
             request.session['shop_per_page'] = 10
-    return redirect('settings')
+    return redirect('shop-index', pk=request.POST.get('shop_id'))
 
 def index(request, pk):
     shop = Shop.objects.get(id=pk)

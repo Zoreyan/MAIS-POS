@@ -105,39 +105,25 @@ def settings_page(request):
         try:
             lat, lon = map(float, coordinates.split(','))  # Разбиваем и конвертируем координаты
             map_center = [lat, lon]  # Устанавливаем центр карты на координаты магазина
+            m = Map(location=map_center, zoom_start=8)
+
+            # Создаём карту с центром на координаты магазина или по умолчанию
+    
+
+            map_html = m._repr_html_()
+
+            # Если у магазина есть координаты, добавляем маркер
+            if coordinates:
+                Marker(location=[lat, lon]).add_to(m)
         except ValueError:
             map_center = [40.516018, 72.803835]  # Центр по умолчанию
+            map_html = Map(location=map_center, zoom_start=8)._repr_html_()
     else:
         map_center = [40.516018, 72.803835]  # Центр по умолчанию
-
-    # Создаём карту с центром на координаты магазина или по умолчанию
-    m = Map(location=map_center, zoom_start=8)
-
-    # Если у магазина есть координаты, добавляем маркер
-    if coordinates:
-        Marker(location=[lat, lon]).add_to(m)
-
-    # Генерация HTML-кода карты
-    map_html = m._repr_html_()
-
-    products = Product.objects.filter(shop=shop) 
-    sales = OrderHistory.objects.filter(shop=shop, order_type='sale')
-    incomes = OrderHistory.objects.filter(shop=shop, order_type='income')
-    total_products_cost = sum(Decimal(p.price) * Decimal(p.quantity) for p in products)
-
-    shop_stats = {
-        'total_products': products.count(),
-        'total_products_cost': total_products_cost,
-        'total_sales': sales.count(),
-        'total_sales_cost': sum(Decimal(s.total_amount) for s in sales.all()), 
-        'total_incomes': incomes.count(),
-        'total_incomes_cost': sum(Decimal(sh.amount) for sh in incomes.all()), 
-    }           
 
     context = {
         'form': form,
         'map_html': map_html,
         'shop': shop,
-        'shop_stats': shop_stats
     }
     return render(request, 'settings_page.html', context)

@@ -1,30 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
+<div class="row gy-2">
 
-    <div class="col-12 col-md-4">
-        <div class="card position-sticky" style="top: 15%; width: 100%; max-height: 85vh; padding: 10px;">
+    <div class="col-sm-12 col-md-4">
+        <div class="card">
             <div class="card-body text-center" style="padding: 10px;">
                 {% if shop.image %}
-                <img src="{{ shop.image.url }}" alt="Изображение магазина" class="img-fluid rounded mb-2"
-                    style="max-height: 150px;">
+                <img src="{{ shop.image.url }}" alt="Изображение магазина" class="img-fluid rounded mb-2">
                 {% else %}
                 <img src="https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
-                    alt="Изображение магазина" class="img-fluid rounded mb-2" style="max-height: 150px;">
+                    alt="Изображение магазина" class="img-fluid rounded mb-2">
                 {% endif %}
-                <h4 class="card-title" style="margin-bottom: 10px;">{{ shop.name }}</h4>
-                <ul class="list-group" style="padding: 0;">
-                    <li class="list-group-item" style="padding: 5px 10px;">Товары: {{ shop_stats.total_products }} —
-                        на сумму {{ shop_stats.total_products_cost }}</li>
-                    <li class="list-group-item" style="padding: 5px 10px;">Продажи: {{ shop_stats.total_sales }} —
-                        на сумму {{ shop_stats.total_sales_cost }}</li>
-                    <li class="list-group-item" style="padding: 5px 10px;">Поставки: {{ shop_stats.total_incomes }}
-                        — на сумму {{ shop_stats.total_incomes_cost }}</li>
-                </ul>
+                
             </div>
             <div class="card-footer" style="padding: 5px;">
-                <div id="shop-map" style="height: 100%;">
+                <div id="shop-map" style="height: 100%;" class="rounded-2">
                     {{ map_html|safe }}
                 </div>
             </div>
@@ -32,25 +23,45 @@
     </div>
 
 
-    <div class="col-12 col-md-8 mt-3 mt-md-0">
-        <div class="card">
+    <div class="col-sm-12 col-md-8">
+        <form method="post" class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Данные магазина</h4>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editShopModal">
-                    Изменить
-                </button>
+
+                <button type="submit" class="btn btn-primary">Сохранить</button>
             </div>
             <div class="card-body">
-                <p class="fs-5"><strong>Название:</strong> {{ shop.name }}</p>
-                <p class="fs-5"><strong>Адрес:</strong> {{ shop.address }}</p>
-                <p class="fs-5"><strong>Координаты:</strong> {{ shop.coordinates }}</p>
-                <p class="fs-5"><strong>Контакты:</strong> {{ shop.contacts }}</p>
-                <p class="fs-5"><strong>О нас:</strong> {{ shop.about }}</p>
-                <p class="fs-5"><strong>Часы работы:</strong> {{ shop.opening_hours }}</p>
+                {% csrf_token %}
+                <div class="row gy-3">
+                    <div class="col-6">
+                        <label for="name" class="form-label">Название</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="col-6">
+                        <label for="address" class="form-label">Адрес</label>
+                        {{ form.address }}
+                    </div>
+                    <div class="col-6">
+                        <label for="coordinates" class="form-label">Координаты</label>
+                        {{ form.coordinates }}
+                    </div>
+                    <div class="col-6">
+                        <label for="contacts" class="form-label">Контакты</label>
+                        {{ form.contacts }}
+                    </div>
+                    <div class="col-6">
+                        <label for="about" class="form-label">О нас</label>
+                        {{ form.about }}
+                    </div>
+                    <div class="col-6">
+                        <label for="opening_hours" class="form-label">Часы работы</label>
+                        {{ form.opening_hours }}
+                    </div>
+                </div>
             </div>
-        </div>
+        </form>
 
-        <div class="card mt-3">
+        <!-- <div class="card mt-3">
             <div class="card-header">
                 <h5>Настройки</h5>
             </div>
@@ -101,14 +112,7 @@
                             value="{{ request.session.sales_per_page|default:10 }}">
                         <button class="btn btn-primary mt-2" type="submit">Изменить</button>
                     </form>
-                    <form class="d-flex flex-column align-items-start mb-2" method="post"
-                        action="{% url 'update_incomes_per_page' %}">
-                        {% csrf_token %}
-                        <label for="incomes_per_page" class="me-2">Количество доходов на странице:</label>
-                        <input class="form-control w-auto me-2" type="number" name="incomes_per_page"
-                            id="incomes_per_page" value="{{ request.session.incomes_per_page|default:10 }}">
-                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
-                    </form>
+                    
                     <form class="d-flex flex-column align-items-start mb-2" method="post"
                         action="{% url 'update_shop_per_page' %}">
                         {% csrf_token %}
@@ -119,55 +123,9 @@
                     </form>
                 </div>
             </div>
-        </div>
+        </div> -->
+        
     </div>
 </div>
 
-<!-- Модальное окно для изменения данных магазина -->
-<div class="modal fade" id="editShopModal" tabindex="-1" aria-labelledby="editShopModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editShopModalLabel">Изменить данные магазина</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="shopName" class="form-label">Название</label>
-                        <input type="text" class="form-control" id="shopName" name="name" value="{{ shop.name }}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="shopAddress" class="form-label">Адрес</label>
-                        <input type="text" class="form-control" id="shopAddress" name="address"
-                            value="{{ shop.address }}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="shopCoordinates" class="form-label">Координаты</label>
-                        <input type="text" class="form-control" id="shopCoordinates" name="coordinates"
-                            value="{{ shop.coordinates }}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="shopContacts" class="form-label">Контакты</label>
-                        <textarea class="form-control" id="shopContacts" name="contacts">{{ shop.contacts }}</textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="shopAbout" class="form-label">О нас</label>
-                        <textarea class="form-control" id="shopAbout" name="about">{{ shop.about }}</textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="shopHours" class="form-label">Часы работы</label>
-                        <input type="text" class="form-control" id="shopHours" name="opening_hours"
-                            value="{{ shop.opening_hours }}">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 {% endblock %}
