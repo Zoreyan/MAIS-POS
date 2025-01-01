@@ -68,7 +68,6 @@
                         {% block content %}
                         {% endblock content %}
                     </div>
-                    <div class="content-backdrop fade"></div>
                 </div>
                 {% include 'includes/footer.html' %}
             </div>
@@ -84,7 +83,7 @@
             snowflake.classList.add('snowflake');
 
             // Рандомный размер
-            const size = Math.random() * 3 + 5 + 'px';
+            const size = Math.random() * 1 + 2 + 'px';
             snowflake.style.width = size;
             snowflake.style.height = size;
 
@@ -92,8 +91,8 @@
             snowflake.style.left = Math.random() * 100 + 'vw';
 
             // Рандомная продолжительность анимации
-            snowflake.style.animationDuration = Math.random() * 3 + 7 + 's';
-            snowflake.style.animationDelay = Math.random() * 6 + 's';
+            snowflake.style.animationDuration = Math.random() * 3 + 33 + 's';
+            snowflake.style.animationDelay = Math.random() * 44 + 's';
 
             container.appendChild(snowflake);
 
@@ -104,7 +103,7 @@
         }
 
         // Создание снежинок каждые 300 мс
-        setInterval(createSnowflake, 800);
+        setInterval(createSnowflake, 1000);
     </script>
     <script src="{% static 'assets/vendor/libs/jquery/jquery.js'  %}"></script>
     <script src="{% static 'assets/vendor/libs/popper/popper.js'  %}"></script>
