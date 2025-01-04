@@ -10,5 +10,4 @@ urlpatterns = [
     path('get-chart-data/', get_chart_data, name='get-chart-data'),
     path('get-top-products-data/', get_top_products_data, name='get-top-products-data'),
     path('get-top-incomes-data/', get_top_incomes_data, name='get-top-incomes-data'),
-    path('settings/', settings_page, name='settings'),
 ]

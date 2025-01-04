@@ -9,9 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from apps.product.models import Shop, Product
 from datetime import datetime
-from apps.product.forms import ShopForm
-import folium
-from folium import Map, Marker
+
 from apps.history.models import *
 
 @login_required
@@ -85,45 +83,3 @@ def dashboard(request):
     return render(request, 'dashboard.html', context)
 
 
-@login_required
-def settings_page(request):
-    user = request.user
-    form = ShopForm(instance=user.shop)
-    if request.method == 'POST':
-        form = ShopForm(request.POST, request.FILES, instance=user.shop)
-        if form.is_valid():
-            form.save()
-            return redirect('settings')
-
-
-    # Получаем объект магазина
-    shop = Shop.objects.get(id=request.user.shop.id) if request.user.shop else None
-    coordinates = shop.coordinates if shop else None
-
-    # Проверяем наличие координат
-    if coordinates:
-        try:
-            lat, lon = map(float, coordinates.split(','))  # Разбиваем и конвертируем координаты
-            map_center = [lat, lon]  # Устанавливаем центр карты на координаты магазина
-            m = Map(location=map_center, zoom_start=8)
-
-            # Создаём карту с центром на координаты магазина или по умолчанию
-    
-
-            map_html = m._repr_html_()
-
-            # Если у магазина есть координаты, добавляем маркер
-            if coordinates:
-                Marker(location=[lat, lon]).add_to(m)
-        except ValueError:
-            map_center = [40.516018, 72.803835]  # Центр по умолчанию
-            map_html = Map(location=map_center, zoom_start=8)._repr_html_()
-    else:
-        map_center = [40.516018, 72.803835]  # Центр по умолчанию
-
-    context = {
-        'form': form,
-        'map_html': map_html,
-        'shop': shop,
-    }
-    return render(request, 'settings_page.html', context)
