@@ -189,6 +189,7 @@ def create_sell_history(request):
             amount=amount,
             change=change,
             discount=discount,
+            order_type='sale'
         )
         for item in products:
             product = Product.objects.get(id=item['id'])
@@ -223,8 +224,6 @@ def create_sell_history(request):
         order.profit = profit
         order.save()
 
-        check_inventory_levels(products)
-
         return JsonResponse({'status': 'success'})
         
         
@@ -240,13 +239,14 @@ def create_income_history(request):
         order = OrderHistory.objects.create(
             amount=amount,
             change=change,
-            shop=request.user.shop
+            shop=request.user.shop,
+            order_type='income'
         )
         expend = Expense.objects.create(
             expend_type='supplies',
             description='Поступление',
             amount=amount,
-            shop=request.user.shop,
+            shop=request.user.shop
         )
 
         for item in products:
