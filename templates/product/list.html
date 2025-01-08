@@ -4,7 +4,7 @@
 
 <div class="card">
     <div class="card-header">
-        <div class="row mb-4">
+        <div class="row mb-2">
             <div class="col-12">
                 <h5 class="card-title">Фильтр</h5>
                 <form method="get" class="row gy-3 align-items-end">
@@ -54,8 +54,10 @@
                         </div>
                     </div>
                 </form>
+                
             </div>
         </div>
+        
     </div>
 
     <div class="table-responsive">
@@ -149,8 +151,9 @@
                     {% endfor %}
             </tbody>
         </table>
-
-        <div class="d-flex justify-content-end me-3 mt-5">
+        
+        <div class="d-flex align-items-center justify-content-end me-3 mt-5 flex-wrap">
+            
             <div class="pagination-container">
                 <nav aria-label="Пагинация">
                     <ul class="pagination justify-content-center">
@@ -181,7 +184,7 @@
                         {% for page_num in visible_pages %}
                         {% if page_num  ==  page_obj.number %}
                         <li class="page-item active" aria-current="page">
-                            <span class="page-link" style="color: black;">{{ page_num }}</span>
+                            <span class="page-link">{{ page_num }}</span>
                         </li>
                         {% else %}
                         <li class="page-item">

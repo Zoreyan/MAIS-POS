@@ -29,7 +29,7 @@ class ProductForm(forms.ModelForm):
             'sale_price': forms.NumberInput(attrs={'class': 'form-control'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
             'min_quantity': forms.NumberInput(attrs={'class': 'form-control'}),
-            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
             'unit': forms.Select(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
@@ -40,17 +40,3 @@ class ProductForm(forms.ModelForm):
             raise forms.ValidationError("Скидка должна быть в диапазоне от 0 до 100.")
         return discount
 
-
-class ShopForm(forms.ModelForm):
-    class Meta:
-        model = Shop
-        fields = ['name', 'address', 'image', 'opening_hours', 'contacts', 'about', 'coordinates']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'address': forms.TextInput(attrs={'class': 'form-control'}),
-            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
-            'opening_hours': forms.TextInput(attrs={'class': 'form-control'}),
-            'contacts': forms.TextInput(attrs={'class': 'form-control'}),
-            'about': forms.Textarea(attrs={'class': 'form-control'}),
-            'coordinates': forms.TextInput(attrs={'class': 'form-control'}),
-        }

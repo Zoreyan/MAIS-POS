@@ -30,10 +30,10 @@
                         <div class="mt-auto d-flex justify-content-between">
                             <a href="#" class="btn btn-primary">Подробнее</a>
                             <div class="d-flex align-items-center gap-1">
-                                <button class="btn rounded-pill btn-icon waves-effect waves-light">
+                                <button disabled class="btn border-none btn-icon waves-effect waves-light">
                                     <i class="bx bx-cart bx-sm"></i>
                                 </button>
-                                <button class="btn rounded-pill btn-icon waves-effect waves-light">
+                                <button disabled class="btn border-none btn-icon waves-effect waves-light">
                                     <i class="bx bx-heart bx-sm"></i>
                                 </button>
                             </div>
@@ -83,7 +83,7 @@
                         {% for page_num in visible_pages %}
                             {% if page_num == page_obj.number %}
                                 <li class="page-item active" aria-current="page">
-                                    <span class="page-link" style="color: black;">{{ page_num }}</span>
+                                    <span class="page-link">{{ page_num }}</span>
                                 </li>
                             {% else %}
                                 <li class="page-item">

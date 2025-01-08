@@ -24,7 +24,7 @@ def update_product_per_page(request):
                 request.session['items_per_page'] = items_per_page
         except ValueError:
             request.session['items_per_page'] = 10  # Устанавливаем значение по умолчанию
-    return redirect('settings') 
+    return redirect('product-list') 
 
 @login_required
 def list_(request):
@@ -384,7 +384,7 @@ def update_category_per_page(request):
                 request.session['category_per_page'] = category_per_page
         except ValueError:
             request.session['category_per_page'] = 10
-    return redirect('settings')
+    return redirect('category-list')
 
 
 @login_required
@@ -395,8 +395,9 @@ def category_delete(request, pk):
 
 @login_required
 def category_update(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    form = CategoryForm(instance=category)
     if request.method == 'POST':
-        category = get_object_or_404(Category, pk=pk)
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()

@@ -63,7 +63,7 @@ def update_finance_per_page(request):
                 request.session['finance_per_page'] = finance_per_page
         except ValueError:
             request.session['finance_per_page'] = 10
-    return redirect('settings')
+    return redirect('finance-list')
 
 @login_required
 def create(request):

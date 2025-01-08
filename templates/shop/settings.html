@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post" class="row gy-2" enctype="multipart/form-data">
+
+    <div class="col-sm-12 col-md-4">
+        <div class="card">
+            <div class="card-body text-center" style="padding: 10px;">
+                <label for="image" class="form-label">
+                    {% if shop.image %}
+                <img src="{{ shop.image.url }}" alt="Изображение магазина" class="img-fluid rounded mb-2">
+                {% else %}
+                <img src="https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
+                    alt="Изображение магазина" class="img-fluid rounded mb-2">
+                {% endif %}
+                </label>
+                {{ form.image }}
+                
+            </div>
+            <div class="card-footer" style="padding: 5px;">
+                <div id="shop-map" style="height: 100%;" class="rounded-2">
+                    {{ map_html|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-sm-12 col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Данные магазина</h4>
+
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+            <div class="card-body">
+                {% csrf_token %}
+                <div class="row gy-3">
+                    <div class="col-6">
+                        <label for="name" class="form-label">Название</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="col-6">
+                        <label for="address" class="form-label">Адрес</label>
+                        {{ form.address }}
+                    </div>
+                    <div class="col-6">
+                        <label for="coordinates" class="form-label">Координаты</label>
+                        {{ form.coordinates }}
+                    </div>
+                    <div class="col-6">
+                        <label for="contacts" class="form-label">Контакты</label>
+                        {{ form.contacts }}
+                    </div>
+                    <div class="col-6">
+                        <label for="about" class="form-label">О нас</label>
+                        {{ form.about }}
+                    </div>
+                    <div class="col-6">
+                        <label for="opening_hours" class="form-label">Часы работы</label>
+                        {{ form.opening_hours }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="card mt-3">
+            <div class="card-header">
+                <h5>Настройки</h5>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#paginationSettings"
+                    aria-expanded="false" aria-controls="paginationSettings">
+                    Настройки пагинации
+                </button>
+
+                <div class="collapse mt-3" id="paginationSettings">
+                    <form class="d-flex flex-column align-items-start mb-2" method="post"
+                        action="{% url 'update_product_per_page' %}">
+                        {% csrf_token %}
+                        <label for="items_per_page" class="me-2">Количество товаров на странице:</label>
+                        <input class="form-control w-auto me-2" type="number" name="items_per_page" id="items_per_page"
+                            value="{{ request.session.items_per_page|default:10 }}">
+                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
+                    </form>
+                    <form class="d-flex flex-column align-items-start mb-2" method="post"
+                        action="{% url 'update_category_per_page' %}">
+                        {% csrf_token %}
+                        <label for="category_per_page" class="me-2">Количество категорий на странице:</label>
+                        <input class="form-control w-auto me-2" type="number" name="category_per_page"
+                            id="category_per_page" value="{{ request.session.category_per_page|default:10 }}">
+                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
+                    </form>
+                    <form class="d-flex flex-column align-items-start mb-2" method="post"
+                        action="{% url 'update_finance_per_page' %}">
+                        {% csrf_token %}
+                        <label for="finance_per_page" class="me-2">Количество расходов на странице:</label>
+                        <input class="form-control w-auto me-2" type="number" name="finance_per_page"
+                            id="finance_per_page" value="{{ request.session.finance_per_page|default:10 }}">
+                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
+                    </form>
+                    <form class="d-flex flex-column align-items-start mb-2" method="post"
+                        action="{% url 'update_orders_per_page' %}">
+                        {% csrf_token %}
+                        <label for="orders_per_page" class="me-2">Количество заказов на странице:</label>
+                        <input class="form-control w-auto me-2" type="number" name="orders_per_page"
+                            id="orders_per_page" value="{{ request.session.orders_per_page|default:10 }}">
+                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
+                    </form>
+                    <form class="d-flex flex-column align-items-start mb-2" method="post"
+                        action="{% url 'update_sales_per_page' %}">
+                        {% csrf_token %}
+                        <label for="sales_per_page" class="me-2">Количество продаж на странице:</label>
+                        <input class="form-control w-auto me-2" type="number" name="sales_per_page" id="sales_per_page"
+                            value="{{ request.session.sales_per_page|default:10 }}">
+                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
+                    </form>
+                    
+                    <form class="d-flex flex-column align-items-start mb-2" method="post"
+                        action="{% url 'update_shop_per_page' %}">
+                        {% csrf_token %}
+                        <label for="shop_per_page" class="me-2">Количество товаров в магазине:</label>
+                        <input class="form-control w-auto me-2" type="number" name="shop_per_page" id="shop_per_page"
+                            value="{{ request.session.shop_per_page|default:10 }}">
+                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
+                    </form>
+                </div>
+            </div>
+        </div> -->
+        
+    </div>
+</form>
+
+{% endblock %}

@@ -13,7 +13,7 @@ def update_orders_per_page(request):
                 request.session['orders_per_page'] = orders_per_page
         except ValueError:
             request.session['orders_per_page'] = 10
-    return redirect('settings')
+    return redirect('total')
 
 @login_required
 def total(request):
@@ -81,7 +81,7 @@ def update_sales_per_page(request):
                 request.session['sales_per_page'] = sales_per_page
         except ValueError:
             request.session['sales_per_page'] = 10
-    return redirect('settings')
+    return redirect('sold-history')
 
 def sales(request):
     sales = SoldHistory.objects.filter(shop=request.user.shop).order_by('-created')
@@ -125,7 +125,7 @@ def update_incomes_per_page(request):
                 request.session['incomes_per_page'] = incomes_per_page
         except ValueError:
             request.session['incomes_per_page'] = 10
-    return redirect('settings')
+    return redirect('income-history')
 
 def incomes(request):
     incomes = IncomeHistory.objects.filter(shop=request.user.shop).order_by('-created')

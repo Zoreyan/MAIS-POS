@@ -1,6 +1,6 @@
 {% load static %}
 
-<form class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar"  method="get" action="{% url 'product-list' %}">
+<form class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar"  method="get" action="{% url 'product-list' %}">
 
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none ">
         <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
@@ -84,6 +84,13 @@
                     <a href="#" class="dropdown-item">
                         <i class="bx bx-bell me-1"></i>
                         <span>Уведомления</span>
+                    </a>
+                    <li>
+                        <div class="dropdown-divider my-1 mx-n2"></div>
+                    </li>
+                    <a href="{% url 'password_change' %}" class="dropdown-item">
+                        <i class="bx bx-edit me-1"></i>
+                        <span>Смена пароля</span>
                     </a>
                     <li>
                         <div class="dropdown-divider my-1 mx-n2"></div>

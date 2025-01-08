@@ -27,60 +27,50 @@
                 <div>Главная</div>
             </a>
         </li>
-        <li class="menu-item {% if url_name == 'dashboar' %} active {% endif %}">
-            <a href="{% url 'dashboard' %}" class="menu-link">
-                <i class='menu-icon bx bx-link'></i>
-                <div>Wildberries</div>
-                <div class="badge bg-danger rounded-pill ms-auto">Скоро</div>
-            </a>
-        </li>
-    
         <li class="menu-item {% if url_name == 'finance-list' %} active {% endif %}">
             <a href="{% url 'finance-list' %}" class="menu-link">
                 <i class="menu-icon bx bx-dollar-circle"></i>
                 <div>Финансы</div>
             </a>
         </li>
-    
+
         <li class="menu-header small">
             <span class="menu-header-text">Продажи</span>
         </li>
-        <li class="menu-item {% if url_name == 'category-list' or url_name == 'product-list' or url_name == 'product-create' or url_name == 'product-sale' or url_name == 'product-income' %} open {% endif %}">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon bx bx-store"></i>
-                <div>Товары</div>
-
+        <li class="menu-item {% if url_name == 'category-list' %} active {% endif %}">
+            <a href="{% url 'category-list' %}" class="menu-link">
+                <i class="menu-icon bx bx-category"></i>
+                <div>Категории</div>
             </a>
-            <ul class="menu-sub">
-                <li class="menu-item {% if url_name == 'category-list' %} active {% endif %}">
-                    <a href="{% url 'category-list' %}" class="menu-link">
-                        <div>Категории</div>
-                    </a>
-                </li>
-                <li class="menu-item {% if url_name == 'product-list' %} active {% endif %}">
-                    <a href="{% url 'product-list' %}" class="menu-link">
-                        <div>Каталог</div>
-                    </a>
-                </li>
-                <li class="menu-item {% if url_name == 'product-create' %} active {% endif %}">
-                    <a href="{% url 'product-create' %}" class="menu-link">
-                        <div>Добавить</div>
-                    </a>
-                </li>
-                <li class="menu-item {% if url_name == 'product-sale' %} active {% endif %}">
-                    <a href="{% url 'product-sale' %}" class="menu-link">
-                        <div>Продажа</div>
-                    </a>
-                </li>
-                <li class="menu-item {% if url_name == 'product-income' %} active {% endif %}">
-                    <a href="{% url 'product-income' %}" class="menu-link">
-                        <div>Поставка</div>
-                    </a>
-                </li>
-            </ul>
         </li>
-    
-        <li class="menu-item {% if url_name == 'history' or url_name == 'total' or url_name == 'sold-history' or url_name == 'income-history' %} open {% endif %}">
+        <li class="menu-item {% if url_name == 'product-list' %} active {% endif %}">
+            <a href="{% url 'product-list' %}" class="menu-link">
+                <i class="menu-icon bx bx-store"></i>
+
+                <div>Каталог</div>
+            </a>
+        </li>
+
+        <li class="menu-item {% if url_name == 'product-sale' %} active {% endif %}">
+            <a href="{% url 'product-sale' %}" class="menu-link">
+                <i class="menu-icon bx bx-wallet"></i>
+                <div>Продажа</div>
+            </a>
+        </li>
+        <li class="menu-item {% if url_name == 'product-income' %} active {% endif %}">
+            <a href="{% url 'product-income' %}" class="menu-link">
+                <i class="menu-icon bx bx-package"></i>
+                <div>Поставка</div>
+            </a>
+        </li>
+        <li class="menu-item {% if url_name == 'user-list' %} active {% endif %}">
+            <a href="{% url 'user-list' %}" class="menu-link">
+                <i class="menu-icon bx bx-user"></i>
+                <div>Сотрудники</div>
+            </a>
+        </li>
+        <li
+            class="menu-item {% if url_name == 'history' or url_name == 'total' or url_name == 'sold-history' or url_name == 'income-history' %} open {% endif %}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon bx bx-archive"></i>
                 <div>История</div>
@@ -96,6 +86,7 @@
                         <div>Продажи</div>
                     </a>
                 </li>
+                
                 <li class="menu-item {% if url_name == 'income-history' %} active {% endif %}">
                     <a href="{% url 'income-history' %}" class="menu-link">
                         <div>Поставки</div>
@@ -103,65 +94,39 @@
                 </li>
             </ul>
         </li>
-    
-        <li class="menu-item {% if url_name == 'user-list' or url_name == 'user-create' %} open {% endif %}">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon bx bx-group"></i>
-                <div>Персонал</div>
-            </a>
-            <ul class="menu-sub">
-                <li class="menu-item {% if url_name == 'user-list' %} active {% endif %}">
-                    <a href="{% url 'user-list' %}" class="menu-link">
-                        <div>Сотрудники</div>
-                    </a>
-                </li>
-                <li class="menu-item {% if url_name == 'user-create' %} active {% endif %}">
-                    <a href="{% url 'user-create' %}" class="menu-link">
-                        <div>Добавить</div>
-                    </a>
-                </li>
-            </ul>
-        </li>
-    
+
+
         <li class="menu-header small">
-            <span class="menu-header-text">Онлайн</span>
+            <span class="menu-header-text">Магазин</span>
         </li>
         <li class="menu-item">
             {% if request.user.shop %}
             <a href="{% url 'shop-index' request.user.shop.id %}" class="menu-link">
-                <i class="menu-icon bx bx-cart"></i>
-                <div>Магазин</div>
+                <i class="menu-icon bx bx-store-alt"></i>
+                <div>Витрина</div>
             </a>
             {% else %}
             <a href="{% url 'settings' %}" class="menu-link">
-                <i class="menu-icon bx bx-cart"></i>
-                <div>Магазин</div>
+                <i class="menu-icon bx bx-store-alt"></i>
+                <div>Витрина</div>
             </a>
             {% endif %}
-        </li>
-        <li class="menu-item {% if url_name == 'shop-order-list' %} active {% endif %}">
-            <a href="{% url 'shop-order-list' %}" class="menu-link">
-                <i class="menu-icon bx bx-cart-download"></i>
-                <div>Заказы</div>
-            </a>
-        </li>
-
-        <li class="menu-header small">
-            <span class="menu-header-text">Настройки</span>
         </li>
         <li class="menu-item {% if url_name == 'settings' %} active {% endif %}">
             <a href="{% url 'settings' %}" class="menu-link">
                 <i class="menu-icon bx bx-cog"></i>
-                <div>Система</div>
+                <div>Настройки</div>
             </a>
         </li>
-        <li class="menu-item">
-            <a href="#" class="menu-link">
-                <i class="menu-icon bx bx-support"></i>
-                <div>Помощь</div>
+        <!-- <li class="menu-item {% if url_name == 'shop-order-list' %} active {% endif %}">
+            <a href="{% url 'shop-order-list' %}" class="menu-link">
+                <i class="menu-icon bx bx-cart-download"></i>
+                <div>Заказы</div>
             </a>
-        </li>
+        </li> -->
+
+
     </ul>
     {% endwith %}
-    
+
 </aside>

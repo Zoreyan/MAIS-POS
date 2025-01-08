@@ -10,9 +10,7 @@ from django.http import JsonResponse
 from apps.product.models import Shop, Product
 from apps.finance.models import Expense
 from datetime import datetime
-from apps.product.forms import ShopForm
-import folium
-from folium import Map, Marker
+
 from apps.history.models import *
 from datetime import datetime, timedelta
 from django.db.models import Sum, F
@@ -342,6 +340,7 @@ def dashboard(request):
     }
 
     return render(request, 'dashboard.html', context)
+
 
 
 @login_required

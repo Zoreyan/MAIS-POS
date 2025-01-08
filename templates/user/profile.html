@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="col-12">
-    <form class="card mb-6" enctype="multipart/form-data" method="POST">
+    <form class="card" enctype="multipart/form-data" method="POST">
 
 
         <div class="card-body">
@@ -18,31 +17,30 @@
                 <small class="text-muted mt-2">Нажмите для выбора фото</small>
             </label>
             {{ form.image }}
-
             </div>
                 {% csrf_token %}
                 <div class="row">
-                    <div class="mb-4 col-12 col-md-6">
+                    <div class="mb-4 col-sm-12 col-md-6">
                         <label for="firstName" class="form-label">Имя</label>
                         {{ form.first_name }}
                     </div>
-                    <div class="mb-4 col-12 col-md-6">
+                    <div class="mb-4 col-sm-12 col-md-6">
                         <label for="lastName" class="form-label">Фамилия</label>
                         {{ form.last_name }}
                     </div>
-                    <div class="mb-4 col-12 col-md-6">
+                    <div class="mb-4 col-sm-12 col-md-6">
                         <label for="email" class="form-label">E-mail</label>
                         {{ form.email }}
                     </div>
-                    <div class="mb-4 col-12 col-md-6">
+                    <div class="mb-4 col-sm-12 col-md-6">
                         <label for="phone" class="form-label">Имя пользователя</label>
                         {{ form.username }}
                     </div>
-                    <div class="mb-4 col-12 col-md-6">
+                    <div class="mb-4 col-sm-12 col-md-6">
                         <label for="phone" class="form-label">Номер телефона</label>
                         {{ form.phone }}
                     </div>
-                  
+
                     <div class="mt-2 d-flex g-2">
                         <button type="submit" class="btn btn-primary me-3">Сохранить изменения</button>
                         <button type="reset" class="btn btn-label-secondary">Отмена</button>
@@ -50,12 +48,6 @@
                 </div>
         </div>
     </form>
-
-    <div class="card">
-        <h5 class="card-header">Конфиденциальное</h5>
-        <div class="card-body">
-            <a href="{% url 'password_change' %}" class="btn btn-sm btn-info">Смена пароля</a>
-        </div>
-    </div>
-</div>
+    
+    
 {% endblock %}

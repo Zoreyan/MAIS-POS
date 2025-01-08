@@ -60,107 +60,107 @@
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="datatables-products table table-bordered">
-            <thead class="border-top">
-                <tr>
-                    <th>Описание</th>
-                    <th>Сумма</th>
-                    <th>Дата</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for expend in page_obj %}
+        <div class="table-responsive">
+            <table class="datatables-products table">
+                <thead class="border-top">
                     <tr>
-                        <td>{{ expend.description|default:"-" }}{% if expend.user %}:{{ expend.user }}{% endif %}</td>
-                        <td>{{ expend.amount }}</td>
-                        <td>{{ expend.created }}</td>
-                        <td>
-                            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ expend.id }}">
-                                <i class='bx bx-trash text-danger fs-5'></i>
-                            </button>
-                            <div class="modal fade" id="deleteModal{{ expend.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="fs-5" id="deleteModalLabel">Вы уверены, что хотите удалить?</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            {{ expend.description }}<br>
-                                            {{ expend.amount }}
-                                        </div>
-                                        <div class="modal-footer">
-                                            <a href="{% url 'expense-delete' expend.id %}" class="btn btn-danger">Да</a>
+                        <th>Описание</th>
+                        <th>Сумма</th>
+                        <th>Дата</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expend in page_obj %}
+                        <tr>
+                            <td>{{ expend.description|default:"-" }}{% if expend.user %}:{{ expend.user }}{% endif %}</td>
+                            <td>{{ expend.amount }}</td>
+                            <td>{{ expend.created }}</td>
+                            <td>
+                                <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ expend.id }}">
+                                    <i class='bx bx-trash text-danger fs-5'></i>
+                                </button>
+                                <div class="modal fade" id="deleteModal{{ expend.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="fs-5" id="deleteModalLabel">Вы уверены, что хотите удалить?</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {{ expend.description }}<br>
+                                                {{ expend.amount }}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a href="{% url 'expense-delete' expend.id %}" class="btn btn-danger">Да</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center">Нет расходов, соответствующих фильтру.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div class="d-flex justify-content-center mt-4">
-        <nav aria-label="Пагинация">
-            <ul class="pagination">
-                {% if page_obj.number > 1 %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1" aria-label="Первая">&laquo;&laquo;</a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">&laquo;&laquo;</span>
-                    </li>
-                {% endif %}
-                {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">&laquo;</a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">&laquo;</span>
-                    </li>
-                {% endif %}
-                {% for page_num in visible_pages %}
-                    {% if page_num == page_obj.number %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ page_num }}</span>
-                        </li>
-                    {% else %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                        </li>
-                    {% endif %}
-                {% endfor %}
-                {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">&raquo;</a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">&raquo;</span>
-                    </li>
-                {% endif %}
-                {% if page_obj.number < page_obj.paginator.num_pages %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">&raquo;&raquo;</a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">&raquo;&raquo;</span>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-    </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">Нет расходов, соответствующих фильтру.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-end mt-5 me-3">
+                <nav aria-label="Пагинация">
+                    <ul class="pagination">
+                        {% if page_obj.number > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1" aria-label="Первая">&laquo;&laquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;&laquo;</span>
+                            </li>
+                        {% endif %}
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">&laquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
+                        {% endif %}
+                        {% for page_num in visible_pages %}
+                            {% if page_num == page_obj.number %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">&raquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                        {% endif %}
+                        {% if page_obj.number < page_obj.paginator.num_pages %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">&raquo;&raquo;</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;&raquo;</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    
 
 </div>
 
