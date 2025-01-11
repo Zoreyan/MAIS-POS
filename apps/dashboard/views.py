@@ -26,7 +26,6 @@ from django.utils.dateformat import DateFormat
 
 
 
-
 @login_required
 def get_top_products_data(request):
     top_products = SoldHistory.objects.filter(shop=request.user.shop).values('product__name').annotate(
@@ -70,7 +69,6 @@ def dashboard(request):
     end_month = request.GET.get('end_month', None)
 
     current_year = datetime.now().year
-
     start_year = int(start_month.split('-')[0]) if start_month else current_year
     end_year = int(end_month.split('-')[0]) if end_month else current_year
 
@@ -80,7 +78,7 @@ def dashboard(request):
     ]
 
     shop = request.user.shop
-
+      
     # Значения по умолчанию - текущий месяц
     if not start_month and not end_month:
         today = datetime.now()

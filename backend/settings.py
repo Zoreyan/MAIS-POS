@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'apps.client',
     'apps.finance',
     'apps.shop',
+    'apps.ai',
     'mptt',
     'django_filters',
 ]
