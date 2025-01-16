@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load tags %}
 {% block content %}
 
 <div class="card">
@@ -46,11 +47,18 @@
                                 <i class="bx bx-filter-alt me-1"></i>
                                 <span>Фильтр</span>
                             </button>
+                            {% if request.user|has_permission:"add_product" %}
                             <a href="{% url 'product-create' %}"
                                 class="btn btn-primary d-flex align-items-center justify-content-center">
                                 <i class="bx bx-plus me-1"></i>
                                 <span>Добавить</span>
                             </a>
+                            {% else %}
+                            <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center" onclick="showNoAccessMessage()">
+                                <i class="bx bx-plus me-1"></i>
+                                <span>Добавить</span>
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
                 </form>
@@ -118,13 +126,27 @@
                     <td>{{ product.unit }}</td>
                     <td>
                         <div class="d-inline-block text-nowrap">
+                            {% if request.user|has_permission:"change_product" %}
                             <a class="btn btn-sm btn-icon rounded-pill" href="{% url 'product-update' product.id %}">
                                 <i class="bx bx-edit bx-sm"></i>
                             </a>
+                            {% else %}
+                            <a class="btn btn-sm btn-icon rounded-pill" href="#" onclick="showNoAccessMessage()">
+                                <i class="bx bx-edit bx-sm"></i>
+                            </a>
+                            {% endif %}
+
+                            {% if request.user|has_permission:"delete_product" %}
                             <button type="button" class="btn btn-sm btn-icon rounded-pill" data-bs-toggle="modal"
                                 data-bs-target="#modalDelete{{ product.id }}">
                                 <i class="bx bx-trash bx-sm"></i>
                             </button>
+                            {% else %}
+                            <button type="button" class="btn btn-sm btn-icon rounded-pill" onclick="showNoAccessMessage()">
+                                <i class="bx bx-trash bx-sm"></i>
+                            </button>
+                            {% endif %}
+
                             <div class="modal fade" id="modalDelete{{ product.id }}" tabindex="-1"
                                 style="display: none;" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -140,8 +162,10 @@
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-label-secondary"
                                                 data-bs-dismiss="modal">Close</button>
+                                            {% if request.user|has_permission:"delete_product" %}
                                             <a href="{% url 'product-delete' product.id %}"
                                                 class="btn btn-danger">Удалить</a>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>

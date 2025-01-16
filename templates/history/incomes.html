@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load tags %}
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-12">
@@ -50,8 +50,14 @@
                                 <td>{{ income.total_sum }}</td>
                                 <td>{{ income.created|date:"d.m.Y H:i" }}</td>
                                 <td>
+                                    {% if request.user|has_permission:"delete_incomehistory" %}
                                     <button type="button" class="btn btn-danger btn-sm w-100" data-bs-toggle="modal"
                                         data-bs-target="#deleteModal{{ income.id }}">Удалить</button>
+                                    {% else %}
+                                    <button type="button" class="btn btn-danger btn-sm w-100" onclick="showNoAccessMessage()">
+                                        Удалить
+                                    </button>
+                                    {% endif %}
                                     <!-- Modal -->
                                     <div id="deleteModal{{ income.id }}" class="modal fade" tabindex="-1" role="dialog"
                                         aria-hidden="true">
@@ -62,9 +68,11 @@
                                                         {% csrf_token %}
                                                         <p>Вы действительно хотите удалить поставку?</p>
                                                         <div class="text-center">
+                                                            {% if request.user|has_permission:"delete_incomehistory" %}
                                                             <a class="btn btn-danger w-50"
                                                                 href="{% url 'income-history-delete' income.id %}">Удалить</a>
-                                                        </div>
+                                                            {% endif %}
+                                                            </div>
                                                     </form>
                                                 </div>
                                             </div>

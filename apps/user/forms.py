@@ -1,6 +1,7 @@
 from django import forms
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Permission
 
 
 class SignUpForm(UserCreationForm):
@@ -35,13 +36,16 @@ class CreateUserForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2', 'role', 'first_name', 'last_name', 'image', 'phone']
+        fields = ['username', 'email', 'password1', 'password2', 'role', 'first_name', 'last_name', 'image', 'phone']
 
         widgets = {
             'image': forms.FileInput(attrs={
                 'class': 'form-control'
             }),
             'username': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'email': forms.EmailInput(attrs={
                 'class': 'form-control'
             }),
             'role': forms.Select(attrs={
@@ -58,6 +62,42 @@ class CreateUserForm(UserCreationForm):
             })
         }
 
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'image', 'phone', 'email', 'role']
+        
+        
+        widgets = {
+           'email': forms.EmailInput(attrs={
+                'class':'form-control',
+                'id':'email'
+            }),
+            'role': forms.Select(attrs={
+                'class':'form-select',
+                'id':'role'
+            }),
+            'first_name': forms.TextInput(attrs={
+                'class':'form-control',
+                'id':'first_name'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class':'form-control',
+                'id':'last_name'
+            }),
+            'username': forms.TextInput(attrs={
+                'class':'form-control',
+                'id':'username'
+            }),
+            'phone': forms.TextInput(attrs={
+                'class':'form-control',
+                'id':'phone'
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'form-control',
+            })
+        }
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
@@ -87,7 +127,6 @@ class UserProfileForm(forms.ModelForm):
                 'id':'phone'
             }),
             'image': forms.FileInput(attrs={
-                'class': 'd-none',
-                'id': 'upload'
+                'class': 'form-control',
             })
         }

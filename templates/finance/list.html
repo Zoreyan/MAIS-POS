@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load tags %}
 {% block content %}
 
 <div class="card">
@@ -29,10 +30,17 @@
                             <i class="bx bx-filter-alt me-1"></i>
                             <span>Фильтр</span>
                         </button>
+                        {% if request.user|has_permission:"add_expense" %}
                         <button type="button" class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#expendTypeModal">
                             <i class="bx bx-plus me-1"></i>
                             <span>Добавить</span>
                         </button>
+                        {% else %}
+                        <button type="button" class="btn btn-primary d-flex align-items-center" onclick="showNoAccessMessage()">
+                            <i class="bx bx-plus me-1"></i>
+                            <span>Добавить</span>
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -77,9 +85,15 @@
                             <td>{{ expend.amount }}</td>
                             <td>{{ expend.created }}</td>
                             <td>
+                                {% if request.user|has_permission:"delete_expense" %}
                                 <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#deleteModal{{ expend.id }}">
                                     <i class='bx bx-trash text-danger fs-5'></i>
                                 </button>
+                                {% else %}
+                                <button type="button" class="btn" onclick="showNoAccessMessage()">
+                                    <i class='bx bx-trash text-danger fs-5'></i>
+                                </button>
+                                {% endif %}
                                 <div class="modal fade" id="deleteModal{{ expend.id }}" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
