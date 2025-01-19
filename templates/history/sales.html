@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load tags %}
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-12">
@@ -49,9 +50,15 @@
                                 <td>{{ sale.total_sum }}</td>
                                 <td>{{ sale.created|date:"d.m.Y H:i" }}</td>
                                 <td>
+                                    {% if request.user|has_permission:"delete_soldhistory"%}
                                     <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ sale.id }}">
                                         <i class="mdi mdi-cart me-1"></i>Удалить
                                     </button>
+                                    {% else %}
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="showNoAccessMessage()">
+                                        <i class="mdi mdi-cart me-1"></i>Удалить
+                                    </button>
+                                    {% endif %}
                                     <div id="deleteModal{{ sale.id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
@@ -60,7 +67,9 @@
                                                         {% csrf_token %}
                                                         <p>Вы действительно хотите удалить поставку?</p>
                                                         <div class="mb-3 text-center">
+                                                            {% if request.user|has_permission:"delete_soldhistory" %}
                                                             <a class="btn btn-danger" href="{% url 'sold-history-delete' sale.id %}">Удалить</a>
+                                                            {% endif %}
                                                         </div>
                                                     </form>
                                                 </div>

@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load tags %}
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
 
     <div class="app-brand demo">
@@ -27,28 +27,42 @@
                 <div>Главная</div>
             </a>
         </li>
+        {% if request.user|has_permission:"view_expense" %}
         <li class="menu-item {% if url_name == 'finance-list' %} active {% endif %}">
             <a href="{% url 'finance-list' %}" class="menu-link">
                 <i class="menu-icon bx bx-dollar-circle"></i>
                 <div>Финансы</div>
             </a>
         </li>
-        <li class="menu-item {% if url_name == 'chat' %} active {% endif %}">
-            <a href="{% url 'chat' %}" class="menu-link">
-                <i class='menu-icon bx bx-message-alt-detail'></i>
-                <div>ИИ ассистент</div>
+        {% else %}
+        <li class="menu-item {% if url_name == 'finance-list' %} active {% endif %}">
+            <a href="javascript:void(0);" class="menu-link" onclick="showNoAccessMessage()">
+                <i class="menu-icon bx bx-dollar-circle"></i>
+                <div class="text-danger">Финансы</div>
             </a>
         </li>
+        {% endif %}
 
         <li class="menu-header small">
             <span class="menu-header-text">Продажи</span>
         </li>
+        {% if request.user|has_permission:"view_category" %}
         <li class="menu-item {% if url_name == 'category-list' %} active {% endif %}">
             <a href="{% url 'category-list' %}" class="menu-link">
                 <i class="menu-icon bx bx-category"></i>
                 <div>Категории</div>
             </a>
         </li>
+        {% else %}
+        <li class="menu-item {% if url_name == 'category-list' %} active {% endif %}">
+            <a href="javascript:void(0);" class="menu-link" onclick="showNoAccessMessage()">
+                <i class="menu-icon bx bx-category"></i>
+                <div class="text-danger">Категории</div>
+            </a>
+        </li>
+        {% endif %}
+        
+        {% if request.user|has_permission:"view_product" %}
         <li class="menu-item {% if url_name == 'product-list' %} active {% endif %}">
             <a href="{% url 'product-list' %}" class="menu-link">
                 <i class="menu-icon bx bx-store"></i>
@@ -56,6 +70,14 @@
                 <div>Каталог</div>
             </a>
         </li>
+        {% else %}
+        <li class="menu-item {% if url_name == 'product-list' %} active {% endif %}">
+            <a href="javascript:void(0);" class="menu-link" onclick="showNoAccessMessage()">
+                <i class="menu-icon bx bx-store"></i>
+                <div class="text-danger">Каталог</div>
+            </a>
+        </li>
+        {% endif %}
 
         <li class="menu-item {% if url_name == 'product-sale' %} active {% endif %}">
             <a href="{% url 'product-sale' %}" class="menu-link">
@@ -69,12 +91,22 @@
                 <div>Поставка</div>
             </a>
         </li>
+        {% if request.user|has_permission:"view_user" %}
         <li class="menu-item {% if url_name == 'user-list' %} active {% endif %}">
             <a href="{% url 'user-list' %}" class="menu-link">
                 <i class="menu-icon bx bx-user"></i>
                 <div>Сотрудники</div>
             </a>
         </li>
+        {% else %}
+        <li class="menu-item {% if url_name == 'user-list' %} active {% endif %}">
+            <a href="javascript:void(0);" class="menu-link" onclick="showNoAccessMessage()">
+                <i class="menu-icon bx bx-user"></i>
+                <div class="text-danger">Сотрудники</div>
+            </a>
+        </li>
+        {% endif %}
+
         <li
             class="menu-item {% if url_name == 'history' or url_name == 'total' or url_name == 'sold-history' or url_name == 'income-history' %} open {% endif %}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -82,22 +114,46 @@
                 <div>История</div>
             </a>
             <ul class="menu-sub">
+                {% if request.user|has_permission:"view_orderhistory" %}
                 <li class="menu-item {% if url_name == 'total' %} active {% endif %}">
                     <a href="{% url 'total' %}" class="menu-link">
                         <div>Общая</div>
                     </a>
                 </li>
+                {% else %}
+                <li class="menu-item {% if url_name == 'total' %} active {% endif %}">
+                    <a href="javascript:void(0);" class="menu-link" onclick="showNoAccessMessage()">
+                        <div class="text-danger">Общая</div>
+                    </a>
+                </li>
+                {% endif %}
+                {% if request.user|has_permission:"view_soldhistory" %}
                 <li class="menu-item {% if url_name == 'sold-history' %} active {% endif %}">
                     <a href="{% url 'sold-history' %}" class="menu-link">
                         <div>Продажи</div>
                     </a>
                 </li>
-                
+                {% else %}
+                <li class="menu-item {% if url_name == 'sold-history' %} active {% endif %}">
+                    <a href="javascript:void(0);" class="menu-link" onclick="showNoAccessMessage()">
+                        <div class="text-danger">Продажи</div>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if request.user|has_permission:"view_incomehistory" %}
                 <li class="menu-item {% if url_name == 'income-history' %} active {% endif %}">
                     <a href="{% url 'income-history' %}" class="menu-link">
                         <div>Поставки</div>
                     </a>
                 </li>
+                {% else %}
+                <li class="menu-item {% if url_name == 'income-history' %} active {% endif %}">
+                    <a href="javascript:void(0);" class="menu-link" onclick="showNoAccessMessage()">
+                        <div class="text-danger">Поставки</div>
+                    </a>
+                </li>
+                {% endif %}
             </ul>
         </li>
 

@@ -1,60 +1,69 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load tags %}
 {% block content %}
-<div class="modal modal-top fade" id="modalTop" tabindex="-1" style="display: none;" aria-hidden="true">
-<div class="modal-dialog">
-    <form class="modal-content" method="get">
-    <div class="modal-header">
-        <h5 class="modal-title" id="modalTopTitle">Фильтр</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
-    <div class="modal-body row gy-3">
-        <div class="col-md-12">
-        <label for="ProductCategory" class="form-label">Категория</label>
-        <select id="ProductCategory" name="category" class="form-select text-capitalize">
-            <option value="" {% if request.GET.category == "" %}selected{% endif %}>Все категории</option>
-            {% for category in categories %}
-            <option value="{{ category.name }}" {% if request.GET.category == category.name %}selected{% endif %}>
-                {{ category.name }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-md-12">
-        <label for="price_min" class="form-label">Цена с</label>
-        <input type="number" id="price_min" name="price_min" class="form-control" placeholder="Сумма от"
-            value="{{ request.GET.price_min }}">
-    </div>
-    <div class="col-md-12">
-        <label for="price_max" class="form-label">Цена по</label>
-        <input type="number" id="price_max" name="price_max" class="form-control" placeholder="Сумма по"
-            value="{{ request.GET.price_max }}">
-    </div>
-    <div class="col-md-12">
-        <label for="in_stock" class="form-label">Доступность</label>
-        <select id="in_stock" name="in_stock" class="form-select">
-            <option value="" {% if request.GET.in_stock == "" %}selected{% endif %}>Все</option>
-            <option value="yes" {% if request.GET.in_stock == "yes" %}selected{% endif %}>В наличии
-            </option>
-            <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии
-            </option>
-        </select>
-    </div>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Закрыть</button>
-        <button type="submit" class="btn btn-primary">Поиск</button>
-    </div>
-    </form>
-</div>
-</div>
 
-<div class="d-flex justify-content-between mb-3">
-        <div class="d-flex align-items-center gap-3">
-            <h3 class="card-title">Товары</h3>
-            <button type="button" class="btn btn-sm btn-label-secondary" data-bs-toggle="modal" data-bs-target="#modalTop">
-                Фильтр
-            </button>
+<div class="card">
+    <div class="card-header">
+        <div class="row mb-2">
+            <div class="col-12">
+                <h5 class="card-title">Фильтр</h5>
+                <form method="get" class="row gy-3 align-items-end">
+                    <div class="col-md-3">
+                        <label for="ProductCategory" class="form-label">Категория</label>
+                        <select id="ProductCategory" name="category" class="form-select text-capitalize">
+                            <option value="" {% if request.GET.category == "" %}selected{% endif %}>Все категории</option>
+                            {% for category in categories %}
+                            <option value="{{ category.name }}" {% if request.GET.category == category.name %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="price_min" class="form-label">Цена с</label>
+                        <input type="number" id="price_min" name="price_min" class="form-control" placeholder="Сумма от"
+                            value="{{ request.GET.price_min }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="price_max" class="form-label">Цена по</label>
+                        <input type="number" id="price_max" name="price_max" class="form-control" placeholder="Сумма по"
+                            value="{{ request.GET.price_max }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="in_stock" class="form-label">Доступность</label>
+                        <select id="in_stock" name="in_stock" class="form-select">
+                            <option value="" {% if request.GET.in_stock == "" %}selected{% endif %}>Все</option>
+                            <option value="yes" {% if request.GET.in_stock == "yes" %}selected{% endif %}>В наличии
+                            </option>
+                            <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 col-sm-12">
+                        <div class="d-flex btn-group">
+                            <button type="submit"
+                                class="btn btn-success d-flex align-items-center justify-content-center">
+                                <i class="bx bx-filter-alt me-1"></i>
+                                <span>Фильтр</span>
+                            </button>
+                            {% if request.user|has_permission:"add_product" %}
+                            <a href="{% url 'product-create' %}"
+                                class="btn btn-primary d-flex align-items-center justify-content-center">
+                                <i class="bx bx-plus me-1"></i>
+                                <span>Добавить</span>
+                            </a>
+                            {% else %}
+                            <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center" onclick="showNoAccessMessage()">
+                                <i class="bx bx-plus me-1"></i>
+                                <span>Добавить</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+                
+            </div>
         </div>
         <a href="{% url 'product-create' %}"
             class="btn btn-sm btn-primary d-flex align-items-center justify-content-center">
@@ -124,13 +133,27 @@
                     <td>{{ product.unit }}</td>
                     <td>
                         <div class="d-inline-block text-nowrap">
+                            {% if request.user|has_permission:"change_product" %}
                             <a class="btn btn-sm btn-icon rounded-pill" href="{% url 'product-update' product.id %}">
                                 <i class="bx bx-edit bx-sm"></i>
                             </a>
+                            {% else %}
+                            <a class="btn btn-sm btn-icon rounded-pill" href="#" onclick="showNoAccessMessage()">
+                                <i class="bx bx-edit bx-sm"></i>
+                            </a>
+                            {% endif %}
+
+                            {% if request.user|has_permission:"delete_product" %}
                             <button type="button" class="btn btn-sm btn-icon rounded-pill" data-bs-toggle="modal"
                                 data-bs-target="#modalDelete{{ product.id }}">
                                 <i class="bx bx-trash bx-sm"></i>
                             </button>
+                            {% else %}
+                            <button type="button" class="btn btn-sm btn-icon rounded-pill" onclick="showNoAccessMessage()">
+                                <i class="bx bx-trash bx-sm"></i>
+                            </button>
+                            {% endif %}
+
                             <div class="modal fade" id="modalDelete{{ product.id }}" tabindex="-1"
                                 style="display: none;" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -146,8 +169,10 @@
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-label-secondary"
                                                 data-bs-dismiss="modal">Close</button>
+                                            {% if request.user|has_permission:"delete_product" %}
                                             <a href="{% url 'product-delete' product.id %}"
                                                 class="btn btn-danger">Удалить</a>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>

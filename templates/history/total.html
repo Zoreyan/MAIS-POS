@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load tags %}
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-12">
@@ -127,10 +128,16 @@
                   {% endif %}
                 </td>
                 <td>
+                  {% if request.user|has_permission:"delete_orderhistory" %}
                   <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
                     data-bs-target="#deleteModal{{ order.id }}">
                     Удалить
                   </button>
+                  {% else %}
+                  <button type="button" class="btn btn-sm btn-danger" onclick="showNoAccessMessage()">
+                    Удалить
+                  </button>
+                  {% endif %}
                   <div id="deleteModal{{ order.id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
@@ -139,7 +146,9 @@
                             {% csrf_token %}
                             <p>Вы действительно хотите удалить ордер? {{ order.id }}</p>
                             <div class="mb-3 text-center">
+                              {% if request.user|has_permission:"delete_orderhistory" %}
                               <a class="btn btn-danger" href="{% url 'order-history-delete' order.id %}">Удалить</a>
+                              {% endif %}
                             </div>
                           </form>
                         </div>

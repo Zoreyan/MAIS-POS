@@ -62,7 +62,7 @@ def calculate_growth(current, previous):
         return 0
     return ((current - previous) / previous) * 100
 
-
+@login_required
 def dashboard(request):
     # Получаем start_month и end_month из GET-параметров
     start_month = request.GET.get('start_month', None)

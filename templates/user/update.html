@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid page-body-wrapper full-page-wrapper">
+    <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+        <div class="row  justify-content-center w-100">
+            <div class="col-12 col-md-10 col-lg-10 mx-auto p-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Добавить пользователя</h4>
+                    </div>
+                    <div class="card-body col-12 row">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row g-3 mb-3">
+                                <div class="col-12 col-md-6">
+                                    <label for="id_image" class="form-label">Изображение</label>
+                                    {{ form.image }}
+                                    {% if form.image.errors %}
+                                        <div class="text-danger">{{ form.image.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label for="id_username" class="form-label">Логин</label>
+                                    {{ form.username }}
+                                    {% if form.username.errors %}
+                                        <div class="text-danger">{{ form.username.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                    
+                            <div class="row g-3 mb-3">
+                                <div class="col-12 col-md-6">
+                                    <label for="id_email" class="form-label">Email</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label for="id_first_name" class="form-label">Имя</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger">{{ form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                    
+                            <div class="row g-3 mb-3">
+                                <div class="col-12 col-md-6">
+                                    <label for="id_last_name" class="form-label">Фамилия</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger">{{ form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label for="id_phone" class="form-label">Телефон</label>
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}
+                                        <div class="text-danger">{{ form.phone.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                    
+                            <div class="row g-3 mb-3">
+                                <div class="col-12 col-md-6">
+                                    <label for="id_role" class="form-label">Роль</label>
+                                    <select id="id_role" name="role" class="form-select">
+                                        <option value="" disabled selected>Выберите роль</option>
+                                        <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Администратор</option>
+                                        <option value="manager" {% if user.role == 'manager' %}selected{% endif %}>Менеджер</option>
+                                        <option value="cashier" {% if user.role == 'cashier' %}selected{% endif %}>Кассир</option>
+                                        <option value="owner" {% if user.role == 'owner' %}selected{% endif %}>Владелец</option>
+                                    </select>
+                                </div>
+                            </div>
+                    
+                            <div class="accordion mb-3" id="permissionsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="permissionsHeading">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#permissionsCollapse" aria-expanded="false" aria-controls="permissionsCollapse">
+                                            Права пользователя
+                                        </button>
+                                    </h2>
+                                    <div id="permissionsCollapse" class="accordion-collapse collapse" aria-labelledby="permissionsHeading" data-bs-parent="#permissionsAccordion">
+                                        <div class="accordion-body" style="overflow-x: auto; max-width: 100%;">
+                                            <table class="table table-bordered text-center">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Объект</th>
+                                                        <th>Создать</th>
+                                                        <th>Удалить</th>
+                                                        <th>Редактировать</th>
+                                                        <th>Посмотреть</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Пользователь</td>
+                                                        <td><input type="checkbox" id="can_create_user" name="can_create_user"></td>
+                                                        <td><input type="checkbox" id="can_delete_user" name="can_delete_user"></td>
+                                                        <td><input type="checkbox" id="can_edit_user" name="can_edit_user"></td>
+                                                        <td><input type="checkbox" id="can_view_user" name="can_view_user"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Товар</td>
+                                                        <td><input type="checkbox" id="can_create_product" name="can_create_product"></td>
+                                                        <td><input type="checkbox" id="can_delete_product" name="can_delete_product"></td>
+                                                        <td><input type="checkbox" id="can_edit_product" name="can_edit_product"></td>
+                                                        <td><input type="checkbox" id="can_view_product" name="can_view_product"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Категория</td>
+                                                        <td><input type="checkbox" id="can_create_category" name="can_create_category"></td>
+                                                        <td><input type="checkbox" id="can_delete_category" name="can_delete_category"></td>
+                                                        <td><input type="checkbox" id="can_edit_category" name="can_edit_category"></td>
+                                                        <td><input type="checkbox" id="can_view_category" name="can_view_category"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Расход</td>
+                                                        <td><input type="checkbox" id="can_create_expense" name="can_create_expense"></td>
+                                                        <td><input type="checkbox" id="can_delete_expense" name="can_delete_expense"></td>
+                                                        <td><input type="checkbox" id="can_edit_expense" name="can_edit_expense"></td>
+                                                        <td><input type="checkbox" id="can_view_expense" name="can_view_expense"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Общая история</td>
+                                                        <td></td>
+                                                        <td><input type="checkbox" id="can_delete_orderhistory" name="can_delete_orderhistory"></td>
+                                                        <td></td>
+                                                        <td><input type="checkbox" id="can_view_orderhistory" name="can_view_orderhistory"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>История продаж</td>
+                                                        <td></td>
+                                                        <td><input type="checkbox" id="can_delete_soldhistory" name="can_delete_soldhistory"></td>
+                                                        <td></td>
+                                                        <td><input type="checkbox" id="can_view_soldhistory" name="can_view_soldhistory"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>История поставок</td>
+                                                        <td></td>
+                                                        <td><input type="checkbox" id="can_delete_incomehistory" name="can_delete_incomehistory"></td>
+                                                        <td></td>
+                                                        <td><input type="checkbox" id="can_view_incomehistory" name="can_view_incomehistory"></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <div class="text-center d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-block enter-btn">Сохранить</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% if messages %}
+                    <div class="alert alert-danger alert-dismissible mt-3" role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li class="{{ message.tags }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible mt-3" role="alert">
+                        <h4 class="alert-heading">Ошибка в форме!</h4>
+                        <ul>
+                            {% for field, errors in form.errors.items %}
+                                <li>{{ field }}: {{ errors|join:', ' }}</li>
+                            {% endfor %}
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="user_id" value="{{ user.id }}">
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const userIdSelect = document.querySelector('#user_id');
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+        // Функция для обновления состояния чекбоксов
+        function updateCheckboxes(permissions) {
+            checkboxes.forEach((checkbox) => {
+                // Убедитесь, что имя чекбокса совпадает с полем в данных
+                checkbox.checked = permissions[checkbox.name] || false;
+            });
+        }
+
+        // Функция для загрузки прав пользователя
+        function loadUserPermissions(userId) {
+            fetch(`{% url 'get_user_permissions' %}?user_id=${userId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    // Обновляем состояние чекбоксов с помощью функции updateCheckboxes
+                    updateCheckboxes(data);
+                })
+                .catch((error) => console.error('Ошибка загрузки прав пользователя:', error));
+        }
+
+        // Инициализация загрузки прав для выбранного пользователя
+        userIdSelect.addEventListener('change', function () {
+            const userId = userIdSelect.value;
+            loadUserPermissions(userId);
+        });
+
+        // Загружаем права для первого пользователя при загрузке страницы
+        loadUserPermissions(userIdSelect.value);
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const roleSelect = document.querySelector('#id_role');
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+        function updateCheckboxes(permissions) {
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = permissions[checkbox.name] || false;
+            });
+        }
+
+        roleSelect.addEventListener('change', function () {
+            const selectedRole = roleSelect.value;
+            fetch(`{% url 'get_permissions' %}?role=${selectedRole}`, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            })
+                .then((response) => response.json())
+                .then((data) => updateCheckboxes(data))
+                .catch((error) => console.error('Ошибка при загрузке прав:', error));
+        });
+    });
+</script>
+{% endblock %}
