@@ -1,26 +1,23 @@
 from django.shortcuts import render, redirect
-from django.db.models import Sum, F
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Sum, F
 from django.utils.timezone import make_aware, is_aware
 
+import json
 from dateutil.relativedelta import relativedelta
 from calendar import monthrange
-
-import json
-from datetime import datetime
 from datetime import datetime, timedelta
 from folium import Map, Marker
 
 
-from apps.shop.forms import ShopForm
 from .forms import *
 from .models import *
+from apps.shop.forms import ShopForm
 from apps.history.models import *
 from apps.finance.models import Expense
 from apps.product.models import Shop, Product
-from apps.history.models import *
+
 
 
 
