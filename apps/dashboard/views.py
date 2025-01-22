@@ -1,27 +1,26 @@
 from django.shortcuts import render, redirect
-from .models import *
-from apps.history.models import *
-from django.db.models import Sum, F, Avg
-import json
-from .forms import *
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-from apps.product.models import Shop, Product
-from apps.finance.models import Expense
-from datetime import datetime
-
-from apps.history.models import *
-from datetime import datetime, timedelta
 from django.db.models import Sum, F
-from django.utils.timezone import make_aware, is_aware, now
-import calendar
-from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.db.models import Sum, F
+from django.utils.timezone import make_aware, is_aware
+
 from dateutil.relativedelta import relativedelta
 from calendar import monthrange
-from django.db.models.functions import TruncMonth
-from dateutil.relativedelta import relativedelta
-from django.utils.dateformat import DateFormat
+
+import json
+from datetime import datetime
+from datetime import datetime, timedelta
+from folium import Map, Marker
+
+
+from apps.shop.forms import ShopForm
+from .forms import *
+from .models import *
+from apps.history.models import *
+from apps.finance.models import Expense
+from apps.product.models import Shop, Product
+from apps.history.models import *
 
 
 
@@ -106,7 +105,7 @@ def dashboard(request):
         end_date = parse_month(end_month)
 
         if start_date and end_date:
-            _, last_day = calendar.monthrange(end_date.year, end_date.month)
+            _, last_day = monthrange(end_date.year, end_date.month)
             end_date = end_date.replace(day=last_day)
 
             start_date = make_aware(start_date)
@@ -125,7 +124,7 @@ def dashboard(request):
 
         if start_date:
 
-            _, last_day = calendar.monthrange(start_date.year, start_date.month)
+            _, last_day = monthrange(start_date.year, start_date.month)
             end_date = start_date.replace(day=last_day)
 
             start_date = make_aware(start_date)
@@ -140,7 +139,7 @@ def dashboard(request):
             # Вычисление роста на основе прошлого месяца
             previous_month = start_date - relativedelta(months=1)
             previous_start_date = previous_month.replace(day=1)
-            _, previous_last_day = calendar.monthrange(previous_month.year, previous_month.month)
+            _, previous_last_day = monthrange(previous_month.year, previous_month.month)
             previous_end_date = previous_month.replace(day=previous_last_day)
 
             previous_start_date = previous_start_date.replace(tzinfo=None)
@@ -171,7 +170,7 @@ def dashboard(request):
         first_expense = Expense.objects.filter(shop=shop).order_by('created').first()
         
         end_date = datetime.strptime(end_month + '-01', '%Y-%m-%d')
-        _, last_day = calendar.monthrange(end_date.year, end_date.month)
+        _, last_day = monthrange(end_date.year, end_date.month)
         end_date = datetime.strptime(end_month + f'-{last_day}', '%Y-%m-%d')
 
         first_date = None
@@ -236,7 +235,7 @@ def dashboard(request):
 
     if end_month:
         end_year = int(end_month.split('-')[0])
-        _, last_day = calendar.monthrange(int(end_month.split('-')[0]), int(end_month.split('-')[1]))
+        _, last_day = monthrange(int(end_month.split('-')[0]), int(end_month.split('-')[1]))
         end_date = datetime(end_year, int(end_month.split('-')[1]), last_day)
     else:
         end_year = current_year
@@ -280,7 +279,7 @@ def dashboard(request):
     profit = []
 
     for month in months:
-        _, last_day = calendar.monthrange(month.year, month.month)
+        _, last_day = monthrange(month.year, month.month)
     
         if not is_aware(month):
             month = make_aware(month)

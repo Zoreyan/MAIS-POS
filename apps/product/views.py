@@ -1,18 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import *
-from .forms import *
 from django.contrib import messages
 from django.http import JsonResponse
-from apps.history.models import *
-from apps.finance.models import *
-from django.forms.models import model_to_dict
-import json
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count
-from django.db.models import Q, Case, When, IntegerField
-from django.db import IntegrityError
+from django.db.models import Q
 
+import json
+
+from apps.history.models import *
+from apps.finance.models import *
+from .models import *
+from .forms import *
 
 
 @login_required

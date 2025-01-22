@@ -1,8 +1,7 @@
 from django import forms
-from .models import *
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import Permission
 
+from .models import *
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=254, help_text='Обязательное поле.', widget=forms.EmailInput(attrs={

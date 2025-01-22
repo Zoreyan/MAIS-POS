@@ -1,6 +1,4 @@
 from django.db import models
-from django.utils import timezone
-
 
 class Expense(models.Model):
     CHOICES = [

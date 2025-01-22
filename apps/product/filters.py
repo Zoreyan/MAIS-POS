@@ -1,5 +1,6 @@
 import django_filters
 from django.forms import TextInput, Select
+
 from .models import Product, Category
 
 class ProductFilter(django_filters.FilterSet):

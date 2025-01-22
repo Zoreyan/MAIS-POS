@@ -1,16 +1,11 @@
 from django.shortcuts import render, redirect
-from .models import *
-from .forms import *
-from django.db.models import Sum
-from .models import Expense
-from apps.history.models import *
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-from django.db.models.functions import TruncMonth
-from django.views.decorators.http import require_POST
-import json
 from django.core.paginator import Paginator
+
+from apps.history.models import *
+from .models import *
+from .forms import *
 
 
 @login_required

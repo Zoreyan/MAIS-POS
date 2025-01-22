@@ -1,13 +1,14 @@
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import Permission
 from django.http import JsonResponse
 from django.db.utils import IntegrityError
 from django.contrib import messages
-from .utils import generate_password
 from django.db.models import Q
+
+from .utils import generate_password
 from .models import *
 from .forms import *
 

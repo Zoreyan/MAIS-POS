@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
-from apps.product.models import Shop, Product, Category
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from .forms import ShopForm
-import folium
+
 from folium import Map, Marker
+
+from apps.product.models import Shop, Product, Category
+from .forms import ShopForm
 
 def update_shop_per_page(request):
     if request.method == "POST":

@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from django.contrib.admin.models import LogEntry
-from .models import *
-from apps.finance.models import Expense
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+
+from .models import *
+from apps.finance.models import Expense
 
 def update_orders_per_page(request):
     if request.method == "POST":
