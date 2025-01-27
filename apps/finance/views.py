@@ -18,6 +18,9 @@ from django.core.paginator import Paginator
 def finance_list(request):
     permissions = Permission.objects.filter(user=request.user)
     if not permissions.filter(codename='view_expense').exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
         return redirect('dashboard')
 
     expenses = Expense.objects.filter(shop=request.user.shop).order_by('-created')
@@ -72,7 +75,17 @@ def update_finance_per_page(request):
 
 @login_required
 def create(request):
+    permissions = Permission.objects.filter(user=request.user)
+    if not permissions.filter(codename='add_expense').exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     expend_type = request.GET.get('type')
+    if not expend_type:
+        return redirect('finance-list')
+
     expend_display_name = dict(Expense.CHOICES).get(expend_type)
     form = ExpenseForm(initial={'expend_type': expend_type}) 
     
@@ -100,6 +113,13 @@ def create(request):
 
 @login_required
 def expense_delete(request, pk):
+    permissions = Permission.objects.filter(user=request.user)
+    if not permissions.filter(codename='delete_expense').exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     expend = get_object_or_404(Expense, id=pk)
     expend.delete()
     return redirect('finance-list')

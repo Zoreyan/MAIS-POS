@@ -39,6 +39,18 @@
             </option>
             <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии
             </option>
+            <option value="low" {% if request.GET.in_stock == "low" %}selected{% endif %}>Малый остаток
+            </option>
+        </select>
+    </div>
+    <div class="col-md-12">
+        <label for="discount" class="form-label">Скидка</label>
+        <select id="discount" name="discount" class="form-select">
+            <option value="" {% if request.GET.discount == "" %}selected{% endif %}>Все</option>
+            <option value="yes" {% if request.GET.discount == "yes" %}selected{% endif %}>Со скидкой
+            </option>
+            <option value="no" {% if request.GET.discount == "no" %}selected{% endif %}>Без скидки
+            </option>
         </select>
     </div>
     </div>
@@ -67,73 +79,6 @@
         
 
 <div class="card">
-<<<<<<< HEAD
-    <div class="card-header">
-        <div class="row mb-2">
-            <div class="col-12">
-                <h5 class="card-title">Фильтр</h5>
-                <form method="get" class="row gy-3 align-items-end">
-                    <div class="col-md-3">
-                        <label for="ProductCategory" class="form-label">Категория</label>
-                        <select id="ProductCategory" name="category" class="form-select text-capitalize">
-                            <option value="" {% if request.GET.category == "" %}selected{% endif %}>Все категории</option>
-                            {% for category in categories %}
-                            <option value="{{ category.name }}" {% if request.GET.category == category.name %}selected{% endif %}>
-                                {{ category.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="price_min" class="form-label">Цена с</label>
-                        <input type="number" id="price_min" name="price_min" class="form-control" placeholder="Сумма от"
-                            value="{{ request.GET.price_min }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="price_max" class="form-label">Цена по</label>
-                        <input type="number" id="price_max" name="price_max" class="form-control" placeholder="Сумма по"
-                            value="{{ request.GET.price_max }}">
-                    </div>
-                    <div class="col-md-2">
-                        <label for="in_stock" class="form-label">Доступность</label>
-                        <select id="in_stock" name="in_stock" class="form-select">
-                            <option value="" {% if request.GET.in_stock == "" %}selected{% endif %}>Все</option>
-                            <option value="yes" {% if request.GET.in_stock == "yes" %}selected{% endif %}>В наличии
-                            </option>
-                            <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 col-sm-12">
-                        <div class="d-flex btn-group">
-                            <button type="submit"
-                                class="btn btn-success d-flex align-items-center justify-content-center">
-                                <i class="bx bx-filter-alt me-1"></i>
-                                <span>Фильтр</span>
-                            </button>
-                            {% if request.user|has_permission:"add_product" %}
-                            <a href="{% url 'product-create' %}"
-                                class="btn btn-primary d-flex align-items-center justify-content-center">
-                                <i class="bx bx-plus me-1"></i>
-                                <span>Добавить</span>
-                            </a>
-                            {% else %}
-                            <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center" onclick="showNoAccessMessage()">
-                                <i class="bx bx-plus me-1"></i>
-                                <span>Добавить</span>
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </form>
-                
-            </div>
-        </div>
-        
-    </div>
-
-=======
->>>>>>> origin/main
     <div class="table-responsive">
         <table class="table table-hover">
             <thead>
@@ -143,7 +88,6 @@
                     <th>Категория</th>
                     <th>В наличии</th>
                     <th>Цена</th>
-                    <th>Скидка</th>
                     <th>Цена для продажи</th>
                     <th>Кол-во</th>
                     <th>Единица измерения</th>
@@ -153,7 +97,7 @@
             <tbody>
                 {% for product in page_obj %}
                 <tr>
-                    <td>{{ product.bar_code }}</td>
+                    <td>{% if product.bar_code %}{{ product.bar_code }}{% else %}-{% endif %}</td>
                     <td>
                         <a href="{% url 'product-details' product.id %}"
                             class="d-flex justify-content-start align-items-center product-name">
@@ -186,8 +130,7 @@
                             {% endif %}
                     </td>
                     <td>{{ product.price }}</td>
-                    <td>{{ product.discount }}%</td>
-                    <td>{{ product.discounted_price }}</td>
+                    <td>{{ product.discounted_price }}{% if product.discount > 0 %}<span class="text-danger">-{{ product.discount }}%</span>{% endif %}</td>
                     <td>{{ product.quantity }}</td>
                     <td>{{ product.unit }}</td>
                     <td>

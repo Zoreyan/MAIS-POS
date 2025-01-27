@@ -1,5 +1,5 @@
 {% load static %}
-
+{% load tags %}
 <form class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar"  method="get" action="{% url 'product-list' %}">
 
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none ">
@@ -20,11 +20,54 @@
         </div>
         <ul class="navbar-nav flex-row align-items-center ms-auto">
             <li class="nav-item me-2">
-                <a class="nav-link fw-bold d-flex align-items-center" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>0сом</span>" aria-describedby="tooltip725089">
-                    <i class="bx bx-wallet"></i>
-                    <span class="d-none d-sm-block ms-1">0c</span>
-                </a>
+                <div class="dropdown">
+                    <a class="nav-link fw-bold d-flex align-items-center" href="javascript:void(0);" id="shopBalanceDropdown" data-bs-toggle="dropdown" aria-expanded="false" data-bs-toggle="tooltip" data-bs-offset="0,4" data-bs-placement="bottom" data-bs-html="true" data-bs-original-title="<span>{{ request.user|shop_balance }} сом</span>" aria-describedby="tooltip725089">
+                        <i class="bx bx-wallet"></i>
+                        <span class="d-none d-sm-block ms-1">{{ request.user|shop_balance }}с</span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="shopBalanceDropdown">
+                        <li><a class="dropdown-item" href="#">Пополнить баланс</a></li>
+                        <li><a class="dropdown-item" href="{% url 'management' request.user.shop.id %}">Оплатить тариф</a></li>
+                    </ul>
+                </div>
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <!-- Увеличим размер колокольчика -->
+                    <div style="position: relative; display: inline-block;">
+                        <i class="bx bxs-bell" style="font-size: 30px;"></i>
+                        <!-- Уменьшим размер индикатора -->
+                        {% notifications request.user as notifications_data %}
+                        {% if notifications_data.unread_count > 0 %}
+                            <span class="badge bg-danger" style="font-size: 12px; padding: 0.3rem 0.6rem; position: absolute; top: -5px; right: -5px;">
+                                {{ notifications_data.unread_count }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-styles" style="width: 300px; max-height: 400px; overflow-y: auto;">
+                    {% for notification in notifications_data.latest_notifications %}
+                        <li class="m-1">
+                            <div class="card shadow-sm" style="font-size: 14px;">
+                                <div class="card-header py-2">
+                                    <strong class="text-muted">{{ notification.category }}</strong>
+                                    <small class="text-muted">{{ notification.created|date:"H:i, d M Y" }}</small>
+                                </div>
+                                <div class="card-body py-2">
+                                    <p class="card-text">{{ notification.title }}</p>
+                                </div>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li class="p-2 text-center" style="font-size: 14px;">Нет последних уведомлений</li>
+                    {% endfor %}
+                    <div class="d-flex justify-content-center">
+                        <a href="{% url 'notifications' request.user.id %}" class="btn btn-primary btn-sm mt-2">Посмотреть все</a>
+                    </div>
+                </ul>
+            </li>
+
             <li class="nav-item dropdown-style-switcher dropdown">
                 <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <i class="bx bx-sun bx-sm"></i>

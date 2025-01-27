@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from celery.schedules import crontab
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -18,9 +19,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 SITE_ID = 1
-
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
 # Application definition
@@ -43,6 +41,7 @@ INSTALLED_APPS = [
     'apps.ai',
     'mptt',
     'django_filters',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -158,6 +157,8 @@ LOGIN_URL = 'user/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+DEFAULT_FROM_EMAIL = 'dear_sap_my_academy@gmail.com'
+
 EMAIL_TIMEOUT = 60
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -165,6 +166,34 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'muhammadazizmadakimov06@gmail.com'
 EMAIL_HOST_PASSWORD = 'azgh bsqt csxn ujnw'
-EMAIL_PORT = 465
 
 ITEMS_PER_PAGE = 10
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'ERROR',
+    },
+}
+
+
+# Celery
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Адрес брокера Redis
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+broker_connection_retry_on_startup = True
+
+CELERY_BEAT_SCHEDULE = {
+    'check_shop_payments_every_hour': {
+        'task': 'apps.product.tasks.check_shop_payments',
+        'schedule': crontab(minute=00, hour='*'),
+    },
+}
