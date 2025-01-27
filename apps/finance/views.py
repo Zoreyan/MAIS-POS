@@ -9,12 +9,17 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.db.models.functions import TruncMonth
 from django.views.decorators.http import require_POST
+from django.contrib.auth.models import Permission
 import json
 from django.core.paginator import Paginator
 
 
 @login_required
 def finance_list(request):
+    permissions = Permission.objects.filter(user=request.user)
+    if not permissions.filter(codename='view_expense').exists():
+        return redirect('dashboard')
+
     expenses = Expense.objects.filter(shop=request.user.shop).order_by('-created')
     expense_types = ['rent', 'utilities', 'salaries', 'supplies', 'other']
 

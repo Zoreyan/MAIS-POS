@@ -1,70 +1,25 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="">
+
+
+<section>
   <div class="d-flex justify-content-between align-items-center flex-wrap">
     <h4 class="page-title">Панель управления</h4>
-    <div class="">
-      <form method="get" class="d-flex flex-column align-items-center" id="period-form">
-        <div class="input-group">
-          <div>
-            <div class="input-group mb-2">
-              <label class="btn btn-light border text-primary me-2 toggle-end-month" for="toggle-end-month-checkbox">
-                <i class="bx bx-chevron-down"></i>
-              </label>
-              <input 
-                  type="month" 
-                  class="form-control form-control-light" 
-                  id="start_month" 
-                  name="start_month" 
-                  placeholder="Начало" 
-                  value="{{ start_month|default:'' }}">
-            </div>
-      
-            <input type="checkbox" id="toggle-end-month-checkbox" style="display: none;">
-      
-            <div id="end-month-wrapper" class="w-100">
-              <input 
-                  type="month" 
-                  class="form-control form-control-light mt-2" 
-                  id="end_month" 
-                  name="end_month" 
-                  placeholder="Конец" 
-                  value="{{ end_month|default:'' }}">
-            </div>
-          </div>
-    
-          <button class="input-group-text bg-primary border-primary text-white" style="margin-left: 3px;" type="submit">
-            <i class='bx bx-check'></i>
-          </button>
-        </div>
-      </form>
-    </div>
+    <form method="get" class="d-flex align-items-center gap-2 f" id="period-form">
+      <input type="month" class="form-control form-control-light" id="start_month" name="start_month" 
+             placeholder="Начало" value="{{ start_month|default:'' }}" aria-label="Начало периода">
+      <input type="month" class="form-control form-control-light" id="end_month" name="end_month" 
+             placeholder="Конец" value="{{ end_month|default:'' }}" aria-label="Конец периода">
+      <button class="btn btn-primary" type="submit" aria-label="Применить период">
+        <i class='bx bx-check'></i>
+      </button>
+    </form>
   </div>
-  
-  <style>
-    /* Скрыть второй инпут по умолчанию */
-    #end-month-wrapper {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease-in-out;
-    }
-  
-    /* Отображение второго инпута при включении чекбокса */
-    #toggle-end-month-checkbox:checked ~ #end-month-wrapper {
-      max-height: 50px; /* Устанавливаем высоту для отображения */
-    }
-  
-    /* Иконка переключателя */
-    label.toggle-end-month {
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  </style>
-  
-  <div class="row g-5 mb-3">
-    <div class="col-sm-6 col-xl-3">
+
+  <section class="row justify-content-between gy-3 mb-2">
+    <!-- Общий доход -->
+    <article class="col-sm-6 col-xl-3">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
@@ -74,7 +29,7 @@
                 <h5 class="mb-0 me-2">{{ total_incomes_current|default:0 }} ₽</h5>
                 <p class="{% if income_growth > 0 %}text-success{% else %}text-danger{% endif %} mb-0">
                   ({{ income_growth|floatformat:1 }}%)
-              </p>
+                </p>
               </div>
               <small class="mb-0">{{ selected_period_display }}</small>
             </div>
@@ -86,10 +41,10 @@
           </div>
         </div>
       </div>
-    </div>
-  
+    </article>
+
     <!-- Общие расходы -->
-    <div class="col-sm-6 col-xl-3">
+    <article class="col-sm-6 col-xl-3">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
@@ -99,7 +54,7 @@
                 <h5 class="mb-0 me-2">{{ total_expenses_current|default:0 }} ₽</h5>
                 <p class="{% if expense_growth > 0 %}text-success{% else %}text-danger{% endif %} mb-0">
                   ({{ expense_growth|floatformat:1 }}%)
-              </p>
+                </p>
               </div>
               <small class="mb-0">{{ selected_period_display }}</small>
             </div>
@@ -111,10 +66,10 @@
           </div>
         </div>
       </div>
-    </div>
-  
+    </article>
+
     <!-- Чистая прибыль -->
-    <div class="col-sm-6 col-xl-3">
+    <article class="col-sm-6 col-xl-3">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
@@ -136,10 +91,10 @@
           </div>
         </div>
       </div>
-    </div>
-  
+    </article>
+
     <!-- Пользователи -->
-    <div class="col-sm-6 col-xl-3">
+    <article class="col-sm-6 col-xl-3">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-start justify-content-between">
@@ -159,11 +114,12 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="row">
-    <!-- График прибыли, продаж и расходов -->
-    <div class="col-lg-8 mb-3">
+    </article>
+  </section>
+
+  <!-- Графики -->
+  <section class="row gy-3">
+    <article class="col-lg-6">
       <div class="card h-100">
         <div class="card-header">
           <h5>График прибыли, продаж и расходов</h5>
@@ -172,10 +128,9 @@
           <canvas id="myChart"></canvas>
         </div>
       </div>
-    </div>
-  
-    <!-- Расходы -->
-    <div class="col-lg-4 mb-3">
+    </article>
+
+    <article class="col-lg-3">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between">
           <h5>Расходы</h5>
@@ -185,10 +140,8 @@
           <canvas id="pie-chart-expenses"></canvas>
         </div>
       </div>
-    </div>
-</div>
-  <div class="row gy-3">
-    <div class="col-lg-6">
+    </article>
+    <article class="col-lg-3">
       <div class="card">
         <h5 class="card-header">Топ продаваемых товаров за этот месяц</h5>
         <div class="card-body pt-0">
@@ -202,18 +155,9 @@
                     <span class="text-muted font-13">Дата последней продажи:
                       {{ product.soldhistory_set.last.created|date:"d M Y" }}</span>
                   </td>
-                  <td>
-                    <h5 class="font-14 my-1 fw-normal">{{ product.sale_price }}c</h5>
-                    <span class="text-muted font-13">Цена</span>
-                  </td>
-                  <td>
-                    <h5 class="font-14 my-1 fw-normal">{{ product.total_quantity }}шт</h5>
-                    <span class="text-muted font-13">Количество</span>
-                  </td>
-                  <td>
-                    <h5 class="font-14 my-1 fw-normal">{{ product.total_sum }}c</h5>
-                    <span class="text-muted font-13">Сумма</span>
-                  </td>
+                  <td>{{ product.sale_price }}c</td>
+                  <td>{{ product.total_quantity }}шт</td>
+                  <td>{{ product.total_sum }}c</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -221,43 +165,11 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="col-lg-6">
-      <div class="card">
-        <h5 class="card-header">Топ поставок товаров за этот месяц</h5>
-        <div class="card-body pt-0">
-          <div class="table-responsive">
-            <table class="table table-centered table-nowrap table-hover mb-0">
-              <tbody>
-                {% for product in sold_products %}
-                <tr>
-                  <td>
-                    <h5 class="font-14 my-1 fw-normal">{{ product.name }}</h5>
-                    <span class="text-muted font-13">Дата последней продажи:
-                      {{ product.soldhistory_set.last.created|date:"d M Y" }}</span>
-                  </td>
-                  <td>
-                    <h5 class="font-14 my-1 fw-normal">{{ product.sale_price }}c</h5>
-                    <span class="text-muted font-13">Цена</span>
-                  </td>
-                  <td>
-                    <h5 class="font-14 my-1 fw-normal">{{ product.total_quantity }}шт</h5>
-                    <span class="text-muted font-13">Количество</span>
-                  </td>
-                  <td>
-                    <h5 class="font-14 my-1 fw-normal">{{ product.total_sum }}c</h5>
-                    <span class="text-muted font-13">Сумма</span>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+    </article>
+  </section>
+
+</section>
+
 <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -269,75 +181,72 @@
 
     const expenseValues = Object.values(expenseTypes);
     const expenseLabels = Object.keys(expenseTypes).map((key) => {
-        switch (key) {
-            case "rent":
-                return "Аренда";
-            case "utilities":
-                return "Коммунальные услуги";
-            case "salaries":
-                return "Зарплаты";
-            case "supplies":
-                return "Поставки";
-            case "other":
-                return "Другое";
-            default:
-                return key;
-        }
+      switch (key) {
+        case "rent":
+          return "Аренда";
+        case "utilities":
+          return "Коммунальные услуги";
+        case "salaries":
+          return "Зарплаты";
+        case "supplies":
+          return "Поставки";
+        case "other":
+          return "Другое";
+        default:
+          return key;
+      }
     });
 
     // Проверяем, есть ли данные
     if (expenseValues.every(value => value === 0)) {
-        // Если данные пусты, отображаем сообщение
-        const chartContainer = document.getElementById("pie-chart-expenses").parentNode;
-        chartContainer.innerHTML = '<p>Нет данных</p>';
+      // Если данные пусты, отображаем сообщение
+      const chartContainer = document.getElementById("pie-chart-expenses").parentNode;
+      chartContainer.innerHTML = '<p>Нет данных</p>';
     } else {
-        // Если данные есть, отображаем график
-        const ctx = document.getElementById("pie-chart-expenses").getContext("2d");
-        new Chart(ctx, {
-            type: "pie",
-            data: {
-                labels: expenseLabels,
-                datasets: [{
-                    label: "Расходы по типам",
-                    backgroundColor: [
-                        "#3e95cd",
-                        "#8e5ea2",
-                        "#3cba9f",
-                        "#ffcc00",
-                        "#ff5733",
-                    ],
-                    data: expenseValues,
-                }]
+      // Если данные есть, отображаем график
+      const ctx = document.getElementById("pie-chart-expenses").getContext("2d");
+      new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels: expenseLabels,
+          datasets: [{
+            label: "Расходы по типам",
+            backgroundColor: [
+              "#3e95cd",
+              "#8e5ea2",
+              "#3cba9f",
+              "#ffcc00",
+              "#ff5733",
+            ],
+            data: expenseValues,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true,
+              position: "bottom"
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: "bottom"
-                    },
-                    title: {
-                        display: true,
-                        text: "Расходы по типам"
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (tooltipItem) {
-                                // Получение значения и процента для текущего сегмента
-                                const value = expenseValues[tooltipItem.dataIndex];
-                                const percentage = expensePercentages[Object.keys(expenseTypes)[tooltipItem.dataIndex]];
-                                return `${expenseLabels[tooltipItem.dataIndex]}: ${value} (${percentage}%)`;
-                            }
-                        }
-                    }
+            title: {
+              display: true,
+              text: "Расходы по типам"
+            },
+            tooltip: {
+              callbacks: {
+                label: function (tooltipItem) {
+                  // Получение значения и процента для текущего сегмента
+                  const value = expenseValues[tooltipItem.dataIndex];
+                  const percentage = expensePercentages[Object.keys(expenseTypes)[tooltipItem.dataIndex]];
+                  return `${expenseLabels[tooltipItem.dataIndex]}: ${value} (${percentage}%)`;
                 }
+              }
             }
-        });
+          }
+        }
+      });
     }
-});
-</script>
-<script id="chart-data" type="application/json">
-  {{ chart_data_json|safe }}
+  });
 </script>
 
 <script>
@@ -353,63 +262,63 @@
   // Используйте данные для Chart.js
   const ctx = document.getElementById('myChart').getContext('2d');
   const myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-          labels: months,
-          datasets: [
-              {
-                  label: 'Доходы',
-                  data: income,
-                  borderColor: 'rgba(75, 192, 192, 1)',
-                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                  tension: 0.4,
-                  fill: true
-              },
-              {
-                  label: 'Расходы',
-                  data: expenses,
-                  borderColor: 'rgba(255, 99, 132, 1)',
-                  backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                  tension: 0.4,
-                  fill: true
-              },
-              {
-                  label: 'Прибыль',
-                  data: profit,
-                  borderColor: 'rgba(54, 162, 235, 1)',
-                  backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                  tension: 0.4,
-                  fill: true
-              }
-          ]
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        {
+          label: 'Доходы',
+          data: income,
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          tension: 0.4,
+          fill: true
+        },
+        {
+          label: 'Расходы',
+          data: expenses,
+          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          tension: 0.4,
+          fill: true
+        },
+        {
+          label: 'Прибыль',
+          data: profit,
+          borderColor: 'rgba(54, 162, 235, 1)',
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          tension: 0.4,
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top'
+        },
+        title: {
+          display: true,
+          text: 'Доходы, Расходы и Прибыль по месяцам'
+        }
       },
-      options: {
-          responsive: true,
-          plugins: {
-              legend: {
-                  position: 'top'
-              },
-              title: {
-                  display: true,
-                  text: 'Доходы, Расходы и Прибыль по месяцам'
-              }
-          },
-          scales: {
-              x: {
-                  title: {
-                      display: true,
-                      text: 'Месяцы'
-                  }
-              },
-              y: {
-                  beginAtZero: true,
-                  title: {
-                      display: true,
-                      text: 'Сумма'
-                  }
-              }
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Месяцы'
           }
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Сумма'
+          }
+        }
       }
+    }
   });
 </script>
 {% endblock content %}

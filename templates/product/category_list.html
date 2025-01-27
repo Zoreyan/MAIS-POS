@@ -3,10 +3,10 @@
 {% load tags %}
 {% block content %}
 
-<div class="card">
-    <div class="card-header">
+<div class="">
+    <div class="card-header mb-3">
         <div class="d-flex justify-content-between align-items-center flex-wrap">
-            <h5 class="card-title">Категории</h5>
+            <h3 class="card-title">Категории</h3>
             <div class="flex-wrap d-flex mb-2 mb-md-0">
                 {% if request.user|has_permission:"add_category" %}
                 <button type="button" class="btn btn-sm btn-primary waves-effect waves-light" data-bs-toggle="modal"
@@ -53,9 +53,9 @@
             </div>
         </div>
     </form>
-    <div class="table-responsive">
+    <div class="card table-responsive">
         <table class="datatables-products table">
-            <thead class="border-top">
+            <thead>
                 <tr>
                     <th>Название</th>
                     <th>Родитель</th>

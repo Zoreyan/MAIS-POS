@@ -12,6 +12,9 @@ from django.core.paginator import Paginator
 from django.db.models import Count
 from django.db.models import Q, Case, When, IntegerField
 from django.db import IntegrityError
+from django.contrib.auth.models import Permission
+
+
 
 
 
@@ -343,6 +346,10 @@ def search_product(request):
 
 @login_required
 def category_list(request):
+    permission = Permission.objects.filter(user=request.user, codename='view_category')
+    if not permission.exists():
+        return redirect('dashboard')
+
     categories = Category.objects.annotate(total_products=Count('product')).filter(shop=request.user.shop)
     form = CategoryForm(shop=request.user.shop)   
 
