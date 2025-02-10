@@ -1,6 +1,25 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
 <div class="row gy-3">
+    <div class="modal fade" id="modalCenter" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalCenterTitle">Сканнер</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <video id="scanner" style="width: 100%; width: 500px;"></video>
+                <p><strong>Результат:</strong> <span id="barcode-result">Ожидание...</span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary scan_btn">Пробить</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <div class="col-lg-8 col-sm-12">
         <div class="card">
             <div class="card-body p-3">
@@ -9,17 +28,21 @@
                         <input type="number" placeholder="Штрих код" maxlength="14" class="form-control  barcode"
                             name="barcode" autofocus>
                     </div>
-                    <div class="col-sm-12 col-lg-3">
+                    <div class="col-sm-12 col-lg-2">
                         <input type="number" placeholder="Сумма оплаты" maxlength="8" class="form-control  amount"
                             name="amount">
                     </div>
-                    <div class="col-sm-12 col-lg-3">
+                    <div class="col-sm-12 col-lg-2">
                         <input type="number" placeholder="Скидка" maxlength="8" class="form-control  discount"
                             name="discount">
                     </div>
-                    <div class="col-3">
+                    <div class="col-4 d-flex gap-1">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCenter">
+                            <i class="bx bx-barcode"></i>
+                            Сканнер
+                        </button>
                         <button type="button" class="btn btn-info d-flex align-items-center sell">
-                            <i class="bx bx-plus-circle me-2"></i>
+                            <i class="bx bx-plus-circle"></i>
                             Отправить
                         </button>
                     </div>
@@ -70,6 +93,9 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
+<script src="https://unpkg.com/quagga/dist/quagga.min.js"></script>
+
+<script src="{% static 'assets/js/quagga.js' %}"></script>
 <script>
     $(document).ready(function () {
         let barcodeInput = $('.barcode');
@@ -79,6 +105,83 @@
         let totalSum = 0;
         let searchField = $('.search');
         let discountedSum = 0;
+
+        let scannerStarted = false; // Флаг, чтобы избежать повторного запуска
+
+$('.scan_btn').on('click', function () {
+    if (scannerStarted) return; // Если уже запущено — не инициализировать снова
+    scannerStarted = true;
+
+    Quagga.init({
+        inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.querySelector("#scanner"),
+            constraints: {
+                facingMode: "environment"
+            }
+        },
+        decoder: {
+            readers: [
+                "code_128_reader", "ean_reader", "ean_8_reader",
+                "code_39_reader", "code_39_vin_reader", "codabar_reader",
+                "upc_reader", "upc_e_reader", "i2of5_reader",
+                "2of5_reader", "code_93_reader"
+            ]
+        }
+    }, function (err) {
+        if (err) {
+            console.error("Ошибка инициализации Quagga:", err);
+            scannerStarted = false;
+            return;
+        }
+        Quagga.start();
+    });
+
+    let detectedOnce = false; // Флаг для предотвращения дублирования
+
+    Quagga.onDetected(function (result) {
+        if (detectedOnce) return; // Если уже обработали — не повторять
+        detectedOnce = true;
+
+        document.getElementById("barcode-result").textContent = result.codeResult.code;
+
+        $.ajax({
+            url: "/product/get-product/",
+            type: "GET",
+            data: { bar_code: result.codeResult.code },
+            success: function (data) {
+                if (data.quantity <= 0) {
+                    alert('Недостаточно товара на складе!');
+                    return;
+                }
+
+                let existingProduct = productList.find(product => product.id === data.id);
+                if (existingProduct) {
+                    if (existingProduct.quantity < data.quantity) {
+                        existingProduct.quantity++;
+                    } else {
+                        alert('Товара недостаточно на складе!');
+                    }
+                } else {
+                    productList.push({
+                        id: data.id,
+                        name: data.name,
+                        bar_code: data.bar_code,
+                        quantity: 1,
+                        price: data.d_sale_price,
+                        stock: data.quantity,
+                        image: data.image
+                    });
+                }
+
+                updateTable();
+                Quagga.stop();
+                scannerStarted = false; // Позволяет запустить снова при необходимости
+            }
+        });
+    });
+});
 
         $(searchField).on('input', function () {
             let searchQuery = this.value.trim();
@@ -179,7 +282,6 @@
                 $(this).val(''); // очищаем поле штрих-кода после поиска
             }
         });
-
         // Обработчик клика по кнопке "Добавить продукт"
         $(document).on('click', '.add-product', function () {
             let productId = $(this).data('id'); // Получаем id продукта
