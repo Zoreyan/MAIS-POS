@@ -108,6 +108,8 @@
         let discountedSum = 0;
 
         let scannerStarted = false; // Флаг, чтобы избежать повторного запуска
+        let detectedOnce = false; // Флаг для предотвращения дублирования
+
         async function startCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
@@ -125,8 +127,15 @@
                 console.error("Ошибка доступа к камере:", error);
             }
         }
+
 $('.scan_btn').on('click', function () {
-    if (scannerStarted) return; // Если уже запущено — не инициализировать снова
+    // Останавливаем Quagga перед новым запуском
+    if (scannerStarted) {
+        Quagga.stop();
+        scannerStarted = false;
+        detectedOnce = false; // Разрешаем новое сканирование
+    }
+
     scannerStarted = true;
 
     Quagga.init({
@@ -155,8 +164,6 @@ $('.scan_btn').on('click', function () {
         Quagga.start();
         startCamera();
     });
-
-    let detectedOnce = false; // Флаг для предотвращения дублирования
 
     Quagga.onDetected(function (result) {
         if (detectedOnce) return; // Если уже обработали — не повторять
@@ -200,6 +207,7 @@ $('.scan_btn').on('click', function () {
         });
     });
 });
+
 
         $(searchField).on('input', function () {
             let searchQuery = this.value.trim();
