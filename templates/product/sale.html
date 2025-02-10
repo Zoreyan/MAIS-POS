@@ -10,7 +10,8 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <video id="scanner" style="width: 100%; width: 500px;"></video>
+                <video id="scanner" style="width: 0px; height: 0px;"></video>
+                <video src="" id="camera-stream" class="img-fluid"></video>
                 <p><strong>Результат:</strong> <span id="barcode-result">Ожидание...</span></p>
             </div>
             <div class="modal-footer">
@@ -107,7 +108,23 @@
         let discountedSum = 0;
 
         let scannerStarted = false; // Флаг, чтобы избежать повторного запуска
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment" } // Задняя камера
+                });
 
+                const videoElement = document.getElementById("camera-stream");
+                videoElement.srcObject = stream;
+
+                videoElement.onloadedmetadata = () => {
+                    videoElement.play();
+                    startScanner();
+                };
+            } catch (error) {
+                console.error("Ошибка доступа к камере:", error);
+            }
+        }
 $('.scan_btn').on('click', function () {
     if (scannerStarted) return; // Если уже запущено — не инициализировать снова
     scannerStarted = true;
@@ -136,6 +153,7 @@ $('.scan_btn').on('click', function () {
             return;
         }
         Quagga.start();
+        startCamera();
     });
 
     let detectedOnce = false; // Флаг для предотвращения дублирования
