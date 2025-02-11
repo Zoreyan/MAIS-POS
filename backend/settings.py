@@ -80,12 +80,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # # MySQL
 # DATABASES = {
@@ -101,6 +101,21 @@ DATABASES = {
 #         }
 #     }
 # }
+
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DJANGO_DB_NAME'),
+        'USER': os.getenv('DJANGO_DB_USER'),
+        'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
+        'HOST': os.getenv('DJANGO_DB_HOST'),
+        'PORT': os.getenv('DJANGO_DB_PORT'),
+    }
+}
 
 
 # Password validation
@@ -168,3 +183,19 @@ EMAIL_HOST_PASSWORD = 'azgh bsqt csxn ujnw'
 EMAIL_PORT = 465
 
 ITEMS_PER_PAGE = 10
+
+
+# CELERY_BROKER_URL = CELERY_BROKER_URL = 'redis://localhost:6379/0'  
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+CELERY_BROKER_URL = CELERY_BROKER_URL = 'redis://redis:6379/0'  
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TRACK_STARTED = True 
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+
+
