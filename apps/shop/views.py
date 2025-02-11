@@ -150,7 +150,15 @@ def settings(request):
 
 def management(request, pk):
     shop = Shop.objects.get(id=pk)
-    tariffs = Tariff.objects.all()
+    
+    tariffs = Tariff.objects.filter(avaliable=True).order_by('sequence')
+
+    if shop.tariff:
+        shop_tarif = shop.tariff.id
+        shop_tariff = Tariff.objects.filter(id=shop_tarif)
+
+        tariffs = tariffs | shop_tariff
+
     tariff_features_dict = {}
     payment_periods = PaymentPeriod.objects.all().order_by('duration')
     payment_history = Payment.objects.filter(shop=shop).order_by('-payment_date')
@@ -187,14 +195,14 @@ def process_payment(request, shop_id):
         messages.error(request, "Неверный метод запроса.")
         return redirect('dashboard')
 
-    # Получаем магазин по ID
     shop = get_object_or_404(Shop, id=shop_id)
 
-    # Получаем текущий тариф
-    current_tariff = shop.tariff
+    if shop.tariff:
+        current_tariff = shop.tariff
+    else:
+        current_tariff = None
 
-    # Получаем данные из POST-запроса
-    tariff_id = request.POST.get('tariff', current_tariff.id)
+    tariff_id = request.POST.get('tariff', current_tariff)
     period_id = request.POST.get('payment_period')
 
     # Получаем тариф и период
@@ -213,7 +221,6 @@ def process_payment(request, shop_id):
         messages.error(request, "Недостаточно средств для оплаты.")
         return redirect('management', shop.id)
 
-    # Проверяем количество товаров и ограничения тарифа
     if current_tariff != tariff:
         product_limit = tariff.features.filter(name__icontains="товара").first()
         

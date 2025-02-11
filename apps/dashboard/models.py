@@ -6,6 +6,9 @@ class Tariff(models.Model):
     sequence = models.IntegerField(verbose_name="Порядковый номер", null=True, blank=True)
     name = models.CharField(max_length=100, verbose_name="Название тарифа")
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Цена")
+    help_text = models.TextField(verbose_name="Дополнения", null=True, blank=True)
+    avaliable = models.BooleanField(default=True, verbose_name="Доступен")
+
 
     class Meta:
         verbose_name = "Тариф"

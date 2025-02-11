@@ -14,7 +14,7 @@ from .models import *
 from .forms import *
 
 def sign_up(request):
-    tariffs = Tariff.objects.all()
+    tariffs = Tariff.objects.all().order_by('sequence')
     tariff_features_dict = {}
 
     for tariff in tariffs:

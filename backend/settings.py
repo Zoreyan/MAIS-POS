@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'mptt',
     'django_filters',
     'django_celery_beat',
+    'django_extensions',
+    'sslserver',
 ]
 
 MIDDLEWARE = [

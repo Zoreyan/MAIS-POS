@@ -11,7 +11,7 @@ class CustomUserAdmin(UserAdmin):
     model = User
     fieldsets = UserAdmin.fieldsets + (
         ('Дополнительная информация', {
-            'fields': ('shop', 'role', 'phone', 'get_email_notification', 'access', 'image'),
+            'fields': ('shop', 'role', 'phone', 'get_email_notification', 'access', 'image','qr_code'),
         }),
     )
     list_display = ('username', 'email', 'role', 'shop', 'is_active', 'is_staff')

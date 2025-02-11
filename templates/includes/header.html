@@ -32,42 +32,6 @@
                 </div>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <!-- Увеличим размер колокольчика -->
-                    <div style="position: relative; display: inline-block;">
-                        <i class="bx bxs-bell" style="font-size: 30px;"></i>
-                        <!-- Уменьшим размер индикатора -->
-                        {% notifications request.user as notifications_data %}
-                        {% if notifications_data.unread_count > 0 %}
-                            <span class="badge bg-danger" style="font-size: 12px; padding: 0.3rem 0.6rem; position: absolute; top: -5px; right: -5px;">
-                                {{ notifications_data.unread_count }}
-                            </span>
-                        {% endif %}
-                    </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end dropdown-styles" style="width: 300px; max-height: 400px; overflow-y: auto;">
-                    {% for notification in notifications_data.latest_notifications %}
-                        <li class="m-1">
-                            <div class="card shadow-sm" style="font-size: 14px;">
-                                <div class="card-header py-2">
-                                    <strong class="text-muted">{{ notification.category }}</strong>
-                                    <small class="text-muted">{{ notification.created|date:"H:i, d M Y" }}</small>
-                                </div>
-                                <div class="card-body py-2">
-                                    <p class="card-text">{{ notification.title }}</p>
-                                </div>
-                            </div>
-                        </li>
-                    {% empty %}
-                        <li class="p-2 text-center" style="font-size: 14px;">Нет последних уведомлений</li>
-                    {% endfor %}
-                    <div class="d-flex justify-content-center">
-                        <a href="{% url 'notifications' request.user.id %}" class="btn btn-primary btn-sm mt-2">Посмотреть все</a>
-                    </div>
-                </ul>
-            </li>
-
             <li class="nav-item dropdown-style-switcher dropdown">
                 <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <i class="bx bx-sun bx-sm"></i>
@@ -92,15 +56,25 @@
             </li>
             
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <div class="avatar avatar-online">
-                        {% if request.user.image %}
-                            <img src="{{ request.user.image.url }}" alt="user-image" class="rounded-circle" style="object-fit: cover;">
+                {% notifications request.user as notifications_data %}
+                <a class="nav-link dropdown-toggle hide-arrow p-0" href="#" data-bs-toggle="dropdown">
+                    <div class="avatar avatar-online d-flex align-items-start justify-content-between">
+
+                        
+                        <div>
+                            {% if request.user.image %}
+                            <img src="{{ request.user.image.url }}" alt="user-image" class="rounded-circle" style="object-fit: cover; width: 40px; height: 40px;">
                         {% else %}
-                            <img src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg" alt="user-image" class="rounded-circle" style="object-fit: cover;">
+                            <img src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg" alt="user-image" class="rounded-circle" style="object-fit: cover; width: 40px; height: 40px;">
                         {% endif %}
+                        </div>
+                        
+                        <div class="pt-2">{% if notifications_data.unread_count > 0 %}
+                            <span class="badge bg-danger d-flex translate-middle p-1" style="width: 10px; height: 10px; border-radius: 50%;"></span>
+                        {% endif %}</div>
                     </div>
                 </a>
+                
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
                         <a class="dropdown-item mt-0" href="{% url 'user-profile' request.user.id %}">
@@ -124,9 +98,15 @@
                     <li>
                         <div class="dropdown-divider my-1 mx-n2"></div>
                     </li>
-                    <a href="#" class="dropdown-item">
+                    <a href="{% url 'notifications' request.user.id  %}" class="dropdown-item">
                         <i class="bx bx-bell me-1"></i>
                         <span>Уведомления</span>
+                        {% notifications request.user as notifications_data %}
+                        {% if notifications_data.unread_count > 0 %}
+                            <span class="badge bg-danger">
+                                {{ notifications_data.unread_count }}
+                            </span>
+                        {% endif %}
                     </a>
                     <li>
                         <div class="dropdown-divider my-1 mx-n2"></div>

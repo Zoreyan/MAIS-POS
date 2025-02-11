@@ -25,12 +25,11 @@
   <script src="{% static 'assets/vendor/js/template-customizer.js'  %}"></script>
   <script src="{% static 'assets/js/config.js'  %}"></script>
 </head>
-
 <body class="authentication-bg position-relative" cz-shortcut-listen="true">
 
   <div class="container-xxl">
     <div class="authentication-wrapper authentication-basic container-p-y">
-      <div class="col-8">
+      <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8">
         <!-- Регистрация -->
         <div class="card px-sm-3 px-0">
           <div class="card-body">
@@ -113,9 +112,17 @@
                     <div class="d-flex overflow-auto" style="flex-wrap: nowrap; max-width: 100%; padding-bottom: 10px;">
                       {% for tariff, features in tariff_features_dict.items %}
                         <div class="card p-3 border-1 rounded-3 me-3" style="min-width: 250px; flex-shrink: 0;">
-                          <div class="text-start">
-                            <h6 class="mb-1 text-muted">{{ tariff.name }}</h6>
+                          <div class="d-flex justify-content-between align-items-start w-100">
+
+                            <div class="tarif_block_right text-start">
+                              <h6 class="mb-1 text-muted">{{ tariff.name }}</h6>
                             <h2 class="fw-bold">{{ tariff.price|floatformat:0 }} сом<small class="fs-6 text-muted">/ месяц</small></h2>
+                            </div>
+                          <div class="tarif_block_left">
+                            {% if tariff.help_text %}
+                            <span class="badge bg-danger" style="font-size: 1rem; font-weight: bold;">{{ tariff.help_text }}</span>
+                            {% endif %}
+                          </div>
                           </div>
                           <hr style="border: none; border-top: 1px solid #8a8b8b; margin: 5px; padding: 0;">
                           <ul class="list-unstyled">
@@ -209,7 +216,7 @@
 }
 </style>
   <script>
-    let currentStep = 3;
+    let currentStep = 1;
     const totalSteps = 3;
     const nextBtn = document.getElementById("next-btn");
     const prevBtn = document.getElementById("prev-btn");

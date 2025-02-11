@@ -15,6 +15,9 @@ from django.db import IntegrityError
 from django.contrib.auth.models import Permission
 from .tasks import check_product_stock
 from decimal import Decimal
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 
 
@@ -239,6 +242,7 @@ def income(request):
 def get_product(request):
     bar_code = request.GET.get('bar_code')
     product_id = request.GET.get('id')
+    print(bar_code)
     if bar_code:
         product = get_object_or_404(Product, bar_code=bar_code, shop=request.user.shop)  # Находим продукт по штрихкоду
     elif product_id:
