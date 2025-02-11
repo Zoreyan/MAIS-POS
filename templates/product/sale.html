@@ -127,9 +127,9 @@
 
 
         // Обработчик события для ввода штрих-кода
-        barcodeInput.on('keyup', function () {
+        barcodeInput.on('keypress', function (e) {
+            if (e.which === 13) {
             let barcode = $(this).val();
-            if (barcode.length >= 8) {
                 $.ajax({
                     url: "{% url 'get-product' %}",
                     type: "GET",
@@ -223,6 +223,7 @@
             });
         });
 
+        
 
         $(document).on('click', '.increment', function () {
             let productId = $(this).data('id');
@@ -362,6 +363,7 @@
                     $('#product-table-body').empty();
                     updateTotal();
                     updateChange();
+                    
                 },
                 error: function (xhr, status, error) {
                     console.log(error);
