@@ -99,22 +99,42 @@
                 <h6 id="scannedCode">#### ####</h6>
             </div>
 
-            <div class="scanned-product-info d-flex align-items-center d-none" id="productInfo">
-                <div class="product-img" id="productImage"></div>
+            <div class="mt-4 scanned-product-info d-none" id="productInfo">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Левая секция -->
+                            <div class="col-3 border-end d-flex align-items-center">
+                                <div class="product-img" id="productImage"></div>
+                            </div>
             
-                <div class="product-details flex-grow-1">
-                    <p class="product-name text-truncate" id="productName" title="Название товара">Название товара</p>
-                    <p class="product-barcode" id="productBarcode">Штрих-код</p>
-                </div>
+                            <!-- Центральная секция с двумя блоками -->
+                            <div class="col-7">
+                                <div class="row">
+                                    <div class="col-12 border-bottom pb-2">
+                                        <div class="product-details flex-grow-1 d-flex justify-content-between">
+                                            <span class="product-name text-truncate" id="productName" title="Название товара">Название товара</span>
+                                            <span class="product-quantity mb-1" id="productQuantity">кол: 0</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 pt-2">
+                                        <div class="text-end me-3 d-flex justify-content-between">
+                                            <span class="product-barcode" id="productBarcode">Штрих-код</span>
+                                            <span class="price" id="productPrice">0.0c</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
             
-                <div class="product-info-right d-flex align-items-center">
-                    <div class="text-end me-3">
-                        <p class="product-quantity mb-1" id="productQuantity">КОЛ: 0</p>
-                        <p class="price" id="productPrice">0.0c</p>
+                            <!-- Правая секция -->
+                            <div class="col-2 border-start d-flex align-items-center">
+                                <button class="add-btn" id="addProduct">+</button>
+                            </div>
+                        </div>
                     </div>
-                    <button class="add-btn" id="addProduct">+</button>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -186,20 +206,6 @@
         }
     }
 
-    .scanned-product-info {
-        display: none;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px;
-        border-radius: 12px;
-        background: #fff;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        max-width: 100%;
-        width: 95%;
-        margin: 10px auto;
-        flex-wrap: wrap; /* Добавлено, чтобы контент адаптировался */
-    }
-
     .product-img {
         width: 60px;
         height: 60px;
@@ -207,47 +213,6 @@
         background-size: cover;
         background-position: center;
         border: 1px solid #ddd;
-    }
-
-    .product-details {
-        flex-grow: 1;
-        padding: 0 10px;
-        min-width: 150px;
-        max-width: 50%;
-        overflow: hidden;
-    }
-
-    .product-name {
-        font-size: 16px;
-        font-weight: bold;
-        margin: 0;
-        color: #333;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .product-barcode {
-        font-size: 14px;
-        color: #666;
-        margin: 2px 0 0;
-    }
-
-    .product-info-right {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        min-width: 90px;
-        flex-wrap: nowrap;
-    }
-
-    .product-quantity {
-        font-size: 14px;
-        font-weight: bold;
-        color: #555;
-        margin: 0;
-        text-align: right;
-        white-space: nowrap;
     }
 
     .price {
@@ -293,17 +258,6 @@
         width: 50px;
         height: 50px;
     }
-    .product-name {
-        font-size: 14px;
-    }
-    .product-barcode, .product-quantity, .price {
-        font-size: 12px;
-    }
-    .add-btn {
-        width: 30px;
-        height: 30px;
-        font-size: 16px;
-    }
 }
 
 /* Медиа-запрос для мобильных устройств (ширина до 768px) */
@@ -319,28 +273,9 @@
     .scanner-box {
         height: 250px;
     }
-    .scanned-product-info {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        width: 100%;
-    }
     .product-img {
         width: 70px;
         height: 70px;
-    }
-    .product-details {
-        max-width: 100%;
-        text-align: center;
-    }
-    .product-info-right {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .add-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
     }
 }
 
@@ -355,17 +290,6 @@
     .product-img {
         width: 50px;
         height: 50px;
-    }
-    .product-name {
-        font-size: 12px;
-    }
-    .product-barcode, .product-quantity, .price {
-        font-size: 10px;
-    }
-    .add-btn {
-        width: 30px;
-        height: 30px;
-        font-size: 16px;
     }
 }
 </style>

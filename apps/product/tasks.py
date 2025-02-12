@@ -25,7 +25,7 @@ def check_shop_payments():
         # Если срок оплаты прошёл
         if shop.payment_due_date <= now:
             if shop.auto_pay:
-                if shop.balance >= shop.tariff.price:
+                if shop.balance >= shop.tariff.price or shop.tariff.price == 0:
                     shop.balance -= shop.tariff.price
                     shop.is_active = True
                     shop.payment_due_date = now + timedelta(days=30)
