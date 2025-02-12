@@ -62,6 +62,7 @@ def list_(request):
         products = products.filter(quantity=0)
     
     # Пагинация
+    items_per_page = request.session.get('items_per_page', 10)
     paginator = Paginator(products, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -81,6 +82,7 @@ def list_(request):
     
     context = {
         'categories': categories,
+        'visible_pages': range(1, paginator.num_pages + 1),
         'page_obj': page_obj,
         'query': query,
         'form': form,
