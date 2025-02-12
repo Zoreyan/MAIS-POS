@@ -423,7 +423,6 @@ def import_products_view(request):
 
 def task_status(request, task_id):
     task_result = AsyncResult(task_id)
-
     if task_result.state == 'PROGRESS':
         meta = task_result.info  # Должно содержать 'current' и 'total'
         progress = int(meta.get('current', 0) / meta.get('total', 1) * 100)
