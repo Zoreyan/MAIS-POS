@@ -24,7 +24,7 @@ def import_products_from_csv(self, file_data, shop_id):
                     name=category_name,
                     shop=shop
                 )
-                product = Product(
+                product, created = Product.objects.get_or_create(
                     name=row['name'],
                     description=row.get('description', ''),
                     shop=shop,
@@ -39,7 +39,7 @@ def import_products_from_csv(self, file_data, shop_id):
                 )
 
                 # Обработка изображения по ссылке
-                image_url = row.get('image', None) 
+                image_url = row.get('image', None)
                 if image_url:
                     try:
                         img_response = requests.get(image_url)
@@ -48,9 +48,7 @@ def import_products_from_csv(self, file_data, shop_id):
                         product.image.save(f"{product.name}.jpg", product_image, save=True)
                     except requests.exceptions.RequestException:
                         pass
-
-                product.save()
-                imported_count += 1
+                imported_count += 1 if created else 0
 
                 # Обновляем прогресс
                 self.update_state(state='PROGRESS', meta={'current': i, 'total': total})
