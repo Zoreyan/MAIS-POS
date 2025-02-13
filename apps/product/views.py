@@ -68,7 +68,6 @@ def list_(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Обработка формы и запуск импорта
     if request.method == 'POST' and form.is_valid():
         csv_file = form.cleaned_data['csv_file']
         if not csv_file.name.endswith('.csv'):
@@ -402,26 +401,6 @@ def category_update(request, pk):
         'form': form
     }
     return render(request, 'product/category_update.html', context)
-
-
-def import_products_view(request):
-    if request.method == 'POST':
-        form = CSVImportForm(request.POST, request.FILES)
-        if form.is_valid():
-            csv_file = form.cleaned_data['csv_file']
-
-            if not csv_file.name.endswith('.csv'):
-                messages.error(request, 'Файл должен быть в формате CSV.')
-                return redirect('product_list')
-
-            # Запуск задачи через Celery
-            task = import_products_from_csv.delay(csv_file.read().decode('utf-8'))
-            messages.success(request, f'Импорт запущен! ID задачи: {task.id}')
-            return redirect('product_list')
-
-    else:
-        form = CSVImportForm()
-    return render(request, 'products/import_products.html', {'form': form})
 
 
 def task_status(request, task_id):

@@ -16,7 +16,7 @@ class ProductModel(BaseModel):
     discount: Optional[float] = None
     quantity: Optional[float] = None
     min_quantity: Optional[float] = None
-    unit: Optional[str] = 'шт' or 'кг'
+    unit: Optional[str] = 'шт'  # Используем явное значение по умолчанию
 
 def validate_csv(row):
     try:
@@ -42,21 +42,15 @@ def import_products_from_csv(self, file_data, shop_id):
                     validation_errors = validate_csv(row)
                     if validation_errors:
                         for err in validation_errors:
-                            if err['type'] == 'string_too_short':
-                                errors.append(f"Ошибка в строке {i}: Поле '{err['loc'][0]}' должно содержать хотя бы 1 символ. Проверьте значение.")
-                            elif err['type'] == 'float_parsing':
-                                errors.append(f"Ошибка в строке {i}: Поле '{err['loc'][0]}' должно содержать корректное числовое значение. Пример: 10.99.")
-                            elif 'value too long for type character varying(2)' in err['msg']:
-                                errors.append(f"Ошибка в строке {i}: Значение в поле '{err['loc'][0]}' слишком длинное. Оно должно быть не более 2 символов. Проверьте значение.")
-                            else:
-                                errors.append(f"Ошибка в строке {i}: {err['msg']}")
+                            errors.append(f"Ошибка в строке {i}: {err['msg']}")
 
-                        continue
+                        continue  
 
+                    # Дополнительные проверки
                     if len(row.get('unit', 'шт')) > 2:
                         errors.append(f"Ошибка в строке {i}: Поле 'unit' (единица измерения) не может содержать более 2 символов. Проверьте значение.")
                         continue
-
+                    
                     category, _ = Category.objects.get_or_create(name=row['category'], shop=shop)
 
                     product, created = Product.objects.get_or_create(
@@ -73,6 +67,7 @@ def import_products_from_csv(self, file_data, shop_id):
                         min_quantity=row.get('min_quantity', 0)
                     )
 
+                    # Обработка изображений
                     image_url = row.get('image', None)
                     if image_url:
                         try:
@@ -89,6 +84,7 @@ def import_products_from_csv(self, file_data, shop_id):
                     self.update_state(state='PROGRESS', meta={'current': i, 'total': total})
 
                 except IntegrityError as ie:
+                    # Обработка ошибок базы данных
                     if 'product_product_bar_code_key' in str(ie):
                         errors.append(f"Ошибка при импорте товара '{row.get('name')}'. Товар с таким баркодом '{row.get('bar_code')}' уже существует в базе данных.")
                     elif 'value too long for type character varying(2)' in str(ie):
