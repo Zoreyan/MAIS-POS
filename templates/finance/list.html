@@ -51,12 +51,18 @@
             Фильтр
         </button>
     </div>
-
+    {% if request.user|has_permission:"add_expense" %}
     <button type="button" class="btn btn-sm btn-primary d-flex align-items-center" data-bs-toggle="modal"
         data-bs-target="#expendTypeModal">
         <i class="bx bx-plus me-1"></i>
         <span>Добавить</span>
     </button>
+    {% else %}
+    <button type="button" class="btn btn-sm btn-primary d-flex align-items-center" onclick="showNoAccessMessage()">
+        <i class="bx bx-plus me-1"></i>
+        <span>Добавить</span>
+    </button>
+    {% endif %}
 </div>
 
 <div class="modal fade" id="expendTypeModal" tabindex="-1" aria-labelledby="expendTypeModalLabel" aria-hidden="true">
@@ -103,10 +109,16 @@
                     <td>{{ expend.amount }}</td>
                     <td>{{ expend.created }}</td>
                     <td>
+                        {% if request.user|has_permission:"delete_expense"%}
                         <button type="button" class="btn" data-bs-toggle="modal"
                             data-bs-target="#deleteModal{{ expend.id }}">
                             <i class='bx bx-trash text-danger fs-5'></i>
                         </button>
+                        {% else %}
+                        <button type="button" class="btn" onclick="showNoAccessMessage()">
+                            <i class='bx bx-trash text-danger fs-5'></i>
+                        </button>
+                        {% endif %}
                         <div class="modal fade" id="deleteModal{{ expend.id }}" tabindex="-1"
                             aria-labelledby="deleteModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
@@ -121,7 +133,9 @@
                                         {{ expend.amount }}
                                     </div>
                                     <div class="modal-footer">
+                                        {% if request.user|has_permission:"delete_expense"%}
                                         <a href="{% url 'expense-delete' expend.id %}" class="btn btn-danger">Да</a>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

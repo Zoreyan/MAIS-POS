@@ -10,7 +10,6 @@ from django.http import JsonResponse
 from apps.product.models import Shop, Product
 from apps.finance.models import Expense
 from datetime import datetime
-
 from apps.history.models import *
 from datetime import datetime, timedelta
 from django.db.models import Sum, F
@@ -22,6 +21,7 @@ from calendar import monthrange
 from django.db.models.functions import TruncMonth
 from dateutil.relativedelta import relativedelta
 from django.utils.dateformat import DateFormat
+from apps.product.tasks import check_shop_payments
 
 
 
@@ -67,11 +67,10 @@ def dashboard(request):
     # Получаем start_month и end_month из GET-параметров
     start_month = request.GET.get('start_month', None)
     end_month = request.GET.get('end_month', None)
-
     current_year = datetime.now().year
     start_year = int(start_month.split('-')[0]) if start_month else current_year
     end_year = int(end_month.split('-')[0]) if end_month else current_year
-
+    
     MONTHS_RU = [
         'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
         'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
@@ -342,19 +341,20 @@ def dashboard(request):
 
 
 @login_required
-def settings_page(request):
-    selected_period = request.session.get('selected_period', 'this_month')
-    user = request.user
-    form = ShopForm(instance=user.shop)
+def settings_page(request, pk):
+    shop = get_object_or_404(Shop, id=pk)
+    form = ShopForm(instance=shop)
+    
     if request.method == 'POST':
-        form = ShopForm(request.POST, request.FILES, instance=user.shop)
+        form = ShopForm(request.POST, request.FILES, instance=shop)
+
         if form.is_valid():
             form.save()
-            return redirect('settings')
-
-
+            return redirect('settings_page', shop_id=shop.id)
+    else:
+        form = ShopForm(instance=shop)
+    
     # Получаем объект магазина
-    shop = Shop.objects.get(id=request.user.shop.id) if request.user.shop else None
     coordinates = shop.coordinates if shop else None
 
     # Проверяем наличие координат
@@ -377,25 +377,9 @@ def settings_page(request):
     # Генерация HTML-кода карты
     map_html = m._repr_html_()
 
-    products = Product.objects.filter(shop=shop) 
-    sales = OrderHistory.objects.filter(shop=shop, order_type='sale')
-    incomes = OrderHistory.objects.filter(shop=shop, order_type='income')
-    total_products_cost = sum(Decimal(p.price) * Decimal(p.quantity) for p in products)
-
-    shop_stats = {
-        'total_products': products.count(),
-        'total_products_cost': total_products_cost,
-        'total_sales': sales.count(),
-        'total_sales_cost': sum(Decimal(s.total_sum()) for s in sales.all()), 
-        'total_incomes': incomes.count(),
-        'total_incomes_cost': sum(Decimal(sh.total_sum()) for sh in incomes.all()) 
-    }             
-
     context = {
         'form': form,
         'map_html': map_html,
         'shop': shop,
-        'shop_stats': shop_stats,
-        'selected_period': selected_period
     }
     return render(request, 'settings_page.html', context)

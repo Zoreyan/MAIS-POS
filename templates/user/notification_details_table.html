@@ -1,0 +1,19 @@
+<h4>Товары с низким запасом</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Количество</th>
+            <th>Минимальное количество</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.quantity }}</td>
+            <td>{{ product.min_quantity }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

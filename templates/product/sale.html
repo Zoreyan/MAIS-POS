@@ -80,17 +80,402 @@
             </div> <!-- end card-body-->
         </div> <!-- end card-->
     </div>
-    <div class="col-lg-4 col-sm-12">
-        <input type="search" placeholder="Добавить по названию" class="form-control search" name="search">
 
-        <div class="product-search-results mt-2">
-            <div class="row gy-2" id="search-results">
-                <!-- Динамически добавляемые карточки товаров будут вставлены сюда -->
+    <div class="col-lg-4 col-sm-12">
+        <div class="mb-3">
+            
+            <button type="button" class="btn btn-primary mb-2" id="openScanner">
+                <span>Открыть сканер</span>
+            </button>
+    
+            <!-- Поле поиска -->
+            <div>
+                <input type="search" placeholder="Добавить по названию" class="form-control search" name="search">
+                
+                <div class="product-search-results mt-2">
+                    <div class="row gy-2" id="search-results">
+                        <!-- Динамически добавляемые карточки товаров -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+<!-- Scanner Modal -->
+<div class="scanner-modal" id="scannerModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Сканер</h5>
+            <button type="button" class="btn-close" id="closeScanner" aria-label="Закрыть"></button>
+        </div>
+        <div class="modal-body">
+            <div class="scanner-box" id="scanner-box">
+                <div id="scannerCamera" class="camera"></div>
+                <div class="scanner-line"></div>
+                <div class="scanner-center-line"></div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between mt-2">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="autoMode">
+                    <label class="form-check-label" for="autoMode">не показать данные</label>
+                </div>
+                <h6 id="scannedCode">#### ####</h6>
+            </div>
 
+            <div class="mt-4 scanned-product-info d-none" id="productInfo">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Левая секция -->
+                            <div class="col-3 border-end d-flex align-items-center">
+                                <div class="product-img" id="productImage"></div>
+                            </div>
+            
+                            <!-- Центральная секция с двумя блоками -->
+                            <div class="col-7">
+                                <div class="row">
+                                    <div class="col-12 border-bottom pb-2">
+                                        <div class="product-details flex-grow-1 d-flex justify-content-between">
+                                            <span class="product-name text-truncate" id="productName" title="Название товара">Название товара</span>
+                                            <span class="product-quantity mb-1" id="productQuantity">кол: 0</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 pt-2">
+                                        <div class="text-end me-3 d-flex justify-content-between">
+                                            <span class="product-barcode" id="productBarcode">Штрих-код</span>
+                                            <span class="price" id="productPrice">0.0c</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <!-- Правая секция -->
+                            <div class="col-2 border-start d-flex align-items-center">
+                                <button class="add-btn" id="addProduct">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .scanner-modal {
+        position: fixed;
+        top: 10%;
+        right: 0;
+        width: 30%;
+        height: 90vh;
+        background: #121212;
+        color: white;
+        display: none;
+        z-index: 1050;
+        padding: 15px;
+        border-radius: 10px 0 0 10px;
+        display: none;
+        flex-direction: column;
+        overflow-y: scroll !important;
+    }
+
+    .modal-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .scanner-box {
+        position: relative;
+        width: 100%;
+        height: 350px;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        background: #1e1e1e;
+        overflow: hidden;
+    }
+
+    #scannerCamera {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .scanner-line {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: red;
+        animation: scanAnimation 1.5s infinite ease-in-out alternate;
+    }
+
+    @keyframes scanAnimation {
+        from {
+            top: 20%;
+        }
+        to {
+            top: 80%;
+        }
+    }
+
+    .product-img {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        background-size: cover;
+        background-position: center;
+        border: 1px solid #ddd;
+    }
+
+    .price {
+        font-size: 18px;
+        font-weight: bold;
+        color: #27ae60;
+        margin: 0;
+        min-width: 60px;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .add-btn {
+        background: #27ae60;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0; /* Предотвращает изменение размера */
+    }
+
+    .add-btn:hover {
+        background: #219150;
+    }
+
+    /* Медиа-запрос для планшетов (ширина до 1024px) */
+@media (max-width: 1024px) {
+    .scanner-modal {
+        width: 40%;
+    }
+    .scanner-box {
+        height: 300px;
+    }
+    .product-img {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* Медиа-запрос для мобильных устройств (ширина до 768px) */
+@media (max-width: 768px) {
+    .scanner-modal {
+        width: 100%;
+        height: 90vh;
+        top: 10%;
+        right: auto;
+        border-radius: 0;
+        padding: 10px;
+    }
+    .scanner-box {
+        height: 250px;
+    }
+    .product-img {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+/* Медиа-запрос для маленьких экранов (ширина до 480px) */
+@media (max-width: 480px) {
+    .scanner-box {
+        height: 200px;
+    }
+    .modal-body {
+        padding: 5px;
+    }
+    .product-img {
+        width: 50px;
+        height: 50px;
+    }
+}
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let lastScannedCode = "";
+        let scanTimeout;
+        let isAutoMode = false;
+    
+        const scannerBox = document.getElementById("scannerCamera");
+        const scannedCode = document.getElementById("scannedCode");
+        const productInfo = document.getElementById("productInfo");
+        const productName = document.getElementById("productName");
+        const productBarcode = document.getElementById("productBarcode");
+        const productPrice = document.getElementById("productPrice");
+        const productImage = document.getElementById("productImage");
+        const productQuantity = document.getElementById("productQuantity");
+        const addProductBtn = document.getElementById("addProduct");
+        const autoModeCheckbox = document.getElementById("autoMode");
+        const closeScanner = document.getElementById("closeScanner");
+        const scannerModal = document.getElementById("scannerModal");
+        const openScanner = document.getElementById("openScanner");
+        const scannerBoxBorder = document.getElementById("scanner-box");
+        const scannerSound = new Audio("{% static 'audio/scanner.mp3' %}");
+    
+        function startScanner() {
+            Quagga.init({
+                inputStream: {
+                    type: "LiveStream",
+                    target: scannerBox,
+                    constraints: {
+                        width: 1280,
+                        height: 720,
+                        facingMode: "environment",
+                        width: { ideal: 350 },
+                        height: { ideal: 350 }
+                    }
+                },
+                locator: {
+                    patchSize: "x-large",
+                    halfSample: false
+                },
+                decoder: {
+                    readers: [
+                        "ean_reader",
+                        "ean_8_reader",
+                        "upc_reader",
+                        "upc_e_reader",
+                    ]
+                },
+                locate: true,
+                numOfWorkers: navigator.hardwareConcurrency || 4,
+                frequency: 10
+            }, function (err) {
+                if (err) {
+                    console.error("Ошибка инициализации Quagga:", err);
+                    return;
+                }
+                Quagga.start();
+            });
+        }
+    
+        Quagga.onDetected(function (result) {
+            if (!result || !result.codeResult || !result.codeResult.code) {
+                lastScannedCode = "####"; // Если нет штрихкода, заменяем на ####
+                scannedCode.textContent = lastScannedCode;
+                return;
+            }
+            const barcode = result.codeResult.code;
+            if (barcode === lastScannedCode) return;
+    
+            lastScannedCode = barcode;
+            scannedCode.textContent = barcode;
+            scannerBoxBorder.style.borderColor = "blue";
+            clearTimeout(scanTimeout);
+    
+            scanTimeout = setTimeout(() => {
+                $.ajax({
+                    url: "{% url 'get-product' %}",
+                    type: "GET",
+                    data: { bar_code: barcode },
+                    dataType: "json"
+                })
+                .done(function (data) {
+                    scannerSound.play();
+                    if (isAutoMode) {
+                        sendBarcode(barcode);
+                    } else {
+                        productInfo.classList.remove("d-none");
+                        productImage.style.backgroundImage = `url('${data.image}')`;
+                        productName.textContent = data.name;
+                        productBarcode.textContent = barcode;
+                        productQuantity.textContent = `${data.quantity}`;
+                        productPrice.textContent = `${data.d_sale_price}`;
+                        addProductBtn.onclick = function () {
+                            sendBarcode(barcode);
+                            clearProductInfo(); // Очищаем информацию после добавления
+                        };
+                    }
+                })
+                .fail(() => {
+                    lastScannedCode = "#### ####"; // Если товар не найден, заменяем на ####
+                    scannedCode.textContent = lastScannedCode;
+                });
+            }, 1000);
+        });
+
+        function sendBarcode(barcode) {
+            let barcodeInput = document.querySelector(".barcode");
+            if (barcodeInput) {
+                barcodeInput.value = barcode;
+
+                // Создаём событие ввода
+                let inputEvent = new Event("input", { bubbles: true });
+                barcodeInput.dispatchEvent(inputEvent);
+
+                // Создаём событие изменения
+                let changeEvent = new Event("change", { bubbles: true });
+                barcodeInput.dispatchEvent(changeEvent);
+
+                // Ждём, пока обновится поле, затем имитируем нажатие Enter
+                setTimeout(() => {
+                    let enterEvent = new KeyboardEvent("keypress", {
+                        bubbles: true,
+                        cancelable: true,
+                        key: "Enter",
+                        code: "Enter",
+                        keyCode: 13
+                    });
+                    barcodeInput.dispatchEvent(enterEvent);
+                }, 100); // 100 мс для обработки события input
+            }
+        }
+    
+        function clearProductInfo() {
+            productInfo.classList.add("d-none");
+        }
+    
+        if (openScanner) {
+            openScanner.addEventListener("click", function () {
+                scannerModal.style.display = "block";
+                setTimeout(startScanner, 300);
+            });
+        }
+    
+        if (closeScanner) {
+            closeScanner.addEventListener("click", function () {
+                scannerModal.style.display = "none";
+                Quagga.stop();
+            });
+        }
+    
+        if (autoModeCheckbox) {
+            autoModeCheckbox.addEventListener("change", function () {
+                isAutoMode = this.checked;
+            });
+        }
+    });
+    </script>
+    
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
@@ -265,22 +650,20 @@ $('.scan_btn').on('click', function () {
                     data: { bar_code: barcode },
                     success: function (data) {
                         if (data.quantity <= 0) {
-                            $('.product-info').empty();
-                            $('.product-info').append(`
-                                <div class="alert alert-danger bg-transparent text-danger" role="alert">
-                                    Недостаточно товара на складе!
-                                </div>
-                            `);
+                            showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
                             return;
                         }
 
                         // Добавляем продукт в список, если его нет, или увеличиваем количество, если он уже есть
                         let existingProduct = productList.find(product => product.bar_code === data.bar_code);
+                        let productName = data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name;
+
                         if (existingProduct) {
                             if (existingProduct.quantity < data.quantity) {
                                 existingProduct.quantity++;
+                                showNoAccessMessage(`+1 ${productName}!`, '#0b863f');
                             } else {
-                                alert('Товара недостаточно на складе!');
+                                showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
                             }
                         } else {
                             productList.unshift({
@@ -292,17 +675,13 @@ $('.scan_btn').on('click', function () {
                                 stock: data.quantity,
                                 image: data.image
                             });
+                            showNoAccessMessage(`Товар ${productName} добавлен!`, '#0b863f');
                         }
 
                         updateTable();
                     },
                     error: function () {
-                        $('.product-info').empty();
-                        $('.product-info').append(`
-                            <div class="alert alert-danger bg-transparent text-danger" role="alert">
-                                Товар не найден!
-                            </div>
-                        `);
+                        showNoAccessMessage('Товар не найден!', '#ffa500');
                     }
                 });
                 $(this).val(''); // очищаем поле штрих-кода после поиска
@@ -319,17 +698,20 @@ $('.scan_btn').on('click', function () {
                 data: { id: productId },
                 success: function (data) {
                     if (data.quantity <= 0) {
-                        alert('Недостаточно товара на складе!');
+                        showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
                         return;
                     }
 
                     // Добавляем продукт в список
-                    let existingProduct = productList.find(product => product.id === data.id);
+                    let existingProduct = productList.find(product => product.bar_code === data.bar_code);
+                    let productName = data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name;
+
                     if (existingProduct) {
                         if (existingProduct.quantity < data.quantity) {
                             existingProduct.quantity++;
+                            showNoAccessMessage(`+1 ${productName}!`, '#0b863f');
                         } else {
-                            alert('Товара недостаточно на складе!');
+                            showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
                         }
                     } else {
                         productList.push({
@@ -341,12 +723,13 @@ $('.scan_btn').on('click', function () {
                             stock: data.quantity,
                             image: data.image
                         });
+                        showNoAccessMessage(`Товар ${productName} добавлен!`, '#0b863f');
                     }
 
                     updateTable();
                 },
                 error: function () {
-                    alert('Ошибка при добавлении товара!');
+                    showNoAccessMessage('Товар не найден!', '#ffa500');
                 }
             });
         });
@@ -363,11 +746,7 @@ $('.scan_btn').on('click', function () {
                 product.quantity++;
                 updateTable();
             } else {
-                $('.product-info').append(`
-                    <div class="alert alert-danger bg-transparent text-danger" role="alert">
-                        Товара недостаточно на складе!
-                    </div>
-                `);
+                showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
             }
         });
 
@@ -447,21 +826,11 @@ $('.scan_btn').on('click', function () {
 
         $('.sell').on('click', function () {
             if (amountInput.val() < discountedSum) {
-                $('.product-info').empty();
-                $('.product-info').append(`
-                            <div class="alert alert-danger bg-transparent text-danger" role="alert">
-                                Недостаточно средств!
-                            </div>
-                        `);
+                showNoAccessMessage('Недостаточно средств!', '#ffa500');
                 return false;
             }
             if (productList.length === 0) {
-                $('.product-info').empty();
-                $('.product-info').append(`
-                            <div class="alert alert-danger bg-transparent text-danger" role="alert">
-                                Введите хотя бы один товар!
-                            </div>
-                        `);
+                showNoAccessMessage('Введите хотя бы один товар!', '#ffa500');
                 return false;
             }
 
@@ -481,12 +850,7 @@ $('.scan_btn').on('click', function () {
                     discount: discountInput.val()
                 },
                 success: function () {
-                    $('.product-info').empty();
-                    $('.product-info').append(`
-                                <div class="alert alert-success bg-transparent text-success" role="alert">
-                                Продажа успешна!
-                            </div>
-                        `);
+                    showNoAccessMessage('Продажа успешна!', '#0b863f');
                     productList = [];
                     $('#product-table-body').empty();
                     updateTotal();

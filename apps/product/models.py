@@ -4,6 +4,8 @@ from mptt.models import MPTTModel, TreeForeignKey
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
 
+
+
 class Category(MPTTModel):
     shop = models.ForeignKey('Shop', on_delete=models.CASCADE, verbose_name='Магазин', null=True)
     name = models.CharField(max_length=100, verbose_name='Название')
@@ -60,9 +62,21 @@ class Shop(models.Model):
         blank=True
     )
 
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Баланс")
+    tariff = models.ForeignKey('dashboard.Tariff', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Текущий тариф")
+    payment_due_date = models.DateTimeField(null=True, blank=True, verbose_name="Дата следующей оплаты")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    auto_pay = models.BooleanField(default=True, verbose_name="Автоматическая оплата")
+    email_notifications = models.BooleanField(default=True, verbose_name="Email уведомления")
+    system_notifications = models.BooleanField(default=True, verbose_name="Системные уведомления")
+
     class Meta:
         verbose_name = 'Магазин'
         verbose_name_plural = 'Магазины'
+
+        permissions = [
+            ("can_manage_shop", "Can manage shop settings"),
+        ]
 
     def __str__(self):
         return self.name

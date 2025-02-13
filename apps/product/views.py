@@ -12,6 +12,14 @@ from django.core.paginator import Paginator
 from django.db.models import Count
 from django.db.models import Q, Case, When, IntegerField
 from django.db import IntegrityError
+from django.contrib.auth.models import Permission
+from .tasks import check_product_stock
+from decimal import Decimal
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
+
+
 
 
 
@@ -28,6 +36,13 @@ def update_product_per_page(request):
 
 @login_required
 def list_(request):
+    permission = Permission.objects.filter(user=request.user, codename='view_product')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     products = Product.objects.filter(shop=request.user.shop)
 
     categories = Category.objects.filter(shop=request.user.shop)
@@ -74,6 +89,19 @@ def list_(request):
         products = products.filter(quantity__gt=0)
     elif in_stock == "no":
         products = products.filter(quantity=0)
+    elif in_stock == "low":
+        produkts = []
+        for product in products:
+            if product.min_quantity:
+                produkts.append(product)
+        products = produkts
+
+    # Фильтр по наличию
+    discount = request.GET.get('discount')
+    if discount == "yes":
+        products = products.filter(discount__gt=0)
+    elif discount == "no":
+        products = products.filter(discount=0)
 
     # Для пагинации
     items_per_page = request.session.get('items_per_page', 10)
@@ -99,8 +127,50 @@ def list_(request):
 
 @login_required
 def create(request):
+    products_count = Product.objects.filter(shop=request.user.shop).count()
+    tariff = request.user.shop.tariff
+    limit = 0
+    max_products = 0
+
+    if tariff:
+        product_limit = tariff.features.filter(name__icontains="товара").first()
+        
+        if product_limit:
+            list_max = []
+            pr_limit = str(product_limit)
+            
+            if '∞' in pr_limit:
+                # Устанавливаем бесконечное количество товаров
+                max_products = float('inf')
+                limit = '∞'
+            else:
+                try:
+                    for i in pr_limit:
+                        if i.isdigit():
+                            list_max.append(i)
+                    # Если найдены цифры, преобразуем их в число
+                    if list_max:
+                        max_products = int(''.join(list_max))
+                        limit = max_products - products_count
+                    else:
+                        raise ValueError("Не удалось найти число в строке product_limit.")
+                except:
+                    max_products = float('inf')
+                    limit = '∞'
+    
+    permission = Permission.objects.filter(user=request.user, codename='add_product')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+
+        return redirect('dashboard')
+
     form = ProductForm()
     if request.method == 'POST':
+        if products_count >= max_products:
+            messages.error(request, 'Превышено количество товаров')
+            return redirect('product-create')
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             form.instance.shop = request.user.shop
@@ -109,33 +179,13 @@ def create(request):
             return redirect('product-create')
         else:
             messages.error(request, 'Ошибка при создании товара')
-    return render(request, 'product/create.html', {'form': form})
-
-@login_required
-def product_create(request):
-    # Проверяем, что запрос является AJAX и имеет метод POST
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        # Преобразуем данные JSON из запроса
-        data = json.loads(request.body)
-        
-        # Создаем объект Product с полученными данными и значениями по умолчанию
-        product = Product(
-            name=data.get('name'),
-            bar_code=data.get('barcode'),
-            price=data.get('price', 0),       # Цена по умолчанию 0
-            quantity=data.get('quantity', 0), # Количество по умолчанию 0
-            sale_price=data.get('sale_price', 0), # Продажная цена по умолчанию 0
-            shop=request.user.shop
-        )
-
-        # Сохраняем объект и возвращаем ответ JSON
-        try:
-            product.save()
-            return JsonResponse({'success': True, 'barcode': product.bar_code})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
     
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
+    context = {
+        'form': form,
+        'limit': limit
+    }
+    
+    return render(request, 'product/create.html', context)
 
 @login_required
 def details(request, pk):
@@ -148,6 +198,13 @@ def details(request, pk):
 
 @login_required
 def update(request, pk):
+    permission = Permission.objects.filter(user=request.user, codename='change_product')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     product = Product.objects.get(id=pk)
     form = ProductForm(instance=product)
     if request.method == 'POST':
@@ -164,6 +221,13 @@ def update(request, pk):
 
 @login_required
 def delete(request, pk):
+    permission = Permission.objects.filter(user=request.user, codename='delete_product')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     Product.objects.get(id=pk).delete()
     return redirect('product-list')
 
@@ -178,6 +242,7 @@ def income(request):
 def get_product(request):
     bar_code = request.GET.get('bar_code')
     product_id = request.GET.get('id')
+    print(bar_code)
     if bar_code:
         product = get_object_or_404(Product, bar_code=bar_code, shop=request.user.shop)  # Находим продукт по штрихкоду
     elif product_id:
@@ -201,6 +266,9 @@ def get_product(request):
 
 @login_required
 def create_sell_history(request):
+    if not request.user.shop.is_active:
+        return redirect('dashboard')
+
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
         amount = request.POST.get('amount')
@@ -252,12 +320,16 @@ def create_sell_history(request):
         order.profit = profit
         order.save()
 
+        check_product_stock.delay(products, request.user.shop.id )
 
         return JsonResponse({'status': 'success'})
         
         
 @login_required
 def create_income_history(request):
+    if not request.user.shop.is_active:
+        return redirect('dashboard')
+        
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
         amount = request.POST.get('amount')
@@ -336,13 +408,19 @@ def search_product(request):
                 Q(shop=request.user.shop) & 
                 (Q(name__icontains=query) | Q(category__name__icontains=query))
             )
-    print(products)
     serialized_products = list(products.values())
 
     return JsonResponse({'products': serialized_products})
 
 @login_required
 def category_list(request):
+    permission = Permission.objects.filter(user=request.user, codename='view_category')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     categories = Category.objects.annotate(total_products=Count('product')).filter(shop=request.user.shop)
     form = CategoryForm(shop=request.user.shop)   
 
@@ -389,12 +467,26 @@ def update_category_per_page(request):
 
 @login_required
 def category_delete(request, pk):
+    permission = Permission.objects.filter(user=request.user, codename='delete_category')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     category = Category.objects.get(id=pk)
     category.delete()
     return redirect('category-list')
 
 @login_required
 def category_update(request, pk):
+    permission = Permission.objects.filter(user=request.user, codename='change_category')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     category = get_object_or_404(Category, pk=pk)
     form = CategoryForm(instance=category)
     if request.method == 'POST':

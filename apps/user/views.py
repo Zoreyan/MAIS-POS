@@ -8,19 +8,63 @@ from django.db.utils import IntegrityError
 from django.contrib import messages
 from .utils import generate_password
 from django.db.models import Q
+from django.utils.timezone import now, timedelta
+from apps.dashboard.models import *
 from .models import *
 from .forms import *
 
 def sign_up(request):
-    form = SignUpForm()
+    tariffs = Tariff.objects.all().order_by('sequence')
+    tariff_features_dict = {}
+
+    for tariff in tariffs:
+        tariff_features = tariff.features.order_by('sequence', 'id')
+        tariff_features_dict[tariff] = tariff_features
+
+    user_form = UserForm(request.POST or None)
+    shop_form = ShopForm(request.POST or None)
+    errors = {"tariff": None, "user_form": None, "shop_form": None}
+
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.instance.username = generate_password()
-            form.instance.role = 'owner'
-            form.save()
-            return redirect('dashboard')
-    return render(request, 'user/sign_up.html', {'form': form})
+        # Проверяем тариф
+        tariff_id = request.POST.get('tariff')
+        if not tariff_id:
+            errors["tariff"] = "Выберите тариф."
+
+        # Проверяем формы
+        if not user_form.is_valid():
+            errors["user_form"] = user_form.errors
+        if not shop_form.is_valid():
+            errors["shop_form"] = shop_form.errors
+
+        # Если нет ошибок, сохраняем данные
+        if not any(errors.values()):
+            shop = shop_form.save(commit=False)
+            user = user_form.save(commit=False)
+
+            tariff = get_object_or_404(Tariff, id=tariff_id)
+            shop.save()
+            shop.tariff = tariff
+            shop.payment_due_date = now() + timedelta(days=14).replace(minute=59, second=0, microsecond=0)
+            shop.save()
+
+            user.save()
+            user.shop = shop
+            user.role = 'owner'
+            all_permissions = Permission.objects.all()
+            user.user_permissions.set(all_permissions)
+            user.save()
+
+            return login(request, user)
+
+    context = {
+        'tariffs': tariffs,
+        'tariff_features_dict': tariff_features_dict,
+        'user_form': user_form,
+        'shop_form': shop_form,
+        'errors': errors,
+    }
+    return render(request, 'user/sign_up.html', context)
 
 
 def login_page(request):
@@ -47,6 +91,13 @@ def logout_user(request):
 
 @login_required
 def list(request):
+    permission = Permission.objects.filter(user=request.user, codename='view_user')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     # Получение всех пользователей
     users = User.objects.filter(shop=request.user.shop)
 
@@ -117,6 +168,8 @@ def profile(request, pk):
         
         'can_delete_incomehistory': user_permissions.filter(codename='delete_incomehistory').exists(),
         'can_view_incomehistory': user_permissions.filter(codename='view_incomehistory').exists(),
+
+        'can_manage_shop': user_permissions.filter(codename='can_manage_shop').exists(),
     }
 
     context = {
@@ -130,6 +183,13 @@ def profile(request, pk):
 
 @login_required
 def create(request):
+    permission = Permission.objects.filter(user=request.user, codename='add_user')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     form = CreateUserForm()
 
     if request.method == 'POST':
@@ -173,6 +233,8 @@ def create(request):
                     # История поставок
                     'can_delete_incomehistory': 'delete_incomehistory',
                     'can_view_incomehistory': 'view_incomehistory',
+                    # Изменить магазин
+                    'can_manage_shop': 'can_manage_shop',
                 }
 
                 # Устанавливаем права
@@ -222,6 +284,7 @@ ROLE_PERMISSIONS = {
         'can_view_soldhistory': True,
         'can_delete_incomehistory': True,
         'can_view_incomehistory': True,
+        'can_manage_shop': True,
     },
     'manager': {
         'can_create_user': False,
@@ -246,6 +309,7 @@ ROLE_PERMISSIONS = {
         'can_view_soldhistory': True,
         'can_delete_incomehistory': False,
         'can_view_incomehistory': True,
+        'can_manage_shop': False,
     },
     'cashier': {
         'can_create_user': False,
@@ -270,6 +334,7 @@ ROLE_PERMISSIONS = {
         'can_view_soldhistory': True,
         'can_delete_incomehistory': False,
         'can_view_incomehistory': True,
+        'can_manage_shop': False,
     },
     'owner': {
         'can_create_user': True,
@@ -294,6 +359,7 @@ ROLE_PERMISSIONS = {
         'can_view_soldhistory': True,
         'can_delete_incomehistory': True,
         'can_view_incomehistory': True,
+        'can_manage_shop': True,
     },
 }
 
@@ -341,12 +407,21 @@ def get_user_permissions(request):
         
         'can_delete_incomehistory': user_permissions.filter(codename='delete_incomehistory').exists(),
         'can_view_incomehistory': user_permissions.filter(codename='view_incomehistory').exists(),
+
+        'can_manage_shop':user_permissions.filter(codename='can_manage_shop').exists(),
     }
     
     return JsonResponse(permissions_data)
 
 
 def update(request, pk):
+    permission = Permission.objects.filter(user=request.user, codename='change_user')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     user = get_object_or_404(User, pk=pk)
     form = UserUpdateForm(request.POST or None, request.FILES or None, instance=user)
 
@@ -391,6 +466,8 @@ def update(request, pk):
                     # История поставок
                     'can_delete_incomehistory': 'delete_incomehistory',
                     'can_view_incomehistory': 'view_incomehistory',
+                    # Изменить магазин
+                    'can_manage_shop': 'can_manage_shop',
                 }
 
                 new_user.user_permissions.clear()
@@ -420,6 +497,23 @@ def update(request, pk):
     return render(request, 'user/update.html', context)
 
 def delete(request, pk):
+    permission = Permission.objects.filter(user=request.user, codename='delete_user')
+    if not permission.exists():
+        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
+        if referer:  # Если заголовок HTTP_REFERER доступен
+            return redirect(referer)
+        return redirect('dashboard')
+
     user = User.objects.get(id=pk)
     user.delete()
     return redirect('user-list')
+
+def notifications(request, pk):
+
+    user = get_object_or_404(User, pk=pk)
+    notifications = Notification.objects.filter(shop=user.shop).order_by('-created')
+    for notification in notifications:
+        if user in notification.is_not_read.all():
+            notification.is_not_read.remove(user)
+
+    return render(request, 'user/notifications.html', {'notifications': notifications})
