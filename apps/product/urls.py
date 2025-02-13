@@ -23,6 +23,6 @@ urlpatterns = [
     path('category-delete/<int:pk>/', category_delete, name='category-delete'),
     path('update_product_per_page', update_product_per_page, name='update_product_per_page'),
     path('update_category_per_page', update_category_per_page, name='update_category_per_page'),
-    path('import/', import_products_view, name='import_products'),
+    # path('import/', import_products_view, name='import_products'),
     path('task_status/<str:task_id>/', task_status, name='task_status'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

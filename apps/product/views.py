@@ -28,26 +28,27 @@ def update_product_per_page(request):
             request.session['items_per_page'] = 10  # Устанавливаем значение по умолчанию
     return redirect('product-list') 
 
+@login_required
 def list_(request):
     form = CSVImportForm(request.POST or None, request.FILES or None)
     query = request.GET.get('query', '').strip()
     products = Product.objects.filter(shop=request.user.shop)
     categories = Category.objects.filter(shop=request.user.shop)
-    
+
     # Фильтрация по запросу
     if query:
         if query.isdigit():
             products = products.filter(bar_code__icontains=query)
         else:
             products = products.filter(Q(name__icontains=query) | Q(category__name__icontains=query))
-    
+
     # Фильтр по категории
     selected_category = request.GET.get('category')
     if selected_category:
         category = categories.filter(name=selected_category).first()
         if category:
             products = products.filter(Q(category=category) | Q(category__parent=category))
-    
+
     # Фильтры по цене и наличию
     price_min = request.GET.get('price_min')
     if price_min:
@@ -60,14 +61,14 @@ def list_(request):
         products = products.filter(quantity__gt=0)
     elif in_stock == "no":
         products = products.filter(quantity=0)
-    
+
     # Пагинация
     items_per_page = request.session.get('items_per_page', 10)
-    paginator = Paginator(products, 10)
+    paginator = Paginator(products, items_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
-    task_id = None
+
+    # Обработка формы и запуск импорта
     if request.method == 'POST' and form.is_valid():
         csv_file = form.cleaned_data['csv_file']
         if not csv_file.name.endswith('.csv'):
@@ -75,20 +76,20 @@ def list_(request):
             return redirect('product-list')
         try:
             task = import_products_from_csv.delay(csv_file.read().decode('utf-8'), request.user.shop.id)
-            messages.success(request, f'Импорт успешно запущен!')
-            task_id = task.id
+            messages.success(request, 'Импорт успешно запущен!')
+            return redirect(f"{request.path}?task_id={task.id}")
         except Exception as e:
             messages.error(request, f'Ошибка запуска импорта: {e}')
-    
+
     context = {
         'categories': categories,
         'visible_pages': range(1, paginator.num_pages + 1),
         'page_obj': page_obj,
         'query': query,
         'form': form,
-        'task_id': task_id,
     }
     return render(request, 'product/list.html', context)
+
 
 @login_required
 def create(request):
@@ -425,18 +426,36 @@ def import_products_view(request):
 
 def task_status(request, task_id):
     task_result = AsyncResult(task_id)
+
     if task_result.state == 'PROGRESS':
         meta = task_result.info  # Должно содержать 'current' и 'total'
         progress = int(meta.get('current', 0) / meta.get('total', 1) * 100)
         return JsonResponse({
-            'status': task_result.state,
+            'status': 'PROGRESS',
             'progress': progress,
             'current': meta.get('current'),
             'total': meta.get('total')
         })
+
     elif task_result.state == 'SUCCESS':
-        return JsonResponse({'status': 'SUCCESS'})
+        result_data = task_result.result
+        if result_data.get('status') == 'PARTIAL_SUCCESS':
+            return JsonResponse({
+                'status': 'PARTIAL_SUCCESS',
+                'imported': result_data.get('imported', 0),
+                'errors': result_data.get('errors', [])
+            })
+        else:
+            return JsonResponse({
+                'status': 'SUCCESS',
+                'imported': result_data.get('imported', 0)
+            })
+
     elif task_result.state == 'FAILURE':
-        return JsonResponse({'status': 'FAILURE', 'error': str(task_result.result)})
+        return JsonResponse({
+            'status': 'FAILURE',
+            'error': str(task_result.result)
+        })
+
     else:
         return JsonResponse({'status': task_result.state})

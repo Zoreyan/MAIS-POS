@@ -13,13 +13,14 @@
                         <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                     </div>
                     {% if messages %}
-                            <span class="badge bg-info p-2 mb-2">
+                            <span class="messages badge bg-info p-2 mb-2">
                                 {% for message in messages %}
                                 {{ message }}
                                 {% endfor %}
                             </span>
                     {% endif %}
                 </div>
+                <div id="importErrors" class="alert alert-warning" style="display:none;"></div> <!-- Hide by default -->
                 <form method="get" class="row gy-3 align-items-end">
                     <div class="col-md-3">
                         <label for="ProductCategory" class="form-label">Категория</label>
@@ -157,30 +158,6 @@
                                 <i class="bx bx-trash bx-sm"></i>
                             </button>
                             {% endif %}
-
-                            <div class="modal fade" id="modalDelete{{ product.id }}" tabindex="-1"
-                                style="display: none;" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="modalCenterTitle">Удаление продукта</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>Вы уверены, что хотите удалить продукт?</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-label-secondary"
-                                                data-bs-dismiss="modal">Закрыть</button>
-                                            {% if request.user|has_permission:"delete_product" %}
-                                            <a href="{% url 'product-delete' product.id %}"
-                                                class="btn btn-danger">Удалить</a>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </td>
                     {% endfor %}
@@ -266,7 +243,6 @@
                 <div class="modal-body">
                     {{ form.as_p }}
                     <p>Должны быть поля: name, description, category, price, sale_price, discount, unit, image, bar_code, quantity, min_quantity</p>
-                    <!-- Progress bar для отображения прогресса импорта -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -278,36 +254,45 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Если на странице есть элемент с id "taskId" (например, в скрытом поле) или передается через шаблон
-        {% if task_id %}
-        checkTaskStatus('{{ task_id }}');
-        {% endif %}
+    document.addEventListener('DOMContentLoaded', function () {
+        const taskId = new URLSearchParams(window.location.search).get('task_id');
+        if (taskId) {
+            checkTaskStatus(taskId);
+        }
     });
-    
-    let isTaskCompleted = false;  // Флаг для отслеживания завершения задачи
-    
-    function checkTaskStatus(taskId) {
-        if (isTaskCompleted) return;  // Если задача завершена, не отправляем запросы
-    
-        fetch("{% url 'task_status' 'dummy' %}".replace('dummy', taskId))
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'PROGRESS') {
-                    document.getElementById("progressBar").style.width = data.progress + "%";
-                    document.getElementById("progressBar").innerText = data.progress + "%";
-                    setTimeout(() => checkTaskStatus(taskId), 2000);
-                } else if (data.status === 'SUCCESS') {
-                    alert('Импорт завершен!');
-                    isTaskCompleted = true;  // Устанавливаем флаг завершения задачи
-                    location.reload();  // Обновляем страницу
-                } else {
-                    setTimeout(() => checkTaskStatus(taskId), 2000);
-                }
-            })
-            .catch(error => console.error('Ошибка получения статуса задачи:', error));
-    }
-    </script>
-    
 
+    async function checkTaskStatus(taskId) {
+        const response = await fetch(`/product/task_status/${taskId}/`);
+        const data = await response.json();
+
+        if (data.status === 'PROGRESS') {
+            updateProgressBar(data.progress);
+            setTimeout(() => checkTaskStatus(taskId), 1000);  // Проверяем статус каждые 1 секунду
+        } else if (data.status === 'SUCCESS') {
+            showMessage('Импорт завершен успешно! Импортировано товаров: ' + data.imported, 'success');
+        } else if (data.status === 'PARTIAL_SUCCESS') {
+            let errorList = data.errors.map(err => `<li>${err}</li>`).join('');
+            document.getElementById('importErrors').style.display = 'block';
+            document.getElementById('importErrors').innerHTML = `
+                <p>Импорт частично завершён. Успешно импортировано: ${data.imported}</p>
+                <ul>${errorList}</ul>
+            `;
+        } else if (data.status === 'FAILURE') {
+            showMessage('Импорт не удался. Ошибка: ' + data.error, 'danger');
+        }
+    }
+
+    function updateProgressBar(progress) {
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = `${progress}%`;
+        progressBar.setAttribute('aria-valuenow', progress);
+        progressBar.innerText = `${progress}%`;
+    }
+
+    function showMessage(message, type) {
+        const messages = document.querySelector('.messages');
+        messages.innerHTML = `<span class="badge bg-${type}">${message}</span>`;
+        messages.style.display = 'inline-block';
+    }
+</script>
 {% endblock %}
