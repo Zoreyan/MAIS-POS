@@ -396,21 +396,33 @@ def find_product(request):
 
 @login_required
 def search_product(request):
-    query = request.GET.get('query', '')
-    products = []
+    query = request.GET.get('query', '').strip()
+    products = Product.objects.filter(shop=request.user.shop)  # Фильтрация по магазину
 
     if query:
-        print(query)
-        if query.isdigit():
-            products = Product.objects.filter(shop=request.user.shop, bar_code__icontains=query)
-        else:
-            products = Product.objects.filter(
-                Q(shop=request.user.shop) & 
-                (Q(name__icontains=query) | Q(category__name__icontains=query))
+        if query.isdigit():  # Если ввод числовой, ищем по штрих-коду
+            products = products.filter(bar_code__icontains=query)
+        else:  # Иначе ищем по названию или категории
+            products = products.filter(
+                Q(name__icontains=query) | Q(category__name__icontains=query)
             )
-    serialized_products = list(products.values())
 
-    return JsonResponse({'products': serialized_products})
+    products = products.select_related("category").only("name", "sale_price", "bar_code", "quantity", "image", "category", "id")[:10]
+    
+    serialized_products = [
+        {
+            "id": product.id,
+            "name": product.name,
+            "sale_price": product.discounted_price(),
+            "bar_code": product.bar_code,
+            "quantity": product.quantity,
+            "image": product.image.url if product.image else None,
+            "category": product.category.name
+        }
+        for product in products
+    ]
+
+    return JsonResponse({"products": serialized_products})
 
 @login_required
 def category_list(request):
