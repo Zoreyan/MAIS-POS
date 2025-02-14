@@ -52,6 +52,13 @@ class User(AbstractUser):
         verbose_name='Доступ'
     )
 
+    get_email_notification = models.BooleanField(
+        default=False,
+        verbose_name='Получать уведомления'
+    )
+
+    qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username","role"]
 

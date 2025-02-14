@@ -1,134 +1,250 @@
 {% extends 'base.html' %}
-
+{% load tags %}
 {% block content %}
-<form method="post" class="row gy-2" enctype="multipart/form-data">
-
-    <div class="col-sm-12 col-md-4">
-        <div class="card">
-            <div class="card-body text-center" style="padding: 10px;">
-                <label for="image" class="form-label">
+<div class="row gy-4">
+    <div class="col-12 col-md-4">
+        <div class="card shadow-sm border-light rounded d-flex flex-column" style="height: 100%;">
+            <div class="card-body text-center flex-grow-1">
+                <label for="image" class="form-label mb-3">
                     {% if shop.image %}
-                <img src="{{ shop.image.url }}" alt="Изображение магазина" class="img-fluid rounded mb-2">
-                {% else %}
-                <img src="https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ="
-                    alt="Изображение магазина" class="img-fluid rounded mb-2">
-                {% endif %}
+                        <img src="{{ shop.image.url }}" alt="Изображение магазина" class="img-fluid rounded mb-3">
+                    {% else %}
+                        <img src="https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ=" alt="Изображение магазина" class="img-fluid rounded mb-3">
+                    {% endif %}
                 </label>
-                {{ form.image }}
-                
+                    <div id="shop-map"  class="rounded-2">
+                        {{ map_html|safe }}
+                    </div>
             </div>
-            <div class="card-footer" style="padding: 5px;">
-                <div id="shop-map" style="height: 100%;" class="rounded-2">
-                    {{ map_html|safe }}
+            <div class="d-flex flex-column p-2">
+                <!-- Баланс -->
+                <div class="">
+                    <strong>Баланс:</strong> <span class="text-success">{{ shop.balance|floatformat:2 }} сом</span>
+                </div>
+                <!-- Тариф -->
+                <div class="">
+                    <strong>Текущий тариф:</strong>
+                    {% if shop.tariff %}
+                        <span class="text-info">{{ shop.tariff }}</span>
+                    {% else %}
+                        <span class="text-danger">Не выбран</span>
+                    {% endif %}
+                </div>
+                <!-- Дата следующей оплаты с таймером -->
+                <div class="">
+                    <strong>Дата следующей оплаты:</strong> 
+                    <span id="payment-timer">
+                        {% if shop.payment_due_date %}
+                            {{ shop.payment_due_date|date:"d.m.Y H:i" }}
+                        {% else %}
+                            Нет данных
+                        {% endif %}
+                    </span>
+                </div>
+                <!-- Таймер -->
+                <div class="">
+                    <strong>Осталось времени:</strong> 
+                    <span id="countdown" class="text-primary">--:--:--:--</span>
+                </div>
+                <!-- Кнопка управления -->
+                <div class="text-center mt-3">
+                    {% if request.user|has_permission:"can_manage_shop" %}
+                    <a href="{% url 'management' shop.id %}" class="btn btn btn-primary d-inline-flex align-items-center justify-content-center">
+                        Управление
+                        <i class="bx bx-chevron-right ms-2"></i>
+                    </a>
+                    {% else %}
+                    <a href="javascript:void(0);" class="btn btn btn-primary d-inline-flex align-items-center justify-content-center" onclick="showNoAccessMessage()">
+                        Управление
+                        <i class="bx bx-chevron-right ms-2"></i>
+                    </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-
-
-    <div class="col-sm-12 col-md-8">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Данные магазина</h4>
-
-                <button type="submit" class="btn btn-primary">Сохранить</button>
-            </div>
-            <div class="card-body">
-                {% csrf_token %}
-                <div class="row gy-3">
-                    <div class="col-6">
-                        <label for="name" class="form-label">Название</label>
-                        {{ form.name }}
-                    </div>
-                    <div class="col-6">
-                        <label for="address" class="form-label">Адрес</label>
-                        {{ form.address }}
-                    </div>
-                    <div class="col-6">
-                        <label for="coordinates" class="form-label">Координаты</label>
-                        {{ form.coordinates }}
-                    </div>
-                    <div class="col-6">
-                        <label for="contacts" class="form-label">Контакты</label>
-                        {{ form.contacts }}
-                    </div>
-                    <div class="col-6">
-                        <label for="about" class="form-label">О нас</label>
-                        {{ form.about }}
-                    </div>
-                    <div class="col-6">
-                        <label for="opening_hours" class="form-label">Часы работы</label>
-                        {{ form.opening_hours }}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- <div class="card mt-3">
-            <div class="card-header">
-                <h5>Настройки</h5>
-            </div>
-            <div class="card-body">
-                <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#paginationSettings"
-                    aria-expanded="false" aria-controls="paginationSettings">
-                    Настройки пагинации
-                </button>
-
-                <div class="collapse mt-3" id="paginationSettings">
-                    <form class="d-flex flex-column align-items-start mb-2" method="post"
-                        action="{% url 'update_product_per_page' %}">
-                        {% csrf_token %}
-                        <label for="items_per_page" class="me-2">Количество товаров на странице:</label>
-                        <input class="form-control w-auto me-2" type="number" name="items_per_page" id="items_per_page"
-                            value="{{ request.session.items_per_page|default:10 }}">
-                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
-                    </form>
-                    <form class="d-flex flex-column align-items-start mb-2" method="post"
-                        action="{% url 'update_category_per_page' %}">
-                        {% csrf_token %}
-                        <label for="category_per_page" class="me-2">Количество категорий на странице:</label>
-                        <input class="form-control w-auto me-2" type="number" name="category_per_page"
-                            id="category_per_page" value="{{ request.session.category_per_page|default:10 }}">
-                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
-                    </form>
-                    <form class="d-flex flex-column align-items-start mb-2" method="post"
-                        action="{% url 'update_finance_per_page' %}">
-                        {% csrf_token %}
-                        <label for="finance_per_page" class="me-2">Количество расходов на странице:</label>
-                        <input class="form-control w-auto me-2" type="number" name="finance_per_page"
-                            id="finance_per_page" value="{{ request.session.finance_per_page|default:10 }}">
-                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
-                    </form>
-                    <form class="d-flex flex-column align-items-start mb-2" method="post"
-                        action="{% url 'update_orders_per_page' %}">
-                        {% csrf_token %}
-                        <label for="orders_per_page" class="me-2">Количество заказов на странице:</label>
-                        <input class="form-control w-auto me-2" type="number" name="orders_per_page"
-                            id="orders_per_page" value="{{ request.session.orders_per_page|default:10 }}">
-                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
-                    </form>
-                    <form class="d-flex flex-column align-items-start mb-2" method="post"
-                        action="{% url 'update_sales_per_page' %}">
-                        {% csrf_token %}
-                        <label for="sales_per_page" class="me-2">Количество продаж на странице:</label>
-                        <input class="form-control w-auto me-2" type="number" name="sales_per_page" id="sales_per_page"
-                            value="{{ request.session.sales_per_page|default:10 }}">
-                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
-                    </form>
-                    
-                    <form class="d-flex flex-column align-items-start mb-2" method="post"
-                        action="{% url 'update_shop_per_page' %}">
-                        {% csrf_token %}
-                        <label for="shop_per_page" class="me-2">Количество товаров в магазине:</label>
-                        <input class="form-control w-auto me-2" type="number" name="shop_per_page" id="shop_per_page"
-                            value="{{ request.session.shop_per_page|default:10 }}">
-                        <button class="btn btn-primary mt-2" type="submit">Изменить</button>
-                    </form>
-                </div>
-            </div>
-        </div> -->
+    
+    <script>
+        // Таймер для отсчета времени до следующей оплаты
+        function updateCountdown() {
+            const paymentDueDate = new Date("{{ shop.payment_due_date|date:'Y-m-d H:i:s' }}").getTime();
+            const now = new Date().getTime();
+            const distance = paymentDueDate - now;
         
+            if (distance <= 0) {
+                document.getElementById("countdown").innerHTML = "Оплата просрочена";
+                clearInterval(timerInterval);
+            } else {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+                document.getElementById("countdown").innerHTML = `${days} д ${hours} ч ${minutes} м ${seconds} с`;
+            }
+        }
+        
+        const timerInterval = setInterval(updateCountdown, 1000);
+    </script>
+
+    <div class="col-12 col-md-8">
+        <div class="card shadow-sm border-light rounded d-flex flex-column" style="height: 100%;">
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Данные магазина</h5>
+                {% if request.user|has_permission:"can_manage_shop" %}
+                <button id="editButton" class="btn btn-primary mb-4">Изменить</button>
+                {% else %}
+                <button  href="javascript:void(0);" class="btn btn-primary mb-4" onclick="showNoAccessMessage()">Изменить</button>
+                {% endif %}
+            </div>
+            <div class="card-body mt-4 flex-grow-1" id="shopDetails">
+                <div class="row gy-3">
+                    <!-- Название магазина -->
+                    <div class="col-12 col-md-6">
+                        <label for="name" class="form-label fw-bold text-muted">Название магазина</label>
+                        <div class="p-2 bg-light rounded-3">{{ shop.name }}</div>
+                    </div>
+            
+                    <!-- Адрес -->
+                    <div class="col-12 col-md-6">
+                        <label for="address" class="form-label fw-bold text-muted">Адрес</label>
+                        <div class="p-2 bg-light rounded-3">{{ shop.address }}</div>
+                    </div>
+            
+                    <!-- Координаты -->
+                    <div class="col-12 col-md-6">
+                        <label for="coordinates" class="form-label fw-bold text-muted">Координаты</label>
+                        <div class="p-2 bg-light rounded-3">{{ shop.coordinates }}</div>
+                    </div>
+            
+                    <!-- Контакты -->
+                    <div class="col-12 col-md-6">
+                        <label for="contacts" class="form-label fw-bold text-muted">Контакты</label>
+                        <div class="p-2 bg-light rounded-3">{{ shop.contacts }}</div>
+                    </div>
+            
+                    <!-- О нас -->
+                    <div class="col-12 col-md-6">
+                        <label for="about" class="form-label fw-bold text-muted">О нас</label>
+                        <div class="p-2 bg-light rounded-3">{{ shop.about }}</div>
+                    </div>
+            
+                    <!-- Часы работы -->
+                    <div class="col-12 col-md-6">
+                        <label for="opening_hours" class="form-label fw-bold text-muted">Часы работы</label>
+                        <div class="p-2 bg-light rounded-3">{{ shop.opening_hours }}</div>
+                    </div>
+
+                    <!-- Уведомления -->
+                    <div class="col-12 col-md-6 form-check form-switch">
+                        <label class="form-label  fw-bold text-muted">Email уведомления</label>
+                        <div>
+                            {% if shop.email_notifications %}
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked disabled>
+                                <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">Включено</label>
+                              </div>
+                              {% else %}
+                              <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" disabled>
+                                <label class="form-check-label" for="flexSwitchCheckDisabled">Выключено</label>
+                              </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 form-check form-switch">
+                        <label class="form-label  fw-bold text-muted">Системные уведомления</label>
+                        <div>
+                            {% if shop.system_notifications %}
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked disabled>
+                                <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">Включено</label>
+                              </div>
+                              {% else %}
+                              <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" disabled>
+                                <label class="form-check-label" for="flexSwitchCheckDisabled">Выключено</label>
+                              </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div> 
+            <!-- Форма для редактирования -->
+            <div class="card-body  flex-grow-1" id="shopForm" style="display: none;">
+                <form method="post" class="row gy-4" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row gy-3">
+                        <div class="col-12 col-md-6">
+                            <label for="name" class="form-label">Название магазина</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="address" class="form-label">Адрес</label>
+                            {{ form.address }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="coordinates" class="form-label">Координаты</label>
+                            {{ form.coordinates }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="contacts" class="form-label">Контакты</label>
+                            {{ form.contacts }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="about" class="form-label">О нас</label>
+                            {{ form.about }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="opening_hours" class="form-label">Часы работы</label>
+                            {{ form.opening_hours }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label for="image" class="form-label">Изображение магазина</label>
+                            <input type="file" name="image" id="image" class="form-control" />
+                        </div>
+                        <!-- Уведомления -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label  fw-bold text-muted">Email уведомления</label>
+                        <div class="form-check form-switch text-center">
+                            {{ form.email_notifications }}
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label  fw-bold text-muted">Системные уведомления</label>
+                        <div class="form-check form-switch text-center">
+                            {{ form.system_notifications }}
+                        </div>
+                    </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-4">Сохранить</button>
+                </form>
+            </div>
+        </div>
     </div>
-</form>
+</div>
+
+<script>
+    document.getElementById('editButton').addEventListener('click', function() {
+        var shopDetails = document.getElementById('shopDetails');
+        var shopForm = document.getElementById('shopForm');
+        var editButton = document.getElementById('editButton');
+        var saveButton = document.getElementById('saveButton');
+
+        // Переключаем видимость
+        if (shopForm.style.display === 'none') {
+            shopForm.style.display = 'block';
+            shopDetails.style.display = 'none';
+            editButton.textContent = 'Отменить';
+            saveButton.style.display = 'inline-block';
+        } else {
+            shopForm.style.display = 'none';
+            shopDetails.style.display = 'block';
+            editButton.textContent = 'Изменить';
+            saveButton.style.display = 'none';
+        }
+    });
+</script>
 
 {% endblock %}

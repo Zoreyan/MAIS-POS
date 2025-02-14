@@ -68,6 +68,14 @@
                 </div>
                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
               </div>
+              {% if messages %}
+                  {% for message in messages %}
+                      <div class="alert text-danger {% if message.tags %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                          {{ message }}
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                      </div>
+                  {% endfor %}
+              {% endif %}
               <div class="mb-2">
                 <div class="d-flex justify-content-between mt-4">
                   <a href="{% url 'sign-up' %}">

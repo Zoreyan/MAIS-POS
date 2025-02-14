@@ -89,7 +89,6 @@
                     <th>Категория</th>
                     <th>В наличии</th>
                     <th>Цена</th>
-                    <th>Скидка</th>
                     <th>Цена для продажи</th>
                     <th>Кол-во</th>
                     <th>Единица измерения</th>
@@ -99,7 +98,7 @@
             <tbody>
                 {% for product in page_obj %}
                 <tr>
-                    <td>{{ product.bar_code }}</td>
+                    <td>{% if product.bar_code %}{{ product.bar_code }}{% else %}-{% endif %}</td>
                     <td>
                         <a href="{% url 'product-details' product.id %}"
                             class="d-flex justify-content-start align-items-center product-name">
@@ -132,8 +131,7 @@
                         {% endif %}
                     </td>
                     <td>{{ product.price }}</td>
-                    <td>{{ product.discount }}%</td>
-                    <td>{{ product.discounted_price }}</td>
+                    <td>{{ product.discounted_price }}{% if product.discount > 0 %}<span class="text-danger">-{{ product.discount }}%</span>{% endif %}</td>
                     <td>{{ product.quantity }}</td>
                     <td>{{ product.unit }}</td>
                     <td>

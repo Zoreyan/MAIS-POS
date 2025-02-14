@@ -20,7 +20,7 @@ class CategoryForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'price', 'sale_price', 'image', 'bar_code', 'quantity', 'unit', 'discount', 'description', 'category']
+        fields = ['name', 'price', 'sale_price', 'image', 'bar_code', 'quantity', 'min_quantity', 'unit', 'discount', 'description', 'category']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'bar_code': forms.TextInput(attrs={'class': 'form-control', 'autofocus': True}),

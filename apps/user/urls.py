@@ -17,4 +17,5 @@ urlpatterns = [
     path('profile/<int:pk>/', profile, name='user-profile'),
     path('get-permissions/', get_permissions, name='get_permissions'),
     path('get-user-permissions/', get_user_permissions, name='get_user_permissions'),
+    path('notifications/<int:pk>/', notifications, name='notifications'),
 ]

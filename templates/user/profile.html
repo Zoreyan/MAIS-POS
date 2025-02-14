@@ -32,6 +32,13 @@
                     <p class="d-flex justify-content-between"><strong>Телефон:</strong> {{ form.phone }}</p>
                     <p class="d-flex justify-content-between"><strong>Магазин:</strong> {{ user.shop.name }}</p>
                     <p class="d-flex justify-content-between"><strong>Роль:</strong>{{ user.role }}</p>
+                    <!-- Уведомления -->
+                    <div class="col-12 col-md-6 form-check form-switch">
+                        <label class="form-label  fw-bold text-muted">получить Email уведомления</label>
+                        <div>
+                            {{ form.get_email_notification }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -58,6 +65,23 @@
                     <p><strong>Телефон:</strong> {{ user.phone }}</p>
                     <p><strong>Магазин:</strong> {{ user.shop.name }}</p>
                     <p><strong>Роль:</strong> {{ user.role }}</p>
+                    <!-- Уведомления -->
+                    <div class="col-12 col-md-6 form-check form-switch">
+                        <label class="form-label  fw-bold text-muted">получить Email уведомления</label>
+                        <div>
+                            {% if user.get_email_notification %}
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked disabled>
+                                <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">Включено</label>
+                              </div>
+                              {% else %}
+                              <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" disabled>
+                                <label class="form-check-label" for="flexSwitchCheckDisabled">Выключено</label>
+                              </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

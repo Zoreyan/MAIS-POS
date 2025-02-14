@@ -9,6 +9,8 @@ urlpatterns = [
     path('contacts/<int:pk>', contacts, name='shop-contacts'),
     path('order-list', order_list, name='shop-order-list'),
     path('update_shop_per_page', update_shop_per_page, name='update_shop_per_page'),
-    path('settings/', settings, name='settings'),
-
+    path('settings', settings, name='settings'),
+    path('management/<int:pk>', management, name='management'),
+    path('process_payment/<int:shop_id>/', process_payment, name='process_payment'),
+    path('update_auto_pay', update_auto_pay, name='update_auto_pay'),
 ]
