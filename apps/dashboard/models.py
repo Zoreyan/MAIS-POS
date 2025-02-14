@@ -1,6 +1,7 @@
 from django.db import models
 
 
+
 class Tariff(models.Model):
     sequence = models.IntegerField(verbose_name="Порядковый номер", null=True, blank=True)
     name = models.CharField(max_length=100, verbose_name="Название тарифа")
