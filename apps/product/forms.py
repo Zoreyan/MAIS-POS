@@ -40,3 +40,11 @@ class ProductForm(forms.ModelForm):
             raise forms.ValidationError("Скидка должна быть в диапазоне от 0 до 100.")
         return discount
 
+
+
+
+class CSVImportForm(forms.Form):
+    csv_file = forms.FileField(
+        label='Выберите CSV файл',
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
