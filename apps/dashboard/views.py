@@ -338,3 +338,48 @@ def dashboard(request):
 
     return render(request, 'dashboard.html', context)
 
+
+
+@login_required
+def settings_page(request, pk):
+    # shop = get_object_or_404(Shop, id=pk)
+    # form = ShopForm(instance=shop)
+    
+    # if request.method == 'POST':
+    #     form = ShopForm(request.POST, request.FILES, instance=shop)
+
+    #     if form.is_valid():
+    #         form.save()
+    #         return redirect('settings_page', shop_id=shop.id)
+    # else:
+    #     form = ShopForm(instance=shop)
+    
+    # # Получаем объект магазина
+    # coordinates = shop.coordinates if shop else None
+
+    # # Проверяем наличие координат
+    # if coordinates:
+    #     try:
+    #         lat, lon = map(float, coordinates.split(','))  # Разбиваем и конвертируем координаты
+    #         map_center = [lat, lon]  # Устанавливаем центр карты на координаты магазина
+    #     except ValueError:
+    #         map_center = [40.516018, 72.803835]  # Центр по умолчанию
+    # else:
+    #     map_center = [40.516018, 72.803835]  # Центр по умолчанию
+
+    # # Создаём карту с центром на координаты магазина или по умолчанию
+    # m = Map(location=map_center, zoom_start=8)
+
+    # # Если у магазина есть координаты, добавляем маркер
+    # if coordinates:
+    #     Marker(location=[lat, lon]).add_to(m)
+
+    # # Генерация HTML-кода карты
+    # map_html = m._repr_html_()
+
+    context = {
+        # 'form': form,
+        # 'map_html': map_html,
+        # 'shop': shop,
+    }
+    return render(request, 'settings_page.html', context)
