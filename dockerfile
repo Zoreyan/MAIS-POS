@@ -1,17 +1,22 @@
-# Используем официальный образ Python
-FROM python:3.12.0-slim
+# Указываем базовый образ
+FROM python:3.10-slim
 
-# Устанавливаем рабочую директорию внутри контейнера
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем файлы проекта в контейнер
-COPY . /app/
+# Копируем зависимости
+COPY requirements.txt requirements.txt
 
-# Устанавливаем зависимости из requirements.txt
+# Устанавливаем зависимости
+RUN apt-get update && apt-get install -y redis-tools
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Открываем порт для работы сервера
-EXPOSE 8000
+# Копируем все файлы проекта
+COPY . .
 
-# Запуск Django-сервера
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Устанавливаем права для entrypoint
+RUN chmod +x entrypoint.sh
+
+# Указываем точку входа
+ENTRYPOINT ["./entrypoint.sh"]
