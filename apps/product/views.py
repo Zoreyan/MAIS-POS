@@ -20,6 +20,8 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 
 
+from celery.result import AsyncResult
+from .tasks import import_products_from_csv
 
 
 
@@ -47,43 +49,32 @@ def list_(request):
 
     categories = Category.objects.filter(shop=request.user.shop)
 
+    form = CSVImportForm(request.POST or None, request.FILES or None)
     query = request.GET.get('query', '').strip()
+    products = Product.objects.filter(shop=request.user.shop)
+    categories = Category.objects.filter(shop=request.user.shop)
 
+    # Фильтрация по запросу
     if query:
         if query.isdigit():
-            products = products.filter(shop=request.user.shop, bar_code__icontains=query)
+            products = products.filter(bar_code__icontains=query)
         else:
-            products = products.filter(
-                Q(shop=request.user.shop) & 
-                (Q(name__icontains=query) | Q(category__name__icontains=query))
-            )         
-    # Фильтр по категории и родительской категории
+            products = products.filter(Q(name__icontains=query) | Q(category__name__icontains=query))
+
+    # Фильтр по категории
     selected_category = request.GET.get('category')
     if selected_category:
-        # Получаем выбранную категорию
-        category = Category.objects.filter(name=selected_category, shop=request.user.shop).first()
+        category = categories.filter(name=selected_category).first()
+        if category:
+            products = products.filter(Q(category=category) | Q(category__parent=category))
 
-        # Продукты из выбранной категории
-        category_products = products.filter(category=category)
-
-        # Продукты из дочерних категорий
-        child_categories = category.children.all() if category else []
-        child_category_products = products.filter(category__in=child_categories)
-
-        # Объединяем и сортируем продукты
-        products = list(category_products) + list(child_category_products)
-
-    # Фильтр по минимальной сумме
+    # Фильтры по цене и наличию
     price_min = request.GET.get('price_min')
     if price_min:
         products = products.filter(price__gte=price_min)
-
-    # Фильтр по максимальной сумме
     price_max = request.GET.get('price_max')
     if price_max:
         products = products.filter(price__lte=price_max)
-
-    # Фильтр по наличию
     in_stock = request.GET.get('in_stock')
     if in_stock == "yes":
         products = products.filter(quantity__gt=0)
@@ -103,27 +94,34 @@ def list_(request):
     elif discount == "no":
         products = products.filter(discount=0)
 
-    # Для пагинации
+
+    # Пагинация
     items_per_page = request.session.get('items_per_page', 10)
     paginator = Paginator(products, items_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    # Ограничение отображаемых страниц
-    current_page = page_obj.number
-    total_pages = paginator.num_pages
-    delta = 3  # Количество страниц до и после текущей
 
-    start_page = max(current_page - delta, 1)
-    end_page = min(current_page + delta, total_pages)
-    visible_pages = range(start_page, end_page + 1)
+    if request.method == 'POST' and form.is_valid():
+        csv_file = form.cleaned_data['csv_file']
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'Файл должен быть в формате CSV.')
+            return redirect('product-list')
+        try:
+            task = import_products_from_csv.delay(csv_file.read().decode('utf-8'), request.user.shop.id)
+            messages.success(request, 'Импорт успешно запущен!')
+            return redirect(f"{request.path}?task_id={task.id}")
+        except Exception as e:
+            messages.error(request, f'Ошибка запуска импорта: {e}')
 
     context = {
         'categories': categories,
-        'visible_pages': visible_pages,
+        'visible_pages': range(1, paginator.num_pages + 1),
         'page_obj': page_obj,
         'query': query,
+        'form': form,
     }
     return render(request, 'product/list.html', context)
+
 
 @login_required
 def create(request):
@@ -512,3 +510,40 @@ def category_update(request, pk):
         'form': form
     }
     return render(request, 'product/category_update.html', context)
+
+
+def task_status(request, task_id):
+    task_result = AsyncResult(task_id)
+
+    if task_result.state == 'PROGRESS':
+        meta = task_result.info  # Должно содержать 'current' и 'total'
+        progress = int(meta.get('current', 0) / meta.get('total', 1) * 100)
+        return JsonResponse({
+            'status': 'PROGRESS',
+            'progress': progress,
+            'current': meta.get('current'),
+            'total': meta.get('total')
+        })
+
+    elif task_result.state == 'SUCCESS':
+        result_data = task_result.result
+        if result_data.get('status') == 'PARTIAL_SUCCESS':
+            return JsonResponse({
+                'status': 'PARTIAL_SUCCESS',
+                'imported': result_data.get('imported', 0),
+                'errors': result_data.get('errors', [])
+            })
+        else:
+            return JsonResponse({
+                'status': 'SUCCESS',
+                'imported': result_data.get('imported', 0)
+            })
+
+    elif task_result.state == 'FAILURE':
+        return JsonResponse({
+            'status': 'FAILURE',
+            'error': str(task_result.result)
+        })
+
+    else:
+        return JsonResponse({'status': task_result.state})
