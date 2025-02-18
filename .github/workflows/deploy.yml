@@ -38,7 +38,6 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           HOST: ${{ secrets.SERVER_HOST }}
           USER: ${{ secrets.SERVER_USER }}
-
         run: |
           echo "$SSH_PRIVATE_KEY" > ssh_key
           chmod 600 ssh_key
@@ -48,6 +47,7 @@ jobs:
           cd public_html
           git pull origin main
           pip install -r requirements.txt
+          export OPENBLAS_NUM_THREADS=4
           python manage.py migrate
           python manage.py collectstatic --noinput
           EOF

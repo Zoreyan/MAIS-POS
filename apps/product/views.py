@@ -406,6 +406,7 @@ def search_product(request):
             products = products.filter(
                 Q(name__icontains=query) | Q(category__name__icontains=query)
             )
+    serialized_products = list(products.values())
 
     products = products.select_related("category").only("name", "sale_price", "bar_code", "quantity", "image", "category", "id")[:10]
     
