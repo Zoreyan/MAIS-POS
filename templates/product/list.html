@@ -2,81 +2,82 @@
 {% load static %}
 {% load tags %}
 {% block content %}
-<div class="modal modal-top fade" id="modalTop" tabindex="-1" style="display: none;" aria-hidden="true">
-<div class="modal-dialog">
-    <form class="modal-content" method="get">
-    <div class="modal-header">
-        <h5 class="modal-title" id="modalTopTitle">Фильтр</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
-    <div class="modal-body row gy-3">
-        <div class="col-md-12">
-        <label for="ProductCategory" class="form-label">Категория</label>
-        <select id="ProductCategory" name="category" class="form-select text-capitalize">
-            <option value="" {% if request.GET.category == "" %}selected{% endif %}>Все категории</option>
-            {% for category in categories %}
-            <option value="{{ category.name }}" {% if request.GET.category == category.name %}selected{% endif %}>
-                {{ category.name }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="col-md-12">
-        <label for="price_min" class="form-label">Цена с</label>
-        <input type="number" id="price_min" name="price_min" class="form-control" placeholder="Сумма от"
-            value="{{ request.GET.price_min }}">
-    </div>
-    <div class="col-md-12">
-        <label for="price_max" class="form-label">Цена по</label>
-        <input type="number" id="price_max" name="price_max" class="form-control" placeholder="Сумма по"
-            value="{{ request.GET.price_max }}">
-    </div>
-    <div class="col-md-12">
-        <label for="in_stock" class="form-label">Доступность</label>
-        <select id="in_stock" name="in_stock" class="form-select">
-            <option value="" {% if request.GET.in_stock == "" %}selected{% endif %}>Все</option>
-            <option value="yes" {% if request.GET.in_stock == "yes" %}selected{% endif %}>В наличии
-            </option>
-            <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии
-            </option>
-            <option value="low" {% if request.GET.in_stock == "low" %}selected{% endif %}>Малый остаток
-            </option>
-        </select>
-    </div>
-    <div class="col-md-12">
-        <label for="discount" class="form-label">Скидка</label>
-        <select id="discount" name="discount" class="form-select">
-            <option value="" {% if request.GET.discount == "" %}selected{% endif %}>Все</option>
-            <option value="yes" {% if request.GET.discount == "yes" %}selected{% endif %}>Со скидкой
-            </option>
-            <option value="no" {% if request.GET.discount == "no" %}selected{% endif %}>Без скидки
-            </option>
-        </select>
-    </div>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Закрыть</button>
-        <button type="submit" class="btn btn-primary">Поиск</button>
-    </div>
-    </form>
-</div>
-</div>
-
-<div class="d-flex justify-content-between mb-3">
-        <div class="d-flex align-items-center gap-3">
-            <h3 class="card-title">Товары</h3>
-            <button type="button" class="btn btn-sm btn-label-secondary" data-bs-toggle="modal" data-bs-target="#modalTop">
-                Фильтр
-            </button>
+<div class="card">
+    <div class="card-header">
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="d-flex align-items-center">
+                    <h5 class="card-title me-3">Фильтр</h5>
+                    <button class="btn btn-sm btn-warning mb-2 me-3" id="openModalBtn" data-bs-toggle="modal" data-bs-target="#importModal">Импортировать CSV</button>                    
+                    <div class="progress mb-2 me-3" style="width: 250px; height: 30px;">
+                        <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                    </div>
+                    {% if messages %}
+                            <span class="messages badge bg-info p-2 mb-2">
+                                {% for message in messages %}
+                                {{ message }}
+                                {% endfor %}
+                            </span>
+                    {% endif %}
+                </div>
+                <div id="importErrors" class="alert alert-warning" style="display:none;"></div> <!-- Hide by default -->
+                <form method="get" class="row gy-3 align-items-end">
+                    <div class="col-md-3">
+                        <label for="ProductCategory" class="form-label">Категория</label>
+                        <select id="ProductCategory" name="category" class="form-select text-capitalize">
+                            <option value="" {% if request.GET.category == "" %}selected{% endif %}>Все категории</option>
+                            {% for category in categories %}
+                            <option value="{{ category.name }}" {% if request.GET.category == category.name %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="price_min" class="form-label">Цена с</label>
+                        <input type="number" id="price_min" name="price_min" class="form-control" placeholder="Сумма от"
+                            value="{{ request.GET.price_min }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="price_max" class="form-label">Цена по</label>
+                        <input type="number" id="price_max" name="price_max" class="form-control" placeholder="Сумма по"
+                            value="{{ request.GET.price_max }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="in_stock" class="form-label">Доступность</label>
+                        <select id="in_stock" name="in_stock" class="form-select">
+                            <option value="" {% if request.GET.in_stock == "" %}selected{% endif %}>Все</option>
+                            <option value="yes" {% if request.GET.in_stock == "yes" %}selected{% endif %}>В наличии
+                            </option>
+                            <option value="no" {% if request.GET.in_stock == "no" %}selected{% endif %}>Нет в наличии
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 col-sm-12">
+                        <div class="d-flex btn-group">
+                            <button type="submit"
+                                class="btn btn-success d-flex align-items-center justify-content-center">
+                                <i class="bx bx-filter-alt me-1"></i>
+                                <span>Фильтр</span>
+                            </button>
+                            {% if request.user|has_permission:"add_product" %}
+                            <a href="{% url 'product-create' %}"
+                                class="btn btn-primary d-flex align-items-center justify-content-center">
+                                <i class="bx bx-plus me-1"></i>
+                                <span>Добавить</span>
+                            </a>
+                            {% else %}
+                            <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center" onclick="showNoAccessMessage()">
+                                <i class="bx bx-plus me-1"></i>
+                                <span>Добавить</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <a href="{% url 'product-create' %}"
-            class="btn btn-sm btn-primary d-flex align-items-center justify-content-center">
-            <i class="bx bx-plus me-1"></i>
-            <span>Добавить</span>
-        </a>
-        
 </div>
-        
 
 <div class="card">
     <div class="table-responsive">
@@ -122,12 +123,12 @@
                         {% if product.quantity  ==  0 %}
                         <span class="badge bg-label-danger">Нет в наличии</span>
                         {% else %}
-                        {% if product.quantity < product.min_quantity %} <span class="badge bg-label-warning">Малый
-                            остаток</span>
-                            {% else %}
-                            <span class="badge bg-label-success">В наличии</span>
-                            {% endif %}
-                            {% endif %}
+                        {% if product.quantity < product.min_quantity %} 
+                        <span class="badge bg-label-warning">Малый остаток</span>
+                        {% else %}
+                        <span class="badge bg-label-success">В наличии</span>
+                        {% endif %}
+                        {% endif %}
                     </td>
                     <td>{{ product.price }}</td>
                     <td>{{ product.discounted_price }}{% if product.discount > 0 %}<span class="text-danger">-{{ product.discount }}%</span>{% endif %}</td>
@@ -155,30 +156,6 @@
                                 <i class="bx bx-trash bx-sm"></i>
                             </button>
                             {% endif %}
-
-                            <div class="modal fade" id="modalDelete{{ product.id }}" tabindex="-1"
-                                style="display: none;" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="modalCenterTitle">Удаление продукта</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>Вы уверены, что хотите удалить продукт?</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-label-secondary"
-                                                data-bs-dismiss="modal">Close</button>
-                                            {% if request.user|has_permission:"delete_product" %}
-                                            <a href="{% url 'product-delete' product.id %}"
-                                                class="btn btn-danger">Удалить</a>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </td>
                     {% endfor %}
@@ -290,5 +267,69 @@
     </div>
 </div>
 
+<!-- Модальное окно для импорта CSV -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">Импорт CSV</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {{ form.as_p }}
+                    <p>Должны быть поля: name, description, category, price, sale_price, discount, unit, image, bar_code, quantity, min_quantity</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary">Загрузить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const taskId = new URLSearchParams(window.location.search).get('task_id');
+        if (taskId) {
+            checkTaskStatus(taskId);
+        }
+    });
+
+    async function checkTaskStatus(taskId) {
+        const response = await fetch(`/product/task_status/${taskId}/`);
+        const data = await response.json();
+
+        if (data.status === 'PROGRESS') {
+            updateProgressBar(data.progress);
+            setTimeout(() => checkTaskStatus(taskId), 1000);  // Проверяем статус каждые 1 секунду
+        } else if (data.status === 'SUCCESS') {
+            showMessage('Импорт завершен успешно! Импортировано товаров: ' + data.imported, 'success');
+        } else if (data.status === 'PARTIAL_SUCCESS') {
+            let errorList = data.errors.map(err => `<li>${err}</li>`).join('');
+            document.getElementById('importErrors').style.display = 'block';
+            document.getElementById('importErrors').innerHTML = `
+                <p>Импорт частично завершён. Успешно импортировано: ${data.imported}</p>
+                <ul>${errorList}</ul>
+            `;
+        } else if (data.status === 'FAILURE') {
+            showMessage('Импорт не удался. Ошибка: ' + data.error, 'danger');
+        }
+    }
+
+    function updateProgressBar(progress) {
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = `${progress}%`;
+        progressBar.setAttribute('aria-valuenow', progress);
+        progressBar.innerText = `${progress}%`;
+    }
+
+    function showMessage(message, type) {
+        const messages = document.querySelector('.messages');
+        messages.innerHTML = `<span class="badge bg-${type}">${message}</span>`;
+        messages.style.display = 'inline-block';
+    }
+</script>
 {% endblock %}

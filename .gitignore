@@ -3,5 +3,4 @@ __pycache__/
 db.sqlite3
 media
 migrations/
-settings.py
 wsgi.py

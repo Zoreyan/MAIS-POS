@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main  # Триггер на пуши в ветку 'main'
-
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
