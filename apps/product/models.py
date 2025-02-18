@@ -62,13 +62,15 @@ class Shop(models.Model):
         blank=True
     )
 
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Баланс")
-    tariff = models.ForeignKey('dashboard.Tariff', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Текущий тариф")
-    payment_due_date = models.DateTimeField(null=True, blank=True, verbose_name="Дата следующей оплаты")
-    is_active = models.BooleanField(default=True, verbose_name="Активен")
-    auto_pay = models.BooleanField(default=True, verbose_name="Автоматическая оплата")
     email_notifications = models.BooleanField(default=True, verbose_name="Email уведомления")
     system_notifications = models.BooleanField(default=True, verbose_name="Системные уведомления")
+
+    products_per_page = models.PositiveIntegerField(default=10)
+    finance_per_page = models.PositiveIntegerField(default=10)
+    category_per_page = models.PositiveIntegerField(default=10)
+    orderhistory_per_page = models.PositiveIntegerField(default=10)
+    salehistory_per_page = models.PositiveIntegerField(default=10)
+    incomehistory_per_page = models.PositiveIntegerField(default=10)
 
     class Meta:
         verbose_name = 'Магазин'

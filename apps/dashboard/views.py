@@ -21,7 +21,6 @@ from calendar import monthrange
 from django.db.models.functions import TruncMonth
 from dateutil.relativedelta import relativedelta
 from django.utils.dateformat import DateFormat
-from apps.product.tasks import check_shop_payments
 
 
 

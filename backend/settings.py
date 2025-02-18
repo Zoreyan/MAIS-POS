@@ -192,10 +192,3 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 broker_connection_retry_on_startup = True
-
-CELERY_BEAT_SCHEDULE = {
-    'check_shop_payments_every_hour': {
-        'task': 'apps.product.tasks.check_shop_payments',
-        'schedule': crontab(minute=00, hour='*'),
-    },
-}
