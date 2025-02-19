@@ -125,7 +125,7 @@
         right: 0;
         width: 30%;
         height: 90vh;
-        background: #121212;
+        background: rgba(61, 61, 61, 0.5);
         color: white;
         display: none;
         z-index: 1050;
@@ -135,7 +135,7 @@
         flex-direction: column;
         overflow-y: scroll !important;
     }
-
+    
     .modal-content {
         flex: 1;
         display: flex;

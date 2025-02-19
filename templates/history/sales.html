@@ -81,70 +81,112 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    <div class="d-flex justify-content-end flex-wrap me-3 mt-4">
-                        <nav aria-label="Пагинация">
-                            <ul class="pagination justify-content-center">
-                                {% if page_obj.number > 1 %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=1" aria-label="Первая">
-                                        <span aria-hidden="true">&laquo;&laquo;</span>
-                                    </a>
-                                </li>
-                                {% else %}
-                                <li class="page-item disabled">
-                                    <span class="page-link">&laquo;&laquo;</span>
-                                </li>
-                                {% endif %}
-                                {% if page_obj.has_previous %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                                {% else %}
-                                <li class="page-item disabled">
-                                    <span class="page-link">&laquo;</span>
-                                </li>
-                                {% endif %}
-                                {% for page_num in visible_pages %}
-                                {% if page_num == page_obj.number %}
-                                <li class="page-item active" aria-current="page">
-                                    <span class="page-link">{{ page_num }}</span>
-                                </li>
-                                {% else %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                                </li>
-                                {% endif %}
-                                {% endfor %}
-                                {% if page_obj.has_next %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                                {% else %}
-                                <li class="page-item disabled">
-                                    <span class="page-link">&raquo;</span>
-                                </li>
-                                {% endif %}
-                                {% if page_obj.number < page_obj.paginator.num_pages %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
-                                        <span aria-hidden="true">&raquo;&raquo;</span>
-                                    </a>
-                                </li>
-                                {% else %}
-                                <li class="page-item disabled">
-                                    <span class="page-link">&raquo;&raquo;</span>
-                                </li>
-                                {% endif %}
-                            </ul>
-                        </nav>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div class="d-flex align-items-center justify-content-center me-3 mt-5 flex-wrap">
+    <div class="pagination-container">
+        <nav aria-label="Пагинация">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.number > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="Первая">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;&laquo;</span>
+                </li>
+                {% endif %}
+  
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+                {% endif %}
+  
+                {% for page_num in visible_pages %}
+                {% if page_num  ==  page_obj.number %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+  
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li>
+                {% endif %}
+  
+                {% if page_obj.number < page_obj.paginator.num_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;&raquo;</span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+  
+        <!-- Отображение номера текущей страницы -->
+        <div class="text-center mt-2">
+            <small class="text-muted">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</small>
+        </div>
+  
+        <!-- Ссылка для открытия настроек -->
+        <div class="text-center mt-1">
+            <small>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#settingsModal" class="text-muted" style="font-size: 10px;">
+                    Вы можете изменить настройки здесь
+                </a>
+            </small>
+        </div>
+    </div>
+  </div>
+  <!-- Модальное окно для настроек -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="settingsModalLabel">Настройки</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'update-per-pages' %}">    
+                    {% csrf_token %}
+                    <input type="number" class="form-control" name="number_per_page" value="{{ number_per_page }}">
+                    <button type="submit" name="salehistory" class="btn btn-primary mt-3">Сохранить</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+  </div>
 {% endblock %}
