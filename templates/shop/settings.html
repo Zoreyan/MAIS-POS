@@ -16,76 +16,9 @@
                         {{ map_html|safe }}
                     </div>
             </div>
-            <div class="d-flex flex-column p-2">
-                <!-- Баланс -->
-                <div class="">
-                    <strong>Баланс:</strong> <span class="text-success">{{ shop.balance|floatformat:2 }} сом</span>
-                </div>
-                <!-- Тариф -->
-                <div class="">
-                    <strong>Текущий тариф:</strong>
-                    {% if shop.tariff %}
-                        <span class="text-info">{{ shop.tariff }}</span>
-                    {% else %}
-                        <span class="text-danger">Не выбран</span>
-                    {% endif %}
-                </div>
-                <!-- Дата следующей оплаты с таймером -->
-                <div class="">
-                    <strong>Дата следующей оплаты:</strong> 
-                    <span id="payment-timer">
-                        {% if shop.payment_due_date %}
-                            {{ shop.payment_due_date|date:"d.m.Y H:i" }}
-                        {% else %}
-                            Нет данных
-                        {% endif %}
-                    </span>
-                </div>
-                <!-- Таймер -->
-                <div class="">
-                    <strong>Осталось времени:</strong> 
-                    <span id="countdown" class="text-primary">--:--:--:--</span>
-                </div>
-                <!-- Кнопка управления -->
-                <div class="text-center mt-3">
-                    {% if request.user|has_permission:"can_manage_shop" %}
-                    <a href="{% url 'management' shop.id %}" class="btn btn btn-primary d-inline-flex align-items-center justify-content-center">
-                        Управление
-                        <i class="bx bx-chevron-right ms-2"></i>
-                    </a>
-                    {% else %}
-                    <a href="javascript:void(0);" class="btn btn btn-primary d-inline-flex align-items-center justify-content-center" onclick="showNoAccessMessage()">
-                        Управление
-                        <i class="bx bx-chevron-right ms-2"></i>
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
         </div>
     </div>
     
-    <script>
-        // Таймер для отсчета времени до следующей оплаты
-        function updateCountdown() {
-            const paymentDueDate = new Date("{{ shop.payment_due_date|date:'Y-m-d H:i:s' }}").getTime();
-            const now = new Date().getTime();
-            const distance = paymentDueDate - now;
-        
-            if (distance <= 0) {
-                document.getElementById("countdown").innerHTML = "Оплата просрочена";
-                clearInterval(timerInterval);
-            } else {
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        
-                document.getElementById("countdown").innerHTML = `${days} д ${hours} ч ${minutes} м ${seconds} с`;
-            }
-        }
-        
-        const timerInterval = setInterval(updateCountdown, 1000);
-    </script>
 
     <div class="col-12 col-md-8">
         <div class="card shadow-sm border-light rounded d-flex flex-column" style="height: 100%;">

@@ -5,16 +5,6 @@ from apps.finance.models import Expense
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 
-def update_orders_per_page(request):
-    if request.method == "POST":
-        try:
-            orders_per_page = int(request.POST.get("orders_per_page", 10))
-            if orders_per_page > 0:
-                request.session['orders_per_page'] = orders_per_page
-        except ValueError:
-            request.session['orders_per_page'] = 10
-    return redirect('total')
-
 @login_required
 def total(request):
     orders = OrderHistory.objects.filter(shop=request.user.shop).order_by('-created')
@@ -49,7 +39,7 @@ def total(request):
         # Сохраняем первый товар для отображения
         order.first_product = first_product.product if first_product else None
 
-    orders_per_page = request.session.get('orders_per_page', 10)
+    orders_per_page = request.user.shop.orderhistory_per_page
     paginator = Paginator(orders, orders_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -57,7 +47,7 @@ def total(request):
     # Ограничение отображаемых страниц
     current_page = page_obj.number
     total_pages = paginator.num_pages
-    delta = 3  # Количество страниц до и после текущей
+    delta = 5  # Количество страниц до и после текущей
 
     start_page = max(current_page - delta, 1)
     end_page = min(current_page + delta, total_pages)
@@ -69,19 +59,10 @@ def total(request):
         'date_from': date_from,
         'date_to': date_to,
         'order_type': order_type,
+        'number_per_page':orders_per_page
     }
 
     return render(request, 'history/total.html', context)
-
-def update_sales_per_page(request):
-    if request.method == "POST":
-        try:
-            sales_per_page = int(request.POST.get("sales_per_page", 10))
-            if sales_per_page > 0:
-                request.session['sales_per_page'] = sales_per_page
-        except ValueError:
-            request.session['sales_per_page'] = 10
-    return redirect('sold-history')
 
 def sales(request):
     sales = SoldHistory.objects.filter(shop=request.user.shop).order_by('-created')
@@ -95,7 +76,7 @@ def sales(request):
     if date_to:
         sales = sales.filter(created__lte=date_to)
 
-    sales_per_page = request.session.get('sales_per_page', 10)
+    sales_per_page = request.user.shop.salehistory_per_page
     paginator = Paginator(sales, sales_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -103,7 +84,7 @@ def sales(request):
     # Ограничение отображаемых страниц
     current_page = page_obj.number
     total_pages = paginator.num_pages
-    delta = 3  # Количество страниц до и после текущей
+    delta = 5  # Количество страниц до и после текущей
 
     start_page = max(current_page - delta, 1)
     end_page = min(current_page + delta, total_pages)
@@ -114,18 +95,9 @@ def sales(request):
         'visible_pages': visible_pages,
         'date_from': date_from,
         'date_to': date_to,
+        'number_per_page':sales_per_page
     }
     return render(request, 'history/sales.html', context)
-
-def update_incomes_per_page(request):
-    if request.method == "POST":
-        try:
-            incomes_per_page = int(request.POST.get("incomes_per_page", 10))
-            if incomes_per_page > 0:
-                request.session['incomes_per_page'] = incomes_per_page
-        except ValueError:
-            request.session['incomes_per_page'] = 10
-    return redirect('income-history')
 
 def incomes(request):
     incomes = IncomeHistory.objects.filter(shop=request.user.shop).order_by('-created')
@@ -139,7 +111,7 @@ def incomes(request):
     if date_to:
         incomes = incomes.filter(created__lte=date_to)
 
-    incomes_per_page = request.session.get('incomes_per_page', 10)
+    incomes_per_page = request.user.shop.incomehistory_per_page
     paginator = Paginator(incomes, incomes_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -147,7 +119,7 @@ def incomes(request):
     # Ограничение отображаемых страниц
     current_page = page_obj.number
     total_pages = paginator.num_pages
-    delta = 3  # Количество страниц до и после текущей
+    delta = 5  # Количество страниц до и после текущей
 
     start_page = max(current_page - delta, 1)
     end_page = min(current_page + delta, total_pages)
@@ -158,6 +130,7 @@ def incomes(request):
         'visible_pages': visible_pages,
         'date_from': date_from,
         'date_to': date_to,
+        'number_per_page':incomes_per_page
     }
     return render(request, 'history/incomes.html', context)
 

@@ -14,13 +14,7 @@ from .models import *
 from .forms import *
 
 def sign_up(request):
-    tariffs = Tariff.objects.all().order_by('sequence')
-    tariff_features_dict = {}
-
-    for tariff in tariffs:
-        tariff_features = tariff.features.order_by('sequence', 'id')
-        tariff_features_dict[tariff] = tariff_features
-
+    
     user_form = UserForm(request.POST or None)
     shop_form = ShopForm(request.POST or None)
     errors = {"tariff": None, "user_form": None, "shop_form": None}
@@ -41,13 +35,7 @@ def sign_up(request):
         if not any(errors.values()):
             shop = shop_form.save(commit=False)
             user = user_form.save(commit=False)
-
-            tariff = get_object_or_404(Tariff, id=tariff_id)
             shop.save()
-            shop.tariff = tariff
-            shop.payment_due_date = now() + timedelta(days=14).replace(minute=59, second=0, microsecond=0)
-            shop.save()
-
             user.save()
             user.shop = shop
             user.role = 'owner'
@@ -58,8 +46,6 @@ def sign_up(request):
             return login(request, user)
 
     context = {
-        'tariffs': tariffs,
-        'tariff_features_dict': tariff_features_dict,
         'user_form': user_form,
         'shop_form': shop_form,
         'errors': errors,
