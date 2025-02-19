@@ -1,4 +1,124 @@
 
+<<<<<<< HEAD
+.scanner-modal {
+    position: fixed;
+    top: 10%;
+    right: 0;
+    width: 30%;
+    height: 90vh;
+    background: #121212;
+    color: white;
+    display: none;
+    z-index: 1050;
+    padding: 15px;
+    border-radius: 10px 0 0 10px;
+    display: none;
+    flex-direction: column;
+    overflow-y: scroll !important;
+}
+
+.modal-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 10px;
+}
+
+.scanner-box {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    background: #1e1e1e;
+    overflow: hidden;
+}
+
+#scannerCamera {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scanner-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: red;
+    animation: scanAnimation 1.5s infinite ease-in-out alternate;
+}
+
+@keyframes scanAnimation {
+    from {
+        top: 20%;
+    }
+    to {
+        top: 80%;
+    }
+}
+
+.product-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #ddd;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #27ae60;
+    margin: 0;
+    min-width: 60px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.add-btn {
+    background: #27ae60;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Предотвращает изменение размера */
+}
+
+.add-btn:hover {
+    background: #219150;
+}
+
+/* Медиа-запрос для планшетов (ширина до 1024px) */
+@media (max-width: 1024px) {
+.scanner-modal {
+    width: 40%;
+}
+.scanner-box {
+    height: 300px;
+}
+.product-img {
+    width: 50px;
+    height: 50px;
+}
+=======
     .scanner-modal {
         position: fixed;
         top: 10%;
@@ -117,10 +237,28 @@
         width: 50px;
         height: 50px;
     }
+>>>>>>> 6d723613be76f86120b9dcf053b8dda2527e6327
 }
 
 /* Медиа-запрос для мобильных устройств (ширина до 768px) */
 @media (max-width: 768px) {
+<<<<<<< HEAD
+.scanner-modal {
+    width: 100%;
+    height: 90vh;
+    top: 10%;
+    right: auto;
+    border-radius: 0;
+    padding: 10px;
+}
+.scanner-box {
+    height: 250px;
+}
+.product-img {
+    width: 70px;
+    height: 70px;
+}
+=======
     .scanner-modal {
         width: 100%;
         height: 90vh;
@@ -136,10 +274,23 @@
         width: 70px;
         height: 70px;
     }
+>>>>>>> 6d723613be76f86120b9dcf053b8dda2527e6327
 }
 
 /* Медиа-запрос для маленьких экранов (ширина до 480px) */
 @media (max-width: 480px) {
+<<<<<<< HEAD
+.scanner-box {
+    height: 200px;
+}
+.modal-body {
+    padding: 5px;
+}
+.product-img {
+    width: 50px;
+    height: 50px;
+}
+=======
     .scanner-box {
         height: 200px;
     }
@@ -150,4 +301,5 @@
         width: 50px;
         height: 50px;
     }
+>>>>>>> 6d723613be76f86120b9dcf053b8dda2527e6327
 }
