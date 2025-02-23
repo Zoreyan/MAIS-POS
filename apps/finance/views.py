@@ -40,7 +40,7 @@ def finance_list(request):
     if expend_type:
         expenses = expenses.filter(expend_type=expend_type)
 
-    finance_per_page = request.session.get('finance_per_page', 10)
+    finance_per_page = request.user.shop.finance_per_page
     paginator = Paginator(expenses, finance_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -48,7 +48,7 @@ def finance_list(request):
     # Ограничение отображаемых страниц
     current_page = page_obj.number
     total_pages = paginator.num_pages
-    delta = 3  # Количество страниц до и после текущей
+    delta = 5  # Количество страниц до и после текущей
 
     start_page = max(current_page - delta, 1)
     end_page = min(current_page + delta, total_pages)
@@ -58,20 +58,13 @@ def finance_list(request):
         'expense_types': expense_types,
         'page_obj': page_obj,
         'visible_pages': visible_pages,
+        'date_from': date_from,
+        'date_to': date_to,
+        'expend_type': expend_type,
+        'number_per_page':finance_per_page
     }
     
     return render(request, 'finance/list.html', context)
-
-@login_required
-def update_finance_per_page(request):
-    if request.method == "POST":
-        try:
-            finance_per_page = int(request.POST.get("finance_per_page", 10))
-            if finance_per_page > 0:
-                request.session['finance_per_page'] = finance_per_page
-        except ValueError:
-            request.session['finance_per_page'] = 10
-    return redirect('finance-list')
 
 @login_required
 def create(request):

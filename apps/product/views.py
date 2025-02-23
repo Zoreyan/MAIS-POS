@@ -26,15 +26,58 @@ from .tasks import import_products_from_csv
 
 
 @login_required
-def update_product_per_page(request):
-    if request.method == "POST":
-        try:
-            items_per_page = int(request.POST.get("items_per_page", 10))
-            if items_per_page > 0:
-                request.session['items_per_page'] = items_per_page
-        except ValueError:
-            request.session['items_per_page'] = 10  # Устанавливаем значение по умолчанию
-    return redirect('product-list') 
+def update_per_pages(request):
+    # Проверка для products_per_page
+    if "products" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.products_per_page = int(number)
+            request.user.shop.save()
+            return redirect('product-list')
+
+    # Проверка для finance_per_page
+    if "finance" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.finance_per_page = int(number)
+            request.user.shop.save()
+            return redirect('finance-list')
+
+    # Проверка для category_per_page
+    if "category" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.category_per_page = int(number)
+            request.user.shop.save()
+            return redirect('category-list')
+
+    # Проверка для orderhistory_per_page
+    if "orderhistory" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.orderhistory_per_page = int(number)
+            request.user.shop.save()
+            return redirect('total')
+
+    # Проверка для salehistory_per_page
+    if "salehistory" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.salehistory_per_page = int(number)
+            request.user.shop.save()
+            return redirect('sold-history')
+
+    # Проверка для incomehistory_per_page
+    if "incomehistory" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.incomehistory_per_page = int(number)
+            request.user.shop.save()
+            return redirect('income-history')
+
+    return redirect('dashboard')
+
+
 
 @login_required
 def list_(request):
@@ -44,6 +87,8 @@ def list_(request):
         if referer:  # Если заголовок HTTP_REFERER доступен
             return redirect(referer)
         return redirect('dashboard')
+    
+    number_per_page = request.user.shop.products_per_page
 
     products = Product.objects.filter(shop=request.user.shop)
 
@@ -94,12 +139,14 @@ def list_(request):
     elif discount == "no":
         products = products.filter(discount=0)
 
-
-    # Пагинация
-    items_per_page = request.session.get('items_per_page', 10)
+    # Для пагинации
+    items_per_page = request.user.shop.products_per_page
     paginator = Paginator(products, items_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+    current_page = page_obj.number
+    total_pages = paginator.num_pages
+    delta = 5
 
     if request.method == 'POST' and form.is_valid():
         csv_file = form.cleaned_data['csv_file']
@@ -118,7 +165,7 @@ def list_(request):
         'visible_pages': range(1, paginator.num_pages + 1),
         'page_obj': page_obj,
         'query': query,
-        'form': form,
+        'number_per_page':number_per_page
     }
     return render(request, 'product/list.html', context)
 
@@ -240,7 +287,7 @@ def income(request):
 def get_product(request):
     bar_code = request.GET.get('bar_code')
     product_id = request.GET.get('id')
-    print(bar_code)
+    
     if bar_code:
         product = get_object_or_404(Product, bar_code=bar_code, shop=request.user.shop)  # Находим продукт по штрихкоду
     elif product_id:
@@ -442,7 +489,7 @@ def category_list(request):
             return redirect('category-list')
 
     # Пагинация
-    category_per_page = request.session.get('category_per_page', 10)
+    category_per_page = request.user.shop.category_per_page
     paginator = Paginator(categories, category_per_page)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -450,7 +497,7 @@ def category_list(request):
     # Ограничение отображаемых страниц
     current_page = page_obj.number
     total_pages = paginator.num_pages
-    delta = 3  # Количество страниц до и после текущей
+    delta = 5  # Количество страниц до и после текущей
 
     start_page = max(current_page - delta, 1)
     end_page = min(current_page + delta, total_pages)
@@ -460,20 +507,9 @@ def category_list(request):
         'page_obj': page_obj,
         'visible_pages': visible_pages,
         'form': form,
+        'number_per_page':category_per_page
     }
     return render(request, 'product/category_list.html', context)
-
-@login_required
-def update_category_per_page(request):
-    if request.method == "POST":
-        try:
-            category_per_page = int(request.POST.get("category_per_page", 10))
-            if category_per_page > 0:
-                request.session['category_per_page'] = category_per_page
-        except ValueError:
-            request.session['category_per_page'] = 10
-    return redirect('category-list')
-
 
 @login_required
 def category_delete(request, pk):

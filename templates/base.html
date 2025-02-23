@@ -32,49 +32,6 @@
 
 <body>
 
-    {% if not request.user.shop.is_active %}
-    <!-- Модальное окно -->
-    <div class="modal fade show" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" style="display: block;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Магазин заблокирован</h5>
-                </div>
-                <div class="modal-body">
-                    <p>Тариф не оплачен, оплатите тариф чтобы продолжить работу</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="{% url 'management' request.user.shop.id %}" type="button" class="btn btn-primary">Перейти</a href="{% url 'management' request.user.shop.id %}">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Задний фон, затемняющий экран -->
-    <div class="modal-backdrop fade show"></div>
-{% endif %}
-
-    {% if not request.user.shop.tariff %}
-    <!-- Модальное окно -->
-    <div class="modal fade show" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" style="display: block;">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">У вашего магазина нет тарифа</h5>
-                </div>
-                <div class="modal-body">
-                    <p>Перейдите на страницу управления выберите тариф и оплатите</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="{% url 'management' request.user.shop.id %}" type="button" class="btn btn-primary">Перейти<a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Задний фон, затемняющий экран -->
-    <div class="modal-backdrop fade show"></div>
-    {% endif %}
 
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">

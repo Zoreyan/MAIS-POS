@@ -81,31 +81,30 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-# import os
-# from dotenv import load_dotenv
-# load_dotenv()
-
-# # # MySQL
+# MySQL
 # DATABASES = {
+
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': os.getenv('DJANGO_DB_NAME'),
-#         'USER': os.getenv('DJANGO_DB_USER'),
-#         'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
-#         'HOST': os.getenv('DJANGO_DB_HOST'),
-#         'PORT': os.getenv('DJANGO_DB_PORT'),
+#         'NAME': 'cl17008_deer',
+#         'USER': 'cl17008_deer',
+#         'PASSWORD': 'deer',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
 #         'OPTIONS': {
 #             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
 #         }
 #     }
 # }
 
+
+# SQLite
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -204,15 +203,6 @@ CELERY_BEAT_SCHEDULE = {
 CELERY_BROKER_URL = 'redis://redis:6379/0'  
 CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
-# CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')
-# CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
-
-# CELERY_BROKER_URL = 'redis://172.18.0.2:6379/0'
-# CELERY_RESULT_BACKEND = 'redis://172.18.0.2:6379/0'
-
-
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TRACK_STARTED = True 
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True

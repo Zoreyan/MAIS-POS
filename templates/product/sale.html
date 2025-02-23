@@ -91,9 +91,8 @@
     
         </div>
     </div>
-    
-
 </div>
+
 <!-- Scanner Modal -->
 <div class="scanner-modal modal" id="scannerModal">
     <div class="modal-content">
@@ -123,7 +122,7 @@
                             <div class="col-3 border-end d-flex align-items-center">
                                 <div class="product-img" id="productImage"></div>
                             </div>
-            
+        
                             <!-- Центральная секция с двумя блоками -->
                             <div class="col-7">
                                 <div class="row">
@@ -186,6 +185,7 @@
                         width: 1280,
                         height: 720,
                         facingMode: "environment",
+                        focusMode: "continuous",
                         width: { ideal: 350 },
                         height: { ideal: 350 }
                     }
@@ -204,7 +204,8 @@
                 },
                 locate: true,
                 numOfWorkers: navigator.hardwareConcurrency || 4,
-                frequency: 10
+                frequency: 10,
+                readerTimeout: 1500 
             }, function (err) {
                 if (err) {
                     console.error("Ошибка инициализации Quagga:", err);
@@ -313,10 +314,10 @@
     </script>
     
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
+<script src="https://unpkg.com/quagga/dist/quagga.min.js"></script>
 <script>
     $(document).ready(function () {
         let barcodeInput = $('.barcode');

@@ -108,74 +108,17 @@
 
               <!-- Шаг 3: Выбор тарифа -->
               <div id="step-3" style="display: none;">
-                <h5>Выберите тариф</h5>
-                <div class="row justify-content-center">
-                  <div class="col-12">
-                    <div class="d-flex overflow-auto" style="flex-wrap: nowrap; max-width: 100%; padding-bottom: 10px;">
-                      {% for tariff, features in tariff_features_dict.items %}
-                        <div class="card p-3 border-1 rounded-3 me-3" style="min-width: 250px; flex-shrink: 0;">
-                          <div class="d-flex justify-content-between align-items-start w-100">
 
-                            <div class="tarif_block_right text-start">
-                              <h6 class="mb-1 text-muted">{{ tariff.name }}</h6>
-                            <h2 class="fw-bold">{{ tariff.price|floatformat:0 }} сом<small class="fs-6 text-muted">/ месяц</small></h2>
-                            </div>
-                          <div class="tarif_block_left">
-                            {% if tariff.help_text %}
-                            <span class="badge bg-danger" style="font-size: 1rem; font-weight: bold;">{{ tariff.help_text }}</span>
-                            {% endif %}
-                          </div>
-                          </div>
-                          <hr style="border: none; border-top: 1px solid #8a8b8b; margin: 5px; padding: 0;">
-                          <ul class="list-unstyled">
-                            {% for feature in features %}
-                              <li class="d-flex align-items-center">
-                                {% if feature.status %}
-                                  <i class="bx bx-check" style="color:#500ba0; font-size: 1.5rem;"></i>
-                                  <span class="fs-8">{{ feature.name }}</span>
-                                {% else %}
-                                  <i class="bx bx-x" style="color:gray; font-size: 1.5rem;"></i>
-                                  <span class="fs-8">{{ feature.name }}</span>
-                                {% endif %}
-                              </li>
-                            {% endfor %}
-                          </ul>
-                          <div class="form-check">
-                            <input type="radio" class="form-check-input-tarif" name="tariff" value="{{ tariff.id }}" id="tariff-{{ tariff.id }}" required>
-                            <label class="form-check-label-tarif" for="tariff-{{ tariff.id }}" style="cursor: pointer; font-weight: bold; font-size: 1rem;">
-                              Выбрать
-                            </label>
-                          </div>
-                        </div>
-                      {% endfor %}
-                    </div>
-                  </div>
+                <div class="mb-3" style="height: 270px; overflow-y: auto;">
+                  <h3>Условия использования</h3>
+                  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nihil, facere error. Hic illum id iure harum alias! Ratione architecto quam, nulla magni tempora officia corporis quos. Non excepturi aperiam ratione architecto quis cum suscipit voluptatem nostrum. Dolorem natus, adipisci facilis rem perspiciatis est! Cumque quia exercitationem unde, nemo assumenda veritatis praesentium eligendi quidem enim doloribus maxime sed, ducimus soluta! Quo hic consequuntur deleniti quos reprehenderit fugiat iusto mollitia enim illo, facilis ratione ex explicabo aspernatur itaque perspiciatis accusantium repudiandae praesentium numquam nulla et repellat earum ipsa? Quia, officia cum ab sit repellendus veritatis a totam ipsum libero, delectus maxime quisquam repudiandae architecto itaque velit accusamus mollitia officiis autem, deleniti quibusdam suscipit alias. Magni vero, harum ex quisquam nobis dignissimos, animi tempora perspiciatis debitis eos quis explicabo. Omnis vitae, mollitia deserunt facilis corrupti rerum reprehenderit eos enim vel animi quibusdam sunt dignissimos corporis veniam sed incidunt totam quae a illo numquam nam exercitationem. Inventore nesciunt quis nostrum doloremque, molestiae eveniet perferendis odit possimus, iure facere quibusdam qui hic sint recusandae soluta. Numquam adipisci quaerat iste debitis. Nostrum necessitatibus nulla ducimus quas rem ipsa consequuntur asperiores ullam. Nemo tempora harum a eum eius provident excepturi assumenda numquam distinctio! Ad, illo consequuntur? Odio, a rerum nam sint voluptas laboriosam dolorem aliquam reprehenderit repudiandae sunt adipisci qui cupiditate, magni asperiores veniam omnis aperiam totam ut doloremque earum? Tenetur odio excepturi ab sunt temporibus iure aliquam reiciendis laboriosam cum ipsam eaque cumque commodi accusamus mollitia omnis, aperiam quod vitae. Maxime harum omnis provident suscipit pariatur deserunt in modi? Laudantium, voluptatum cum commodi veniam iste non, facilis autem dolores quibusdam vero sit inventore numquam? Et accusamus sit officia. Laborum dignissimos placeat autem. Dolorem pariatur ex, distinctio numquam necessitatibus atque. Totam itaque, nostrum ad, nam modi quae libero harum aut dignissimos dolore consequuntur eum optio error tempore.</p>
                 </div>
-
-                <!-- Чекбокс с модальным окном -->
+                
                 <div class="form-check mt-4">
-                  <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
-                  <label class="form-check-label" for="flexCheckChecked">
-                      Я полностью прочитал и соглашаюсь с <a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop">условиями использования</a>
+                  <input class="form-check-input" type="checkbox" id="termsCheckbox">
+                  <label class="form-check-label" for="termsCheckbox">
+                      Я полностью прочитал и соглашаюсь с условиями использования
                   </label>
-                </div>
-                <!-- Bootstrap Modal -->
-                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-scrollable">
-                      <div class="modal-content">
-                          <div class="modal-header">
-                              <h5 class="modal-title" id="termsModalLabel">Условия использования</h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-                          </div>
-                          <div class="modal-body">
-                              <p>Здесь вы можете разместить текст условий использования. Добавьте сюда все необходимые детали, которые пользователь должен прочитать перед согласием.</p>
-                              <p>Пример: Используя наш сервис, вы соглашаетесь с тем, что...</p>
-                          </div>
-                          <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                          </div>
-                      </div>
-                  </div>
                 </div>
 
               </div>
@@ -202,12 +145,6 @@
                   {% endfor %}
                   {% endif %}
                 </div>
-                <div class="col-md-4">
-                  {% if errors.tariff %}
-                  <h6 class="text-danger">Ошибки в шаге 3</h6>
-                  <p class="text-danger">{{ errors.tariff }}</p>
-                  {% endif %}
-                </div>
               </div>
 
               <!-- Кнопки перехода между шагами -->
@@ -216,15 +153,23 @@
                 <button type="button" id="next-btn" class="btn btn-primary ms-auto">Далее</button>
               </div>
 
+              <div class="mb-2">
+                <div class="d-flex justify-content-between mt-4">
+                  <a href="{% url 'login' %}">
+                    <span>Уже есть аккаунт?</span>
+                  </a>
+                </div>
+              </div>
+
               <div class="mb-3 mt-4 d-flex justify-content-center">
-                <button class="btn btn-primary d-grid w-50" type="submit" id="submit-btn" style="display: none;" disabled>Создать аккаунт (первые 14 дней бесплатно)</button>
+                <button class="btn btn-primary d-grid w-50" type="submit" id="submit-btn" style="display: none;" disabled>Создать аккаунт</button>
               </div>
             </form>
           </div>
         </div>
-      </div>
     </div>
   </div>
+</div>
 <style>
   .form-check-input-tarif:checked {
   background-color: #500ba0;
@@ -292,26 +237,18 @@
       toggleSubmitButton();
     }
   
+    const termsCheckbox = document.getElementById('termsCheckbox');
+
+    termsCheckbox.addEventListener('change', toggleSubmitButton);
+
     function toggleSubmitButton() {
-      const currentStepFields = document.querySelectorAll(`#step-${currentStep} input`);
-      const termsCheckbox = document.getElementById('flexCheckChecked'); 
-      let allFieldsFilled = true;
-
-      currentStepFields.forEach(field => {
-          if (field.type !== "checkbox" && field.type !== "radio" && !field.value) {
-              allFieldsFilled = false;
-          }
-      });
-
-      // Проверяем, выбран ли тариф (радиокнопка)
-      const selectedTariff = document.querySelector('input[name="tariff"]:checked');
-
-      if (allFieldsFilled && selectedTariff && termsCheckbox.checked && currentStep === totalSteps) {
-          submitBtn.disabled = false;
-      } else {
-          submitBtn.disabled = true;
-      }
-  }
+        // Проверка, что чекбокс отмечен и остальные условия выполняются
+        if (termsCheckbox.checked && currentStep === totalSteps) {
+            submitBtn.disabled = false;
+        } else {
+            submitBtn.disabled = true;
+        }
+    }
 
   // Вешаем слушатель на чекбокс и радиокнопки тарифов
   document.addEventListener("DOMContentLoaded", function() {
