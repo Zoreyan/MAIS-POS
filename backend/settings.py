@@ -91,7 +91,7 @@ DATABASES = {
 # from dotenv import load_dotenv
 # load_dotenv()
 
-# # MySQL
+# # # MySQL
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -201,7 +201,7 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-CELERY_BROKER_URL = CELERY_BROKER_URL = 'redis://redis:6379/0'  
+CELERY_BROKER_URL = 'redis://redis:6379/0'  
 CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 
 # CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')

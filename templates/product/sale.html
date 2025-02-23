@@ -7,7 +7,7 @@
 <div class="row gy-3">
     <div class="col-lg-8 col-sm-12">
         <div class="card">
-            <div class="card-body p-3">
+            <div class="card-body">
                 <div class="row mb-2 align-items-center gy-2">
                     <div class="col-sm-12 col-lg-3">
                         <input type="number" placeholder="Штрих код" maxlength="14" class="form-control  barcode"
@@ -23,18 +23,8 @@
                     </div>
                     <div class="col-3">
                         <button type="button" class="btn btn-info d-flex align-items-center" id="openScanner">
-                            <span>Открыть сканер</span>
-<<<<<<< HEAD
-=======
-                    <div class="col-4 d-flex gap-1">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCenter">
                             <i class="bx bx-barcode"></i>
-                            Сканнер
-                        </button>
-                        <button type="button" class="btn btn-info d-flex align-items-center sell">
-                            <i class="bx bx-plus-circle"></i>
-                            Отправить
->>>>>>> 6d723613be76f86120b9dcf053b8dda2527e6327
+                            <span>Cканер</span>
                         </button>
                     </div>
                 </div>
@@ -68,8 +58,9 @@
     
             <div style="flex-grow: 0; position: sticky; top: 80px; z-index: 100;">
                 <div class="card p-2">
+                   <div class="card-body">
                     <div class="py-3 d-flex justify-content-between align-items-center">
-                        <span>Итоговая сумма: </span>
+                        <h2 class="fw-semibold mb-0">Итоговая сумма: </h2>
                         <h2 id="total-sum" class="fw-semibold mb-0">0</h2>
                     </div>
                     <div class="mb-2 d-flex justify-content-between align-items-center">
@@ -77,10 +68,13 @@
                         <h3 class="change fw-semibold mb-0">0</h3>
                     </div>
     
-                    <button type="button" class="btn btn-info d-flex align-items-center sell">
-                        <i class="bx bx-plus-circle me-2"></i>
-                        Отправить
-                    </button>
+                    <div class="mt-4">
+                        <button type="button" class="btn btn-info d-flex align-items-center sell">
+                            <i class="bx bx-plus-circle me-2"></i>
+                            Отправить
+                        </button>
+                    </div>
+                   </div>
                 </div>
     
                 <div class="mt-2" style="flex-grow: 1; display: flex; flex-direction: column;">
@@ -101,7 +95,7 @@
 
 </div>
 <!-- Scanner Modal -->
-<div class="scanner-modal" id="scannerModal">
+<div class="scanner-modal modal" id="scannerModal">
     <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title">Сканер</h5>
