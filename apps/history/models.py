@@ -3,14 +3,22 @@ from decimal import Decimal
 
 
 class OrderHistory(models.Model):
+    PAYMENT_METHODS = [
+        ('cash', 'Наличные'),
+        ('mbank', 'МБанк'),
+        ('obank', 'О!Банк'),
+    ]
     shop = models.ForeignKey('product.Shop', on_delete=models.CASCADE, null=True)
     amount = models.FloatField()
     change = models.FloatField(null=True, blank=True)
     discount = models.FloatField(null=True, blank=True)
     profit = models.FloatField(null=True, blank=True)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, null=True)
     created = models.DateTimeField(auto_now_add=True)
     order_type = models.CharField(max_length=10, choices=[('sale', 'Продажа'), ('income', 'Поступление')], null=True)
 
+    def __str__(self):
+        return str(self.id)
 
     class Meta:
         verbose_name = 'История заказа'

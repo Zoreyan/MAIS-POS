@@ -191,3 +191,5 @@ def import_products_from_csv(self, file_data, shop_id):
 
     except Exception as e:
         return {'status': 'FAILURE', 'errors': [f"Неизвестная ошибка: {str(e)}"]}
+
+

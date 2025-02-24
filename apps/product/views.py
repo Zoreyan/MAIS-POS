@@ -5,19 +5,14 @@ from django.contrib import messages
 from django.http import JsonResponse
 from apps.history.models import *
 from apps.finance.models import *
-from django.forms.models import model_to_dict
 import json
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count
-from django.db.models import Q, Case, When, IntegerField
-from django.db import IntegrityError
+from django.db.models import Q
 from django.contrib.auth.models import Permission
 from .tasks import check_product_stock
 from decimal import Decimal
-import qrcode
-from io import BytesIO
-from django.core.files.base import ContentFile
 
 
 from celery.result import AsyncResult
@@ -311,14 +306,15 @@ def get_product(request):
 
 @login_required
 def create_sell_history(request):
-    if not request.user.shop.is_active:
-        return redirect('dashboard')
-
+    
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
         amount = request.POST.get('amount')
         change = request.POST.get('change')
         discount = request.POST.get('discount')
+        payment_method = request.POST.get('payment_method')
+        print(payment_method)
+        print(request.POST)
 
         profit = Decimal(0)
 
@@ -330,7 +326,8 @@ def create_sell_history(request):
             amount=amount,
             change=change,
             discount=discount,
-            order_type='sale'
+            order_type='sale',
+            payment_method=payment_method
         )
         for item in products:
             product = Product.objects.get(id=item['id'])
@@ -442,8 +439,10 @@ def find_product(request):
 @login_required
 def search_product(request):
     query = request.GET.get('query', '').strip()
+    filter_status = request.GET.get('filter')
     products = Product.objects.filter(shop=request.user.shop)  # Фильтрация по магазину
-
+    if filter_status == 'true':
+        products = products.filter(bar_code__isnull=True)
     if query:
         if query.isdigit():  # Если ввод числовой, ищем по штрих-коду
             products = products.filter(bar_code__icontains=query)

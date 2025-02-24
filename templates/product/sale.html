@@ -1,33 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block css %}
-<link rel="stylesheet" href="{% static 'assets/css/scanner.css' %}">
-{% endblock css %}
+
 {% block content %}
 <div class="row gy-3">
     <div class="col-lg-8 col-sm-12">
         <div class="card">
             <div class="card-body">
-                <div class="row mb-2 align-items-center gy-2">
-                    <div class="col-sm-12 col-lg-3">
-                        <input type="number" placeholder="Штрих код" maxlength="14" class="form-control  barcode"
-                            name="barcode" autofocus>
-                    </div>
-                    <div class="col-sm-12 col-lg-3">
-                        <input type="number" placeholder="Сумма оплаты" maxlength="8" class="form-control  amount"
-                            name="amount">
-                    </div>
-                    <div class="col-sm-12 col-lg-3">
-                        <input type="number" placeholder="Скидка" maxlength="8" class="form-control  discount"
-                            name="discount">
-                    </div>
-                    <div class="col-3">
-                        <button type="button" class="btn btn-info d-flex align-items-center" id="openScanner">
-                            <i class="bx bx-barcode"></i>
-                            <span>Cканер</span>
-                        </button>
-                    </div>
-                </div>
+
 
                 <div class="row mb-2">
                     <div class="col-sm-4 product-info"></div>
@@ -55,412 +34,249 @@
 
     <div class="col-lg-4 col-sm-12">
         <div class="mb-3" style="height: 100%; display: flex; flex-direction: column; position: relative;">
-    
+
             <div style="flex-grow: 0; position: sticky; top: 80px; z-index: 100;">
                 <div class="card p-2">
-                   <div class="card-body">
-                    <div class="py-3 d-flex justify-content-between align-items-center">
-                        <h2 class="fw-semibold mb-0">Итоговая сумма: </h2>
-                        <h2 id="total-sum" class="fw-semibold mb-0">0</h2>
-                    </div>
-                    <div class="mb-2 d-flex justify-content-between align-items-center">
-                        <span>Сдача: </span>
-                        <h3 class="change fw-semibold mb-0">0</h3>
-                    </div>
-    
-                    <div class="mt-4">
-                        <button type="button" class="btn btn-info d-flex align-items-center sell">
-                            <i class="bx bx-plus-circle me-2"></i>
-                            Отправить
-                        </button>
-                    </div>
-                   </div>
-                </div>
-    
-                <div class="mt-2" style="flex-grow: 1; display: flex; flex-direction: column;">
-                    <input type="search" placeholder="Добавить по названию" class="form-control search" name="search">
-        
-                    <!-- Карточка для отображения товаров с прокруткой -->
-                    <div class="product-search-results mt-2" style="flex-grow: 1; overflow-y: auto; height: 250px;">
-                        <div class="row gy-2" id="search-results">
-                            <!-- Динамически добавляемые карточки товаров -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-    
-        </div>
-    </div>
-</div>
-
-<!-- Scanner Modal -->
-<div class="scanner-modal modal" id="scannerModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title">Сканер</h5>
-            <button type="button" class="btn-close" id="closeScanner" aria-label="Закрыть"></button>
-        </div>
-        <div class="modal-body">
-            <div class="scanner-box" id="scanner-box">
-                <div id="scannerCamera" class="camera"></div>
-                <div class="scanner-line"></div>
-                <div class="scanner-center-line"></div>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mt-2">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="autoMode">
-                    <label class="form-check-label" for="autoMode">не показать данные</label>
-                </div>
-                <h6 id="scannedCode">#### ####</h6>
-            </div>
-
-            <div class="mt-4 scanned-product-info d-none" id="productInfo">
-                <div class="card">
                     <div class="card-body">
-                        <div class="row">
-                            <!-- Левая секция -->
-                            <div class="col-3 border-end d-flex align-items-center">
-                                <div class="product-img" id="productImage"></div>
+
+
+                        
+                        <div class="row mb-4">
+                            <div class="col-5">
+                                <input type="number" placeholder="Штрих код" maxlength="14"
+                                    class="form-control  barcode" name="barcode" autofocus>
                             </div>
-        
-                            <!-- Центральная секция с двумя блоками -->
-                            <div class="col-7">
-                                <div class="row">
-                                    <div class="col-12 border-bottom pb-2">
-                                        <div class="product-details flex-grow-1 d-flex justify-content-between">
-                                            <span class="product-name text-truncate" id="productName" title="Название товара">Название товара</span>
-                                            <span class="product-quantity mb-1" id="productQuantity">кол: 0</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 pt-2">
-                                        <div class="text-end me-3 d-flex justify-content-between">
-                                            <span class="product-barcode" id="productBarcode">Штрих-код</span>
-                                            <span class="price" id="productPrice">0.0c</span>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="col-4">
+                                <input type="number" placeholder="Сумма оплаты" maxlength="8"
+                                    class="form-control  amount" name="amount">
                             </div>
-            
-                            <!-- Правая секция -->
-                            <div class="col-2 border-start d-flex align-items-center">
-                                <button class="add-btn" id="addProduct">+</button>
+                            <div class="col-3">
+                                <input type="number" placeholder="Скидка" maxlength="8" class="form-control  discount"
+                                    name="discount">
                             </div>
+
+                        </div>
+                        <button type="button" class="btn btn-dark d-flex align-items-center mb-2 w-100 search_btn" id=""
+                            data-bs-toggle="modal" data-bs-target="#searchModal">
+                            <i class="bx bx-search me-2"></i>
+                            <span>Поиск</span>
+                        </button>
+                        <div class="row gy-3 mt-0">
+                            <div class="col-xl-4 col-md-5 col-sm-6 col-12 form-control-validation fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
+                              <div class="form-check custom-option custom-option-icon">
+                                <label class="form-check-label custom-option-content" for="basicPlanMain1">
+                                  <span class="custom-option-body">
+                                   <img src="https://play-lh.googleusercontent.com/xf5_bSz5pNxQHd2K9yig3wM8LAaDigaLhMWdjsVKwSPW0CoyFXoJNUr7Iix1hzTgyg0" height="50" alt="">
+                                  </span>
+                                  <input name="formValidationPlan" class="form-check-input" type="radio" value="mbank" id="basicPlanMain1" >
+                                </label>
+                              </div>
+                            </div>
+                            <div class="col-xl-4 col-md-5 col-sm-6 col-12 form-control-validation">
+                              <div class="form-check custom-option custom-option-icon checked">
+                                <label class="form-check-label custom-option-content" for="basicPlanMain2">
+                                  <span class="custom-option-body">
+                                    <img src="https://i.banks.kg/10185/conversions/deputy-chairman-become-vacant-obank-thumbnail-webp.webp" height="50" alt="">
+                                  </span>
+                                  <input name="formValidationPlan" class="form-check-input" type="radio" value="obank" id="basicPlanMain2">
+                                </label>
+                              </div>
+                            </div>
+                            <div class="col-xl-4 col-md-5 col-sm-6 col-12 form-control-validation">
+                              <div class="form-check custom-option custom-option-icon">
+                                <label class="form-check-label custom-option-content" for="basicPlanMain3">
+                                  <span class="custom-option-body">
+                                    <span class="custom-option-title fs-6" style="height: 50px;">Наличные</span>
+                                  </span>
+                                  <input name="formValidationPlan" class="form-check-input" type="radio" value="cash" id="basicPlanMain3">
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        <div class="py-3 d-flex justify-content-between align-items-center">
+                            <h2 class="fw-semibold mb-0">Сумма: </h2>
+                            <h2 id="total-sum" class="fw-semibold mb-0">0</h2>
+                        </div>
+                        <div class="mb-2 d-flex justify-content-between align-items-center">
+                            <h2 class="fw-semibold mb-0">Сдача: </h2>
+                            <h2 class="change fw-semibold mb-0">0</h2>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center mt-3">
+                            <button type="button" class="btn btn-primary btn-xl d-flex align-items-center sell">
+                                <i class="bx bx-send me-2"></i>
+                                Отправить
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let lastScannedCode = "";
-        let scanTimeout;
-        let isAutoMode = false;
-    
-        const scannerBox = document.getElementById("scannerCamera");
-        const scannedCode = document.getElementById("scannedCode");
-        const productInfo = document.getElementById("productInfo");
-        const productName = document.getElementById("productName");
-        const productBarcode = document.getElementById("productBarcode");
-        const productPrice = document.getElementById("productPrice");
-        const productImage = document.getElementById("productImage");
-        const productQuantity = document.getElementById("productQuantity");
-        const addProductBtn = document.getElementById("addProduct");
-        const autoModeCheckbox = document.getElementById("autoMode");
-        const closeScanner = document.getElementById("closeScanner");
-        const scannerModal = document.getElementById("scannerModal");
-        const openScanner = document.getElementById("openScanner");
-        const scannerBoxBorder = document.getElementById("scanner-box");
-        const scannerSound = new Audio("{% static 'audio/scanner.mp3' %}");
-    
-        function startScanner() {
-            Quagga.init({
-                inputStream: {
-                    type: "LiveStream",
-                    target: scannerBox,
-                    constraints: {
-                        width: 1280,
-                        height: 720,
-                        facingMode: "environment",
-                        focusMode: "continuous",
-                        width: { ideal: 350 },
-                        height: { ideal: 350 }
-                    }
-                },
-                locator: {
-                    patchSize: "x-large",
-                    halfSample: false
-                },
-                decoder: {
-                    readers: [
-                        "ean_reader",
-                        "ean_8_reader",
-                        "upc_reader",
-                        "upc_e_reader",
-                    ]
-                },
-                locate: true,
-                numOfWorkers: navigator.hardwareConcurrency || 4,
-                frequency: 10,
-                readerTimeout: 1500 
-            }, function (err) {
-                if (err) {
-                    console.error("Ошибка инициализации Quagga:", err);
-                    return;
-                }
-                Quagga.start();
-            });
-        }
-    
-        Quagga.onDetected(function (result) {
-            if (!result || !result.codeResult || !result.codeResult.code) {
-                lastScannedCode = "####"; // Если нет штрихкода, заменяем на ####
-                scannedCode.textContent = lastScannedCode;
-                return;
-            }
-            const barcode = result.codeResult.code;
-            if (barcode === lastScannedCode) return;
-    
-            lastScannedCode = barcode;
-            scannedCode.textContent = barcode;
-            scannerBoxBorder.style.borderColor = "blue";
-            clearTimeout(scanTimeout);
-    
-            scanTimeout = setTimeout(() => {
-                $.ajax({
-                    url: "{% url 'get-product' %}",
-                    type: "GET",
-                    data: { bar_code: barcode },
-                    dataType: "json"
-                })
-                .done(function (data) {
-                    scannerSound.play();
-                    if (isAutoMode) {
-                        sendBarcode(barcode);
-                    } else {
-                        productInfo.classList.remove("d-none");
-                        productImage.style.backgroundImage = `url('${data.image}')`;
-                        productName.textContent = data.name;
-                        productBarcode.textContent = barcode;
-                        productQuantity.textContent = `${data.quantity}`;
-                        productPrice.textContent = `${data.d_sale_price}`;
-                        addProductBtn.onclick = function () {
-                            sendBarcode(barcode);
-                            clearProductInfo(); // Очищаем информацию после добавления
-                        };
-                    }
-                })
-                .fail(() => {
-                    lastScannedCode = "#### ####"; // Если товар не найден, заменяем на ####
-                    scannedCode.textContent = lastScannedCode;
-                });
-            }, 1000);
-        });
 
-        function sendBarcode(barcode) {
-            let barcodeInput = document.querySelector(".barcode");
-            if (barcodeInput) {
-                barcodeInput.value = barcode;
+<div class="modal fade" id="searchModal" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel3">Поиск товара</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="" class="form-control search" name="search" placeholder="Название товара">
 
-                // Создаём событие ввода
-                let inputEvent = new Event("input", { bubbles: true });
-                barcodeInput.dispatchEvent(inputEvent);
+                <div class="mt-2" style="flex-grow: 1; display: flex; flex-direction: column;">
 
-                // Создаём событие изменения
-                let changeEvent = new Event("change", { bubbles: true });
-                barcodeInput.dispatchEvent(changeEvent);
+                    <!-- Карточка для отображения товаров с прокруткой -->
+                    <div class="product-search-results mt-2" style="flex-grow: 1; height: 250px;">
+                        <div class="table-responsive text-nowrap">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Название</th>
+                                        <th>Штрих-код</th>
+                                        <th>Цена</th>
+                                        <th>На складе</th>
+                                        <th>Добавить</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-border-bottom-0" id="search-results">
+                                </tbody>
+                            </table>
+                        </div>
 
-                // Ждём, пока обновится поле, затем имитируем нажатие Enter
-                setTimeout(() => {
-                    let enterEvent = new KeyboardEvent("keypress", {
-                        bubbles: true,
-                        cancelable: true,
-                        key: "Enter",
-                        code: "Enter",
-                        keyCode: 13
-                    });
-                    barcodeInput.dispatchEvent(enterEvent);
-                }, 100); // 100 мс для обработки события input
-            }
-        }
-    
-        function clearProductInfo() {
-            productInfo.classList.add("d-none");
-        }
-    
-        if (openScanner) {
-            openScanner.addEventListener("click", function () {
-                scannerModal.style.display = "block";
-                setTimeout(startScanner, 300);
-            });
-        }
-    
-        if (closeScanner) {
-            closeScanner.addEventListener("click", function () {
-                scannerModal.style.display = "none";
-                Quagga.stop();
-            });
-        }
-    
-        if (autoModeCheckbox) {
-            autoModeCheckbox.addEventListener("change", function () {
-                isAutoMode = this.checked;
-            });
-        }
-    });
-    </script>
-    
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
-<script src="https://unpkg.com/quagga/dist/quagga.min.js"></script>
 <script>
-    $(document).ready(function () {
-        let barcodeInput = $('.barcode');
-        let amountInput = $('.amount');
-        let discountInput = $('.discount');
-        let productList = [];
-        let totalSum = 0;
-        let searchField = $('.search');
-        let discountedSum = 0;
+$(document).ready(function () {
 
-        $(searchField).on('input', function () {
-            let searchQuery = this.value.trim();
-            if (searchQuery.length >= 2) {
-                $.ajax(`{% url 'search-product' %}?query=${encodeURIComponent(searchQuery)}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                    success: function (response) {
-                        console.log(response);
-                        console.log(searchQuery)
-                        const searchResultsContainer = document.getElementById('search-results');
-                        searchResultsContainer.innerHTML = ''; // Очищаем предыдущие результаты
-                        document.querySelector('.product-search-results').style.display = 'block';
+    let barcodeInput = $('.barcode');
+    let amountInput = $('.amount');
+    let discountInput = $('.discount');
+    let productList = [];
+    let totalSum = 0;
+    let searchField = $('.search');
+    let discountedSum = 0;
 
-                        if (response.products && response.products.length > 0) {
-                            response.products.forEach(product => {
-                                searchResultsContainer.insertAdjacentHTML('beforeend', `
-                                <div class="card">
-                                    <div class="card-body p-1">
-                                        <div class="row g-1">
-                                            <!-- Левая секция -->
-                                            <div class="product-img col-2">
-                                                <img src="${product.image}" alt="Изображение товара" class="img-fluid w-75 d-block mx-auto">
-                                            </div>
-                                
-                                            <!-- Центральная секция с двумя блоками -->
-                                            <div class="col-8">
-                                                <div class="row g-1">
-                                                    <div class="col-12 border-bottom pb-1">
-                                                        <div class="product-details d-flex justify-content-between">
-                                                            <span class="product-name text-truncate text-bold w-75" title="Название товара">${product.name}</span>
-                                                            <span class="product-quantity">${product.quantity}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 pt-1">
-                                                        <div class="text-end me-1 d-flex justify-content-between">
-                                                            <span class="product-barcode text-muted">${product.bar_code}</span>
-                                                            <span class="price" >${product.sale_price}c</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                
-                                            <!-- Правая секция -->
-                                            <div class="col-2 border-start d-flex align-items-center justify-content-center">
-                                                <button class="add-btn add-product" data-id="${product.id}">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                `);
-                            });
-                        } else {
-                            searchResultsContainer.innerHTML = '<div class="text-center">Товары не найдены.</div>';
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Ошибка поиска:', error);
-                        $('#search-results').innerHTML = '<div class="text-center">Ошибка поиска товара.</div>';
+
+    function getNoBarcodeProducts() {
+        $.ajax(`{% url 'search-product' %}?filter=true`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                success: function (response) {
+                    const searchResultsContainer = document.getElementById('search-results');
+                    searchResultsContainer.innerHTML = ''; // Очищаем предыдущие результаты
+                    document.querySelector('.product-search-results').style.display = 'block';
+
+                    if (response.products && response.products.length > 0) {
+                        response.products.forEach(product => {
+                            searchResultsContainer.insertAdjacentHTML('beforeend', `
+                            <tr>
+                      <td>${product.name.slice(0, 20)}</td>
+                      <td>${product.bar_code ? product.bar_code != 'null' : 'Без штрих-кода'}</td>
+                      
+                      <td>${product.sale_price}</td>
+                      <td>
+                        ${product.quantity}
+                      </td>
+                      <td>
+                        <button class="add-product btn btn-primary btn-sm" data-id="${product.id}">+</button>
+                      </td>
+                    </tr>
+                            `);
+                        });
+                    } else {
+                        searchResultsContainer.innerHTML = '<div class="text-center">Товары не найдены.</div>';
                     }
-                })
+                },
+                error: function (xhr, status, error) {
+                    console.error('Ошибка поиска:', error);
+                    $('#search-results').innerHTML = '<div class="text-center">Ошибка поиска товара.</div>';
+                }
+            })
 
-            } else {
-                document.querySelector('.product-search-results').style.display = 'none';
-            }
-        });
+    }
 
+    getNoBarcodeProducts();
 
-        // Обработчик события для ввода штрих-кода
-        barcodeInput.on('keypress', function (e) {
-            if (e.which === 13) {
-            let barcode = $(this).val();
-                $.ajax({
-                    url: "{% url 'get-product' %}",
-                    type: "GET",
-                    data: { bar_code: barcode },
-                    success: function (data) {
-                        if (data.quantity <= 0) {
-                            showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
-                            return;
-                        }
+    $(searchField).on('input', function () {
+        console.log("Input value:", paymentMethod);
+        let searchQuery = this.value.trim();
+        
+        if (searchQuery.length >= 2) {
+            $.ajax(`{% url 'search-product' %}?query=${encodeURIComponent(searchQuery ? searchQuery : null)}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                success: function (response) {
+                    const searchResultsContainer = document.getElementById('search-results');
+                    searchResultsContainer.innerHTML = ''; // Очищаем предыдущие результаты
+                    document.querySelector('.product-search-results').style.display = 'block';
 
-                        // Добавляем продукт в список, если его нет, или увеличиваем количество, если он уже есть
-                        let existingProduct = productList.find(product => product.bar_code === data.bar_code);
-                        let productName = data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name;
-
-                        if (existingProduct) {
-                            if (existingProduct.quantity < data.quantity) {
-                                existingProduct.quantity++;
-                                showNoAccessMessage(`+1 ${productName}!`, '#0b863f');
-                            } else {
-                                showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
-                            }
-                        } else {
-                            productList.unshift({
-                                id: data.id,
-                                name: data.name,
-                                bar_code: data.bar_code,
-                                quantity: 1,
-                                price: data.d_sale_price,
-                                stock: data.quantity,
-                                image: data.image
-                            });
-                            showNoAccessMessage(`Товар ${productName} добавлен!`, '#0b863f');
-                        }
-
-                        updateTable();
-                    },
-                    error: function () {
-                        showNoAccessMessage('Товар не найден!', '#ffa500');
+                    if (response.products && response.products.length > 0) {
+                        response.products.forEach(product => {
+                            searchResultsContainer.insertAdjacentHTML('beforeend', `
+                            <tr>
+                      <td>${product.name.slice(0, 20)}</td>
+                      <td>${product.bar_code ? product.bar_code != 'null' : 'Без штрих-кода'}</td>
+                      
+                      <td>${product.sale_price}</td>
+                      <td>
+                        ${product.quantity}
+                      </td>
+                      <td>
+                        <button class="add-product btn btn-primary btn-sm" data-id="${product.id}">+</button>
+                      </td>
+                    </tr>
+                            `);
+                        });
+                    } else {
+                        searchResultsContainer.innerHTML = '<div class="text-center">Товары не найдены.</div>';
                     }
-                });
-                $(this).val(''); // очищаем поле штрих-кода после поиска
-            }
-        });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Ошибка поиска:', error);
+                    $('#search-results').innerHTML = '<div class="text-center">Ошибка поиска товара.</div>';
+                }
+            })
 
-        // Обработчик клика по кнопке "Добавить продукт"
-        $(document).on('click', '.add-product', function () {
-            let productId = $(this).data('id'); // Получаем id продукта
+        } else {
+            getNoBarcodeProducts();
+            document.querySelector('.product-search-results').style.display = 'none';
+        }
+    });
 
-            // Отправляем GET-запрос на сервер с id продукта
+
+    // Обработчик события для ввода штрих-кода
+    barcodeInput.on('keypress', function (e) {
+        if (e.which === 13) {
+        let barcode = $(this).val();
             $.ajax({
                 url: "{% url 'get-product' %}",
                 type: "GET",
-                data: { id: productId },
+                data: { bar_code: barcode },
                 success: function (data) {
                     if (data.quantity <= 0) {
                         showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
                         return;
                     }
 
-                    // Добавляем продукт в список
+                    // Добавляем продукт в список, если его нет, или увеличиваем количество, если он уже есть
                     let existingProduct = productList.find(product => product.bar_code === data.bar_code);
                     let productName = data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name;
 
@@ -472,7 +288,7 @@
                             showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
                         }
                     } else {
-                        productList.push({
+                        productList.unshift({
                             id: data.id,
                             name: data.name,
                             bar_code: data.bar_code,
@@ -490,136 +306,198 @@
                     showNoAccessMessage('Товар не найден!', '#ffa500');
                 }
             });
-        });
-
-        
-
-        $(document).on('click', '.increment', function () {
-            let productId = $(this).data('id');
-            const product = productList.find(product => product.id == productId);
-
-            $('.product-info').empty();
-
-            if (product && product.quantity < product.stock) {
-                product.quantity++;
-                updateTable();
-            } else {
-                showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
-            }
-        });
-
-        $(document).on('click', '.decrement', function () {
-            let productId = $(this).data('id');
-            const product = productList.find(product => product.id == productId);
-            if (product && product.quantity > 1) {
-                product.quantity--;
-                updateTable();
-            }
-        });
-
-        function updateTotal() {
-            totalSum = productList.reduce((sum, product) => sum + product.price * product.quantity, 0);
-            applyDiscount();
-            updateDisplay();
+            $(this).val(''); // очищаем поле штрих-кода после поиска
         }
+    });
 
-        function applyDiscount() {
-            const discount = parseFloat(discountInput.val()) || 0;
-            discountedSum = Math.max(totalSum - discount, 0);
-        }
+    // Обработчик клика по кнопке "Добавить продукт"
+    $(document).on('click', '.add-product', function () {
+        let productId = $(this).data('id'); // Получаем id продукта
 
-        function updateDisplay() {
-            $('#total-sum').text(discountedSum.toFixed(2));
-            updateChange();
-        }
-
-        function updateChange() {
-            let amount = parseFloat(amountInput.val()) || 0;
-            $('.change').text((amount - discountedSum).toFixed(2));
-        }
-
-        amountInput.on('input', updateChange);
-        discountInput.on('input', updateTotal);
-
-        function updateTable() {
-            $('#product-table-body').empty();
-            for (let product of productList) {
-                $('#product-table-body').append(`
-                    <tr>
-                        <td>${product.name}</td>
-                        <td>${product.bar_code}</td>
-                        <td class="product-quantity d-flex align-items-center gap-2">
-                            ${product.quantity}/${product.stock}
-                            <div class="d-flex flex-column">
-                                <span class="text-muted increment" data-id="${product.id}">
-                                    <i class='bx bx-chevron-up'></i>
-                                </span>
-                                <span class="text-muted decrement" data-id="${product.id}">
-                                    <i class='bx bx-chevron-down'></i>
-                                </span>
-                            </div>
-                        </td>
-                        <td>${product.price}</td>
-                        <td><button class="btn btn-sm btn-danger delete-product" data-id="${product.id}">Удалить</button></td>
-                    </tr>
-                `);
-            }
-            updateTotal();
-        }
-
-        $(document).on('click', '.delete-product', function () {
-            let productId = $(this).data('id');
-            productList = productList.filter(product => product.id !== productId);
-
-            let product = productList.find(product => product.id == productId);
-
-            $(this).closest('tr').fadeOut(300, function () {
-                $(this).remove();
-                totalSum -= product.price * product.quantity;
-                
-            });
-            updateTotal();
-            updateChange();
-        });
-
-        $('.sell').on('click', function () {
-            if (amountInput.val() < discountedSum) {
-                showNoAccessMessage('Недостаточно средств!', '#ffa500');
-                return false;
-            }
-            if (productList.length === 0) {
-                showNoAccessMessage('Введите хотя бы один товар!', '#ffa500');
-                return false;
-            }
-
-            let products = productList.map(product => ({
-                id: product.id,
-                quantity: product.quantity
-            }));
-
-            $.ajax({
-                url: "{% url 'create-sell-history' %}",
-                type: "POST",
-                data: {
-                    products: JSON.stringify(products),
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    amount: amountInput.val(),
-                    change: amountInput.val() - discountedSum,
-                    discount: discountInput.val()
-                },
-                success: function () {
-                    showNoAccessMessage('Продажа успешна!', '#0b863f');
-                    productList = [];
-                    $('#product-table-body').empty();
-                    updateTotal();
-                    updateChange();
-                    
-                },
-                error: function (xhr, status, error) {
-                    console.log(error);
+        // Отправляем GET-запрос на сервер с id продукта
+        $.ajax({
+            url: "{% url 'get-product' %}",
+            type: "GET",
+            data: { id: productId },
+            success: function (data) {
+                if (data.quantity <= 0) {
+                    showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
+                    return;
                 }
-            });
+
+                // Добавляем продукт в список
+                let existingProduct = productList.find(product => product.bar_code === data.bar_code);
+                let productName = data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name;
+
+                if (existingProduct) {
+                    if (existingProduct.quantity < data.quantity) {
+                        existingProduct.quantity++;
+                        showNoAccessMessage(`+1 ${productName}!`, '#0b863f');
+                    } else {
+                        showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
+                    }
+                } else {
+                    productList.push({
+                        id: data.id,
+                        name: data.name,
+                        bar_code: data.bar_code,
+                        quantity: 1,
+                        price: data.d_sale_price,
+                        stock: data.quantity,
+                        image: data.image
+                    });
+                    showNoAccessMessage(`Товар ${productName} добавлен!`, '#0b863f');
+                }
+
+                updateTable();
+            },
+            error: function () {
+                showNoAccessMessage('Товар не найден!', '#ffa500');
+            }
         });
     });
+
+    
+
+    $(document).on('click', '.increment', function () {
+        let productId = $(this).data('id');
+        const product = productList.find(product => product.id == productId);
+
+        $('.product-info').empty();
+
+        if (product && product.quantity < product.stock) {
+            product.quantity++;
+            updateTable();
+        } else {
+            showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
+        }
+    });
+
+    $(document).on('click', '.decrement', function () {
+        let productId = $(this).data('id');
+        const product = productList.find(product => product.id == productId);
+        if (product && product.quantity > 1) {
+            product.quantity--;
+            updateTable();
+        }
+    });
+
+    function updateTotal() {
+        totalSum = productList.reduce((sum, product) => sum + product.price * product.quantity, 0);
+        applyDiscount();
+        updateDisplay();
+    }
+
+    function applyDiscount() {
+        const discount = parseFloat(discountInput.val()) || 0;
+        discountedSum = Math.max(totalSum - discount, 0);
+    }
+
+    function updateDisplay() {
+        $('#total-sum').text(discountedSum.toFixed(2));
+        updateChange();
+    }
+
+    function updateChange() {
+        let amount = parseFloat(amountInput.val()) || 0;
+        $('.change').text((amount - discountedSum).toFixed(2));
+    }
+
+    amountInput.on('input', updateChange);
+    discountInput.on('input', updateTotal);
+
+    function updateTable() {
+        $('#product-table-body').empty();
+        for (let product of productList) {
+            $('#product-table-body').append(`
+                <tr>
+                    <td>${product.name.slice(0, 22)}</td>
+                    <td>${product.bar_code}</td>
+                    <td class="product-quantity d-flex align-items-center gap-2">
+                        ${product.quantity}/${product.stock}
+                        <div class="d-flex flex-column">
+                            <span class="text-muted increment" data-id="${product.id}">
+                                <i class='bx bx-chevron-up'></i>
+                            </span>
+                            <span class="text-muted decrement" data-id="${product.id}">
+                                <i class='bx bx-chevron-down'></i>
+                            </span>
+                        </div>
+                    </td>
+                    <td>${product.price}</td>
+                    <td><button class="btn btn-sm btn-danger delete-product" data-id="${product.id}">Удалить</button></td>
+                </tr>
+            `);
+        }
+        updateTotal();
+    }
+
+    $(document).on('click', '.delete-product', function () {
+        let productId = $(this).data('id');
+        productList = productList.filter(product => product.id !== productId);
+
+        let product = productList.find(product => product.id == productId);
+
+        $(this).closest('tr').fadeOut(300, function () {
+            $(this).remove();
+            totalSum -= product.price * product.quantity;
+            
+        });
+        updateTotal();
+        updateChange();
+    });
+
+    $('.sell').on('click', function () {
+        let paymentMethod = $('input[name="formValidationPlan"]:checked').val();
+
+        if (amountInput.val() < discountedSum) {
+            showNoAccessMessage('Недостаточно средств!', '#ffa500');
+            return false;
+        }
+        if (productList.length === 0) {
+            showNoAccessMessage('Введите хотя бы один товар!', '#ffa500');
+            return false;
+        }
+
+        if (paymentMethod === undefined) {
+            showNoAccessMessage('Выберите способ оплаты!', '#ffa500');
+            return false;
+        }
+
+        let products = productList.map(product => ({
+            id: product.id,
+            quantity: product.quantity
+        }));
+
+        $.ajax({
+            url: "{% url 'create-sell-history' %}",
+            type: "POST",
+            data: {
+                products: JSON.stringify(products),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                amount: amountInput.val(),
+                change: amountInput.val() - discountedSum,
+                discount: discountInput.val(),
+                payment_method: paymentMethod,
+            },
+            success: function () {
+                showNoAccessMessage('Продажа успешна!', '#0b863f');
+                productList = [];
+                $('#product-table-body').empty();
+                productList = [];
+                totalSum = 0;
+                discountedSum = 0;
+                updateTable();
+                amountInput.val('');
+                discountInput.val('');
+                updateChange();
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+});
+
 </script>
 {% endblock %}
