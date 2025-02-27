@@ -81,30 +81,33 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+# MySQL
+# DATABASES = {
+
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': os.environ.get('DB_NAME'),
+#         'USER': os.environ.get('DB_USER'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#         }
+#     }
+# }
+
+# SQLite
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-# import os
-# from dotenv import load_dotenv
-# load_dotenv()
-
-# # MySQL
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': os.getenv('DJANGO_DB_NAME'),
-#         'USER': os.getenv('DJANGO_DB_USER'),
-#         'PASSWORD': os.getenv('DJANGO_DB_PASSWORD'),
-#         'HOST': os.getenv('DJANGO_DB_HOST'),
-#         'PORT': os.getenv('DJANGO_DB_PORT'),
-#         'OPTIONS': {
-#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-#         }
-#     }
-# }
 
 
 # Password validation
@@ -193,3 +196,16 @@ LOGGING = {
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 broker_connection_retry_on_startup = True
+
+CELERY_BEAT_SCHEDULE = {
+    'check_shop_payments_every_hour': {
+        'task': 'apps.product.tasks.check_shop_payments',
+        'schedule': crontab(minute=00, hour='*'),
+    },
+}
+
+CELERY_BROKER_URL = 'redis://redis:6379/0'  
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TRACK_STARTED = True 
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True

@@ -13,11 +13,11 @@
                         <input type="number" placeholder="Штрих код" maxlength="14" class="form-control  barcode"
                             name="barcode" autofocus>
                     </div>
-                    <div class="col-sm-12 col-lg-2">
+                    <div class="col-sm-12 col-lg-3">
                         <input type="number" placeholder="Сумма оплаты" maxlength="8" class="form-control  amount"
                             name="amount">
                     </div>
-                    <div class="col-sm-12 col-lg-2">
+                    <div class="col-sm-12 col-lg-3">
                         <input type="number" placeholder="Скидка" maxlength="8" class="form-control  discount"
                             name="discount">
                     </div>
@@ -128,7 +128,7 @@
                             <div class="col-3 border-end d-flex align-items-center">
                                 <div class="product-img" id="productImage"></div>
                             </div>
-            
+        
                             <!-- Центральная секция с двумя блоками -->
                             <div class="col-7">
                                 <div class="row">
@@ -320,7 +320,6 @@
     </script>
     
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
@@ -451,6 +450,7 @@
                 $(this).val(''); // очищаем поле штрих-кода после поиска
             }
         });
+
         // Обработчик клика по кнопке "Добавить продукт"
         $(document).on('click', '.add-product', function () {
             let productId = $(this).data('id'); // Получаем id продукта
