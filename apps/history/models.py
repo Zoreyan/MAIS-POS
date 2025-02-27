@@ -10,7 +10,8 @@ class OrderHistory(models.Model):
     profit = models.FloatField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     order_type = models.CharField(max_length=10, choices=[('sale', 'Продажа'), ('income', 'Поступление')], null=True)
-
+    qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
+    cashier = models.ForeignKey('user.User', on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = 'История заказа'

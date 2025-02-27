@@ -65,16 +65,26 @@
                         <span>Сдача: </span>
                         <h3 class="change fw-semibold mb-0">0</h3>
                     </div>
-    
-                    <button type="button" class="btn btn-info d-flex align-items-center sell">
-                        <i class="bx bx-plus-circle me-2"></i>
-                        Отправить
-                    </button>
+            
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Чекбокс "Печатать чек" -->
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="printReceipt" checked>
+                            <label class="form-check-label" for="printReceipt">
+                                чек
+                            </label>
+                        </div>
+                        <!-- Кнопка "Отправить" на всю ширину -->
+                        <button type="button" class="btn btn-info d-flex align-items-center sell flex-grow-1 me-3">
+                            <i class="bx bx-plus-circle me-2"></i>
+                            Отправить
+                        </button>
+                    </div>
                 </div>
-    
+            
                 <div class="mt-2" style="flex-grow: 1; display: flex; flex-direction: column;">
                     <input type="search" placeholder="Добавить по названию" class="form-control search" name="search">
-        
+                
                     <!-- Карточка для отображения товаров с прокруткой -->
                     <div class="product-search-results mt-2" style="flex-grow: 1; overflow-y: auto; height: 250px;">
                         <div class="row gy-2" id="search-results">
@@ -83,6 +93,7 @@
                     </div>
                 </div>
             </div>
+            
     
         </div>
     </div>
@@ -592,6 +603,8 @@
                 quantity: product.quantity
             }));
 
+            const printReceiptChecked = document.getElementById('printReceipt').checked;
+
             $.ajax({
                 url: "{% url 'create-sell-history' %}",
                 type: "POST",
@@ -602,18 +615,42 @@
                     change: amountInput.val() - discountedSum,
                     discount: discountInput.val()
                 },
-                success: function () {
-                    showNoAccessMessage('Продажа успешна!', '#0b863f');
-                    productList = [];
-                    $('#product-table-body').empty();
-                    updateTotal();
-                    updateChange();
-                    
+                success: function (data) {
+                    // Проверка успешного ответа от сервера
+                    if (data.status === 'success') {
+                        showNoAccessMessage('Продажа успешна!', '#0b863f');
+                        productList = [];
+                        $('#product-table-body').empty();
+                        updateTotal();
+                        updateChange();
+
+                        if (printReceiptChecked) {
+                            const popupUrl = `/history/receipt/${data.order_id}`; // Получаем ID заказа из ответа
+                            const left = (window.screen.width - 200) / 2;
+                            const top = (window.screen.height - 600) / 4;
+
+                            const popupWindow = window.open(popupUrl, 'popupWindow', 
+                                `width=200,height=600,left=${left},top=${top},toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no`
+                            );
+
+                            // Печать и закрытие попапа после печати
+                            popupWindow.onload = function() {
+                                popupWindow.print();
+                                popupWindow.onafterprint = function() {
+                                    popupWindow.close();
+                                };
+                            };
+                        }
+                    } else {
+                        // Обработка ошибки
+                        console.error("Ошибка продажи:", data.message);
+                    }
                 },
                 error: function (xhr, status, error) {
                     console.log(error);
                 }
             });
+
         });
     });
 </script>

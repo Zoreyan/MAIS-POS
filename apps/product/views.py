@@ -18,6 +18,7 @@ from decimal import Decimal
 import qrcode
 from io import BytesIO
 from django.core.files.base import ContentFile
+from django.contrib.sites.shortcuts import get_current_site
 
 
 from celery.result import AsyncResult
@@ -309,10 +310,23 @@ def get_product(request):
     }
     return JsonResponse(product_data)
 
+def generate_qr_code(order_id, request):
+    """Генерирует QR-код для заказа с учётом текущего хоста"""
+    current_site = get_current_site(request)
+    qr_data = f"https://{current_site.domain}/history/receipt/{order_id}"  # Формируем полный URL
+
+    qr = qrcode.make(qr_data)
+
+    # Сохраняем QR-код в памяти
+    qr_io = BytesIO()
+    qr.save(qr_io, format='PNG')
+    qr_io.seek(0)
+
+    # Создаём файл для Django
+    return ContentFile(qr_io.read(), name=f'qr_codes/order_{order_id}.png')
+
 @login_required
 def create_sell_history(request):
-    if not request.user.shop.is_active:
-        return redirect('dashboard')
 
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
@@ -330,8 +344,13 @@ def create_sell_history(request):
             amount=amount,
             change=change,
             discount=discount,
-            order_type='sale'
+            order_type='sale',
+            cashier=request.user,
         )
+
+        qr_code_file = generate_qr_code(order.id, request)
+        order.qr_code.save(f'order_{order.id}.png', qr_code_file, save=True)
+
         for item in products:
             product = Product.objects.get(id=item['id'])
             quantity = int(item['quantity'])
@@ -365,20 +384,17 @@ def create_sell_history(request):
         order.profit = profit
         order.save()
 
-        check_product_stock.delay(products, request.user.shop.id )
+        #check_product_stock.delay(products, request.user.shop.id)
 
-        return JsonResponse({'status': 'success'})
+        return JsonResponse({'status': 'success','order_id': order.id })
         
         
 @login_required
 def create_income_history(request):
-    if not request.user.shop.is_active:
-        return redirect('dashboard')
         
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
         amount = request.POST.get('amount')
-        change = request.POST.get('change')
         change = request.POST.get('change')
 
         # Создаем запись о поступлении
@@ -386,8 +402,13 @@ def create_income_history(request):
             amount=amount,
             change=change,
             shop=request.user.shop,
-            order_type='income'
+            order_type='income',
+            cashier=request.user,
         )
+
+        qr_code_file = generate_qr_code(order.id, request)
+        order.qr_code.save(f'order_{order.id}.png', qr_code_file, save=True)
+
         expend = Expense.objects.create(
             expend_type='supplies',
             description='Поступление',

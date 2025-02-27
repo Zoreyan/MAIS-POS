@@ -172,43 +172,52 @@
               }
           });
   
-      // Обработчик события для ввода штрих-кода
-      barcodeInput.on('keypress', function (e) {
-        if (e.which === 13) {
-          let barcode = $(this).val();
-              $.ajax({
-                  url: "{% url 'get-product' %}",
-                  type: "GET",
-                  data: { bar_code: barcode },
-                  success: function (data) {
-  
-                      // Добавляем продукт в список, если его нет, или увеличиваем количество, если он уже есть
-                      let existingProduct = productList.find(product => product.bar_code === data.bar_code);
-                      if (existingProduct) {
-                        existingProduct.quantity++;
-                        showNoAccessMessage(`+1 ${productName}!`, '#0b863f');
-                      } else {
-                          productList.unshift({
-                              id: data.id,
-                              name: data.name,
-                              bar_code: data.bar_code,
-                              quantity: 1,
-                              price: data.price,
-                              sale_price:data.sale_price,
-                              stock: data.quantity,
-                              image: data.image
-                          });
+          barcodeInput.on('keypress', function (e) {
+              if (e.which === 13) {
+                  let barcode = $(this).val().trim(); // Убираем лишние пробелы
+                  if (!barcode) return; // Если поле пустое, не отправляем запрос
+
+                  $.ajax({
+                      url: "{% url 'get-product' %}",
+                      type: "GET",
+                      data: { bar_code: barcode },
+                      success: function (data) {
+                          if (!data || !data.bar_code) {
+                              showNoAccessMessage('Товар не найден!', '#ffa500');
+                              return;
+                          }
+
+                          // Добавляем продукт в список, если его нет, или увеличиваем количество, если он уже есть
+                          let existingProduct = productList.find(product => product.bar_code === data.bar_code);
+                          let productName = data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name;
+
+                          if (existingProduct) {
+                              existingProduct.quantity++;
+                              showNoAccessMessage(`+1 ${productName}!`, '#0b863f');
+                          } else {
+                              productList.unshift({
+                                  id: data.id,
+                                  name: data.name,
+                                  bar_code: data.bar_code,
+                                  quantity: 1,
+                                  price: data.d_sale_price,
+                                  stock: data.quantity,
+                                  image: data.image
+                              });
+                              showNoAccessMessage(`Товар ${productName} добавлен!`, '#0b863f');
+                          }
+
+                          updateTable(); // Обновляем таблицу только в случае успешного добавления
+                      },
+                      error: function () {
+                          showNoAccessMessage('Товар не найден!', '#ffa500');
                       }
-  
-                      updateTable();
-                  },
-                  error: function () {
-                    showNoAccessMessage('Товар не найден!', '#ffa500');
-                  }
-              });
-              $(this).val(''); // очищаем поле штрих-кода после поиска
-          }
-      });
+                  });
+
+                  $(this).val(''); // Очищаем поле штрих-кода после поиска
+              }
+          });
+
   
       // Обработчик клика по кнопке "Добавить продукт"
       $(document).on('click', '.add-product', function () {
@@ -347,19 +356,27 @@
         
     
         $(document).on('click', '.delete-product', function () {
-            let productId = $(this).data('id');
-            productList = productList.filter(product => product.id !== productId);
+          let productId = $(this).data('id');
+          
+          // Находим продукт до удаления
+          let productIndex = productList.findIndex(product => product.id === productId);
+          if (productIndex !== -1) {
+              // Удаляем продукт из списка
+              productList.splice(productIndex, 1);
 
-            let product = productList.find(product => product.id == productId);
+              // Сразу обновляем таблицу
+              updateTable();
 
-            $(this).closest('tr').fadeOut(300, function () {
-                $(this).remove();
-                totalSum -= product.price * product.quantity;
-                
-            });
-            updateTotal();
-            updateChange();
-        });
+              // Пересчитываем сумму и сдачу
+              updateTotal();
+              updateChange();
+
+              // Анимация удаления строки (после всех вычислений)
+              $(this).closest('tr').fadeOut(300, function () {
+                  $(this).remove();
+              });
+          }
+      });
     
         $('.income').on('click', function () {
           if (amountInput.val() < discountedSum) {

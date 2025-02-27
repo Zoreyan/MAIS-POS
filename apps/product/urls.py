@@ -21,5 +21,5 @@ urlpatterns = [
     path('category-list/', category_list, name='category-list'),
     path('category-update/<int:pk>/', category_update, name='category-update'),
     path('category-delete/<int:pk>/', category_delete, name='category-delete'),
-    path('update_per_pages/', update_per_pages, name='update-per-pages')
+    path('update_per_pages/', update_per_pages, name='update-per-pages'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
