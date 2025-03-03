@@ -1,89 +1,47 @@
 from django.shortcuts import render, redirect
 from .models import *
 from .forms import *
-from django.db.models import Sum
 from .models import Expense
 from apps.history.models import *
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-from django.db.models.functions import TruncMonth
-from django.views.decorators.http import require_POST
-from django.contrib.auth.models import Permission
-import json
-from django.core.paginator import Paginator
+from .filters import ExpenseFilter
+from apps.product.utils import paginate
+from apps.user.utils import check_permission
 
 
 @login_required
+@check_permission
 def finance_list(request):
-    permissions = Permission.objects.filter(user=request.user)
-    if not permissions.filter(codename='view_expense').exists():
-        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
-        if referer:  # Если заголовок HTTP_REFERER доступен
-            return redirect(referer)
-        return redirect('dashboard')
+    
 
     expenses = Expense.objects.filter(shop=request.user.shop).order_by('-created')
-    expense_types = ['rent', 'utilities', 'salaries', 'supplies', 'other']
-
-    # Фильтр по дате начала
-    date_from = request.GET.get('date_from')
-    if date_from:
-        expenses = expenses.filter(created__date__gte=date_from)
-
-    # Фильтр по дате окончания
-    date_to = request.GET.get('date_to')
-    if date_to:
-        expenses = expenses.filter(created__date__lte=date_to)
-
-    expend_type = request.GET.get('expend_type')
-    if expend_type:
-        expenses = expenses.filter(expend_type=expend_type)
-
-    finance_per_page = request.user.shop.finance_per_page
-    paginator = Paginator(expenses, finance_per_page)
+    filters = ExpenseFilter(request.GET, queryset=expenses)
+    
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    # Ограничение отображаемых страниц
-    current_page = page_obj.number
-    total_pages = paginator.num_pages
-    delta = 5  # Количество страниц до и после текущей
-
-    start_page = max(current_page - delta, 1)
-    end_page = min(current_page + delta, total_pages)
-    visible_pages = range(start_page, end_page + 1)
-
+    page_obj, visible_pages = paginate(request, filters.qs, page_number)
     context = {
-        'expense_types': expense_types,
         'page_obj': page_obj,
         'visible_pages': visible_pages,
-        'date_from': date_from,
-        'date_to': date_to,
-        'expend_type': expend_type,
-        'number_per_page':finance_per_page
+        'filters': filters
     }
     
     return render(request, 'finance/list.html', context)
 
 @login_required
+@check_permission
 def create(request):
-    permissions = Permission.objects.filter(user=request.user)
-    if not permissions.filter(codename='add_expense').exists():
-        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
-        if referer:  # Если заголовок HTTP_REFERER доступен
-            return redirect(referer)
-        return redirect('dashboard')
+    
 
     expend_type = request.GET.get('type')
     if not expend_type:
         return redirect('finance-list')
 
-    expend_display_name = dict(Expense.CHOICES).get(expend_type)
-    form = ExpenseForm(initial={'expend_type': expend_type}) 
+    expend_display_name = dict(Expense.EXPENSE_TYPES).get(expend_type)
+    form = ExpenseForm(initial={'expend_type': expend_type}, shop=request.user.shop) 
     
     if request.method == 'POST':
-        form = ExpenseForm(request.POST)
+        form = ExpenseForm(request.POST, shop=request.user.shop)
         if form.is_valid():
             expend = form.save(commit=False)
             expend.shop = request.user.shop
@@ -105,14 +63,8 @@ def create(request):
     return render(request, 'finance/create.html', context)
 
 @login_required
+@check_permission
 def expense_delete(request, pk):
-    permissions = Permission.objects.filter(user=request.user)
-    if not permissions.filter(codename='delete_expense').exists():
-        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
-        if referer:  # Если заголовок HTTP_REFERER доступен
-            return redirect(referer)
-        return redirect('dashboard')
-
     expend = get_object_or_404(Expense, id=pk)
     expend.delete()
     return redirect('finance-list')

@@ -18,7 +18,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-SITE_ID = 1
 
 
 # Application definition
@@ -29,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.humanize',
     'django.contrib.staticfiles',
 
     'apps.dashboard',
@@ -37,16 +37,18 @@ INSTALLED_APPS = [
     'apps.history',
     'apps.client',
     'apps.finance',
-    'apps.shop',
-    'apps.ai',
+    'apps.api',
     'mptt',
     'django_filters',
     'django_celery_beat',
     'django_extensions',
+    'rest_framework',
     'sslserver',
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -76,7 +78,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
+CORS_ALLOW_ALL_ORIGINS = True
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -161,48 +163,6 @@ LOGIN_URL = 'user/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-DEFAULT_FROM_EMAIL = 'dear_sap_my_academy@gmail.com'
-
-EMAIL_TIMEOUT = 60
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'muhammadazizmadakimov06@gmail.com'
-EMAIL_HOST_PASSWORD = 'azgh bsqt csxn ujnw'
-
-ITEMS_PER_PAGE = 10
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'ERROR',
-    },
-}
-
-
-# Celery
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-broker_connection_retry_on_startup = True
-
-CELERY_BEAT_SCHEDULE = {
-    'check_shop_payments_every_hour': {
-        'task': 'apps.product.tasks.check_shop_payments',
-        'schedule': crontab(minute=00, hour='*'),
-    },
-}
 
 CELERY_BROKER_URL = 'redis://redis:6379/0'  
 CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
-
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TRACK_STARTED = True 
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True

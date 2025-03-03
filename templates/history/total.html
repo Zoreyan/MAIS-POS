@@ -1,32 +1,48 @@
 {% extends 'base.html' %}
 {% load tags %}
 {% block content %}
+
+<div class="modal fade " id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <form class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="filterModalLabel">Фильтр</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{ filters.form.as_p }}
+      </div>      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary">Показать</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="d-flex align-items-center justify-content-between mt-3 mb-4 flex-wrap">
+  <div class="d-flex align-items-center gap-3">
+      <h2 class="mb-0 fw-bold text-dark">Общая история</h2>
+  </div>
+  <div class="d-flex align-items-center">
+      <button type="button" class="btn btn-dark " data-bs-toggle="modal" data-bs-target="#filterModal">
+          Фильтр
+      </button>
+  </div>
+</div>
+
 <div class="row justify-content-center">
   <div class="col-12">
-    <div class="card shadow">
-      <div class="card-header d-flex flex-column flex-md-row flex-wrap align-items-start align-items-md-center gap-2 justify-content-between">
-        <h4 class="card-title mb-2 mb-md-0">История очередей</h4>
-        <form method="get" class="d-flex flex-column flex-md-row gap-2 align-items-start align-items-md-center">
-            <div class="input-group flex-wrap flex-md-nowrap">
-                <input type="date" id="date_from" name="date_from" class="form-control mb-2 mb-md-0" value="{{ date_from }}">
-                <input type="date" id="date_to" name="date_to" class="form-control mb-2 mb-md-0" value="{{ date_to }}">
-            </div>
-            <select id="order_type" name="order_type" class="form-select mb-2 mb-md-0">
-                <option value="">Все</option>
-                <option value="sale" {% if order_type == 'sale' %}selected{% endif %}>Продажа</option>
-                <option value="income" {% if order_type == 'income' %}selected{% endif %}>Поступление</option>
-            </select>
-            <button type="submit" class="btn btn-primary">Фильтровать</button>
-        </form>
-    </div>
+    <div class="card">
       <div class="card-body">
         <div class="table-responsive">
           <table class="table table-striped table-hover" id="products-datatable">
             <thead class="table-light">
               <tr>
-                <th>#</th>
+                <th>Ответственен</th>
                 <th>Итого</th>
                 <th>Принято</th>
+                <th>Метод оплаты</th>
                 <th>Скидка</th>
                 <th>Сдача</th>
                 <th>Дата</th>
@@ -39,7 +55,7 @@
               <tr>
                 <td>
                   <span class="text-primary" data-bs-toggle="modal" data-bs-target="#itemModal{{ order.id }}">
-                    <i class="mdi mdi-cart me-1"></i>#{{ order.id }}
+                    <i class="mdi mdi-cart me-1"></i>{{ order.user }}
                   </span>
                   <div id="itemModal{{ order.id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
@@ -67,7 +83,7 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td>{{ i.product.name }}</td>
                                 <td>{{ i.quantity }}</td>
-                                <td>{{ i.price_at_moment }}</td>
+                                <td>{{ i.amount }}</td>
                                 <td>{{ i.total_sum }}</td>
                               </tr>
                               {% endfor %}
@@ -117,40 +133,30 @@
                 </td>
                 <td>{{ order.total_sum }}</td>
                 <td>{{ order.amount }}</td>
-                <td>{% if order.discount %}{{ order.discount }}{% else %}-{% endif %}</td>
-                <td>{% if order.change %}{{ order.change }}{% else %}-{% endif %}</td>
+                <td>
+                  {{ order.get_payment_method_display }}
+                </td>
+                <td>{% if order.discount %}{{ order.discount }}{% else %}0{% endif %}</td>
+                <td>{% if order.change %}{{ order.change }}{% else %}0{% endif %}</td>
                 <td>{{ order.created|date:"d.m.Y H:i" }}</td>
                 <td>
-                  {% if order.soldhistory_set.exists %}
-                  <div class="badge bg-primary">Продажа</div>
-                  {% else %}
-                  <div class="badge bg-success">Поступление</div>
-                  {% endif %}
+                  {{ order.get_order_type_display }}
                 </td>
                 <td>
-                  {% if request.user|has_permission:"delete_orderhistory" %}
-                  <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                  <button type="button" class="btn" data-bs-toggle="modal"
                     data-bs-target="#deleteModal{{ order.id }}">
-                    Удалить
+                    <i class="bx bx-trash fs-5"></i>
                   </button>
-                  {% else %}
-                  <button type="button" class="btn btn-sm btn-danger" onclick="showNoAccessMessage()">
-                    Удалить
-                  </button>
-                  {% endif %}
+                 
                   <div id="deleteModal{{ order.id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-body">
-                          <form class="ps-3 pe-3" method="POST">
-                            {% csrf_token %}
                             <p>Вы действительно хотите удалить ордер? {{ order.id }}</p>
-                            <div class="mb-3 text-center">
-                              {% if request.user|has_permission:"delete_orderhistory" %}
-                              <a class="btn btn-danger" href="{% url 'order-history-delete' order.id %}">Удалить</a>
-                              {% endif %}
-                            </div>
-                          </form>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                          <a class="btn btn-danger" href="{% url 'order-history-delete' order.id %}">Удалить</a>
                         </div>
                       </div>
                     </div>
@@ -159,119 +165,83 @@
                 </td>
 
               </tr>
-              {% empty %}
-              <tr>
-                <td colspan="7" class="text-center">Нет данных</td>
-              </tr>
+              
               {% endfor %}
             </tbody>
           </table>
+          <div class="d-flex align-items-center justify-content-center me-3 mt-5 flex-wrap">
+            <div class="pagination-container">
+                <nav aria-label="Пагинация">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.number > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="Первая">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;&laquo;</span>
+                        </li>
+                        {% endif %}
+          
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                        {% endif %}
+          
+                        {% for page_num in visible_pages %}
+                        {% if page_num  ==  page_obj.number %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+          
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                        {% endif %}
+          
+                        {% if page_obj.number < page_obj.paginator.num_pages %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;&raquo;</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+          
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="d-flex align-items-center justify-content-center me-3 mt-5 flex-wrap">
-  <div class="pagination-container">
-      <nav aria-label="Пагинация">
-          <ul class="pagination justify-content-center">
-              {% if page_obj.number > 1 %}
-              <li class="page-item">
-                  <a class="page-link" href="?page=1" aria-label="Первая">
-                      <span aria-hidden="true">&laquo;&laquo;</span>
-                  </a>
-              </li>
-              {% else %}
-              <li class="page-item disabled">
-                  <span class="page-link">&laquo;&laquo;</span>
-              </li>
-              {% endif %}
 
-              {% if page_obj.has_previous %}
-              <li class="page-item">
-                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
-                      <span aria-hidden="true">&laquo;</span>
-                  </a>
-              </li>
-              {% else %}
-              <li class="page-item disabled">
-                  <span class="page-link">&laquo;</span>
-              </li>
-              {% endif %}
-
-              {% for page_num in visible_pages %}
-              {% if page_num  ==  page_obj.number %}
-              <li class="page-item active" aria-current="page">
-                  <span class="page-link">{{ page_num }}</span>
-              </li>
-              {% else %}
-              <li class="page-item">
-                  <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-              </li>
-              {% endif %}
-              {% endfor %}
-
-              {% if page_obj.has_next %}
-              <li class="page-item">
-                  <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
-                      <span aria-hidden="true">&raquo;</span>
-                  </a>
-              </li>
-              {% else %}
-              <li class="page-item disabled">
-                  <span class="page-link">&raquo;</span>
-              </li>
-              {% endif %}
-
-              {% if page_obj.number < page_obj.paginator.num_pages %}
-              <li class="page-item">
-                  <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
-                      <span aria-hidden="true">&raquo;&raquo;</span>
-                  </a>
-              </li>
-              {% else %}
-              <li class="page-item disabled">
-                  <span class="page-link">&raquo;&raquo;</span>
-              </li>
-              {% endif %}
-          </ul>
-      </nav>
-
-      <!-- Отображение номера текущей страницы -->
-      <div class="text-center mt-2">
-          <small class="text-muted">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</small>
-      </div>
-
-      <!-- Ссылка для открытия настроек -->
-      <div class="text-center mt-1">
-          <small>
-              <a href="#" data-bs-toggle="modal" data-bs-target="#settingsModal" class="text-muted" style="font-size: 10px;">
-                  Вы можете изменить настройки здесь
-              </a>
-          </small>
-      </div>
-  </div>
-</div>
-<!-- Модальное окно для настроек -->
-<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="settingsModalLabel">Настройки</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-          </div>
-          <div class="modal-body">
-              <form method="post" action="{% url 'update-per-pages' %}">    
-                  {% csrf_token %}
-                  <input type="number" class="form-control" name="number_per_page" value="{{ number_per_page }}">
-                  <button type="submit" name="orderhistory" class="btn btn-primary mt-3">Сохранить</button>
-              </form>
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-          </div>
-      </div>
-  </div>
-</div>
 {% endblock %}

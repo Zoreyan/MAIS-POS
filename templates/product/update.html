@@ -31,21 +31,17 @@
         <div class="col-12 col-lg-8">
             <div class="card mb-3 h-100">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Информация о продукте</h5>
+                    <h5 class="card-title mb-0">Информация о товаре</h5>
                 </div>
                 <div class="card-body">
-                    <div class="row mb-3">
+                    <div class="row">
                         <div class="col-12 col-md-6 mb-3">
                             <label class="form-label" for="product-name">Название</label>
                             {{ form.name }}
                         </div>
-                        <div class="col-12 col-md-6 mb-3">
-                            <label class="form-label" for="product-image">Изображение</label>
-                            {{ form.image }}
-                        </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-12 col-md-6 mb-3">
+                        <div class="col-12 col-md-6">
                             <label class="form-label mb-1" for="unit-select">Единица измерения</label>
                             {{ form.unit }}
                         </div>
@@ -54,10 +50,7 @@
                             {{ form.bar_code }}
                         </div>
                     </div>
-                    <div>
-                        <label class="mb-1" for="product-description">Описание (необязательно)</label>
-                        {{ form.description }}
-                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -71,7 +64,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label" for="product-price">Базовая цена</label>
-                        {{ form.price }}
+                        {{ form.cost_price }}
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="product-discount-price">Цена для продажи</label>
@@ -79,8 +72,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="product-discount-price">Скидка (0-100)</label>
-                        <input type="number" name="discount" id="product-discount-price" class="form-control" min="0"
-                            max="100" value="{{ form.discount.value|default:0 }}">
+                        {{ form.discount }}
                         <small id="discount-error" class="text-danger" style="display: none;">Введите значение от 0 до
                             100</small>
                     </div>

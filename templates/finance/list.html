@@ -2,94 +2,44 @@
 {% load static %}
 {% load tags %}
 {% block content %}
-<div class="modal modal-top fade" id="modalTop" tabindex="-1" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog">
-        <form class="modal-content" method="get">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTopTitle">Фильтр</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row gy-3">
-                    <div class="col-md-12">
-                        <label for="date_from" class="form-label">Дата с</label>
-                        <input type="date" id="date_from" name="date_from" class="form-control"
-                            value="{{ request.GET.date_from }}">
-                    </div>
-                    <div class="col-md-12">
-                        <label for="date_to" class="form-label">Дата по</label>
-                        <input type="date" id="date_to" name="date_to" class="form-control"
-                            value="{{ request.GET.date_to }}">
-                    </div>
-                    <div class="col-md-12">
-                        <label for="expend_type" class="form-label">Тип</label>
-                        <select id="expend_type" name="expend_type" class="form-select">
-                            <option value="" {% if request.GET.expend_type == "" %}selected{% endif %}>Все типы</option>
-                            {% for expend_type in expense_types %}
-                            <option value="{{ expend_type }}" 
-                            {% if request.GET.expend_type == expend_type %}
-                                selected
-                            {% endif %}>{{ expend_type }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Закрыть</button>
-                <button type="submit" class="btn btn-primary">Поиск</button>
-            </div>
-        </form>
+<div class="modal fade " id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <form class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="filterModalLabel">Фильтр</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {{ filters.form.as_p }}
+        </div>      
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-primary">Показать</button>
+        </div>
+      </form>
     </div>
-</div>
-
-
-<div class="d-flex justify-content-between mb-3">
-    <div class="d-flex align-items-center gap-2">
-        <h3 class="card-title">Финансы</h3>
-        <button type="button" class="btn btn-sm btn-label-secondary" data-bs-toggle="modal" data-bs-target="#modalTop">
+  </div>
+  
+  <div class="d-flex align-items-center justify-content-between mt-3 mb-4 flex-wrap">
+    <div class="d-flex align-items-center gap-3">
+        <h2 class="mb-0 fw-bold text-dark">Финансы</h2>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <button type="button" class="btn btn-dark " data-bs-toggle="modal" data-bs-target="#filterModal">
             Фильтр
         </button>
+        <button class="btn btn-primary" type="button" id="timelineWapper" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <span>Добавить</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="timelineWapper" style="">
+            <a class="dropdown-item" href="{% url 'finance-create' %}?type=rent">Аренда</a>
+            <a class="dropdown-item" href="{% url 'finance-create' %}?type=utilities">Коммунальные услуги</a>
+            <a class="dropdown-item" href="{% url 'finance-create' %}?type=salaries">Зарплаты</a>
+            <a class="dropdown-item" href="{% url 'finance-create' %}?type=other">Другое</a>
+          </div>
     </div>
-    {% if request.user|has_permission:"add_expense" %}
-    <button type="button" class="btn btn-sm btn-primary d-flex align-items-center" data-bs-toggle="modal"
-        data-bs-target="#expendTypeModal">
-        <i class="bx bx-plus me-1"></i>
-        <span>Добавить</span>
-    </button>
-    {% else %}
-    <button type="button" class="btn btn-sm btn-primary d-flex align-items-center" onclick="showNoAccessMessage()">
-        <i class="bx bx-plus me-1"></i>
-        <span>Добавить</span>
-    </button>
-    {% endif %}
-</div>
+  </div>
 
-<div class="modal fade" id="expendTypeModal" tabindex="-1" aria-labelledby="expendTypeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="expendTypeModalLabel">Добавить расход</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-            </div>
-            <div class="modal-body">
-                <ul class="list-group">
-                    <li class="list-group-item"><a href="{% url 'finance-create' %}?type=rent"
-                            class="text-dark">Аренда</a></li>
-                    <li class="list-group-item"><a href="{% url 'finance-create' %}?type=utilities"
-                            class="text-dark">Коммунальные услуги</a></li>
-                    <li class="list-group-item"><a href="{% url 'finance-create' %}?type=salaries"
-                            class="text-dark">Зарплаты</a></li>
-                    <li class="list-group-item"><a href="{% url 'finance-create' %}?type=other"
-                            class="text-dark">Другое</a></li>
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="card">
     <div class="table-responsive text-nowrap">
@@ -107,18 +57,13 @@
                 <tr>
                     <td>{{ expend.description|default:"-" }}{% if expend.user %}:{{ expend.user }}{% endif %}</td>
                     <td>{{ expend.amount }}</td>
-                    <td>{{ expend.created }}</td>
+                    <td>{{ expend.created|date:"d.m.Y H:i" }}</td>
                     <td>
-                        {% if request.user|has_permission:"delete_expense"%}
                         <button type="button" class="btn" data-bs-toggle="modal"
-                            data-bs-target="#deleteModal{{ expend.id }}">
-                            <i class='bx bx-trash text-danger fs-5'></i>
-                        </button>
-                        {% else %}
-                        <button type="button" class="btn" onclick="showNoAccessMessage()">
-                            <i class='bx bx-trash text-danger fs-5'></i>
-                        </button>
-                        {% endif %}
+                                        data-bs-target="#deleteModal{{ expend.id }}">
+                                        <i class="bx bx-trash fs-5"></i>
+                                    </button>
+                        
                         <div class="modal fade" id="deleteModal{{ expend.id }}" tabindex="-1"
                             aria-labelledby="deleteModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
@@ -129,13 +74,11 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        {{ expend.description }}<br>
-                                        {{ expend.amount }}
+                                        <h3>{{ expend.description }}</h3>
+                                        <span>{{ expend.amount }} сом</span>
                                     </div>
                                     <div class="modal-footer">
-                                        {% if request.user|has_permission:"delete_expense"%}
                                         <a href="{% url 'expense-delete' expend.id %}" class="btn btn-danger">Да</a>
-                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -149,110 +92,77 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div class="d-flex align-items-center justify-content-center me-3 mt-5 flex-wrap">
+            <div class="pagination-container">
+                <nav aria-label="Пагинация">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.number > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="Первая">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;&laquo;</span>
+                        </li>
+                        {% endif %}
+          
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
+                        </li>
+                        {% endif %}
+          
+                        {% for page_num in visible_pages %}
+                        {% if page_num  ==  page_obj.number %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+          
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                        {% endif %}
+          
+                        {% if page_obj.number < page_obj.paginator.num_pages %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;&raquo;</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+          </div>
     </div>
 </div>
 
-<div class="d-flex align-items-center justify-content-center me-3 mt-5 flex-wrap">
-    <div class="pagination-container">
-        <nav aria-label="Пагинация">
-            <ul class="pagination justify-content-center">
-                {% if page_obj.number > 1 %}
-                <li class="page-item">
-                    <a class="page-link" href="?page=1" aria-label="Первая">
-                        <span aria-hidden="true">&laquo;&laquo;</span>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&laquo;&laquo;</span>
-                </li>
-                {% endif %}
-  
-                {% if page_obj.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&laquo;</span>
-                </li>
-                {% endif %}
-  
-                {% for page_num in visible_pages %}
-                {% if page_num  ==  page_obj.number %}
-                <li class="page-item active" aria-current="page">
-                    <span class="page-link">{{ page_num }}</span>
-                </li>
-                {% else %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
-  
-                {% if page_obj.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&raquo;</span>
-                </li>
-                {% endif %}
-  
-                {% if page_obj.number < page_obj.paginator.num_pages %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
-                        <span aria-hidden="true">&raquo;&raquo;</span>
-                    </a>
-                </li>
-                {% else %}
-                <li class="page-item disabled">
-                    <span class="page-link">&raquo;&raquo;</span>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-  
-        <!-- Отображение номера текущей страницы -->
-        <div class="text-center mt-2">
-            <small class="text-muted">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</small>
-        </div>
-  
-        <!-- Ссылка для открытия настроек -->
-        <div class="text-center mt-1">
-            <small>
-                <a href="#" data-bs-toggle="modal" data-bs-target="#settingsModal" class="text-muted" style="font-size: 10px;">
-                    Вы можете изменить настройки здесь
-                </a>
-            </small>
-        </div>
-    </div>
-  </div>
-  <!-- Модальное окно для настроек -->
-  <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="settingsModalLabel">Настройки</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-            </div>
-            <div class="modal-body">
-                <form method="post" action="{% url 'update-per-pages' %}">    
-                    {% csrf_token %}
-                    <input type="number" class="form-control" name="number_per_page" value="{{ number_per_page }}">
-                    <button type="submit" name="finance" class="btn btn-primary mt-3">Сохранить</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-            </div>
-        </div>
-    </div>
-  </div>
+
+
 
 {% endblock %}

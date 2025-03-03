@@ -7,5 +7,5 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', finance_list, name='finance-list'),
     path('create/', create, name='finance-create'),
-    path('delete/<int:pk>/', expense_delete, name='expense-delete'),
+    path('delete/<uuid:pk>/', expense_delete, name='expense-delete'),
 ]

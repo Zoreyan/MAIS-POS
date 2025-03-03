@@ -1,315 +1,80 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Профиль сотрудника</h2>
-
-    <div class="row d-flex align-items-center">
-        <!-- Левая колонка с фиксированным положением -->
-        {% if user.id == request.user.id %}
-        <form method="post" class="row d-flex align-items-center">
-            {% csrf_token %}
-        <div class="col-md-4">
-            <img src="{{ user.image.url }}" alt="Фото пользователя" class="img-fluid rounded-circle" width="200">
-            {{ form.image }}
-            <h3 class="mt-3">{{ form.username }}</h3>
-            <p class="text-muted"></p>
-        </div>
-
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    <h4>Информация</h4>
-                    <div class="">
-                        <button class="btn btn-secondary" type="submit">Сохранить</button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p class="d-flex justify-content-between"><strong>Имя:</strong> {{ form.first_name }}</p>
-                    <p class="d-flex justify-content-between"><strong>Фамилия:</strong> {{ form.last_name }}</p>
-                    <p class="d-flex justify-content-between"><strong>Электронная почта:</strong> {{ form.email }}</p>
-                    <p class="d-flex justify-content-between"><strong>Телефон:</strong> {{ form.phone }}</p>
-                    <p class="d-flex justify-content-between"><strong>Магазин:</strong> {{ user.shop.name }}</p>
-                    <p class="d-flex justify-content-between"><strong>Роль:</strong>{{ user.role }}</p>
-                    <!-- Уведомления -->
-                    <div class="col-12 col-md-6 form-check form-switch">
-                        <label class="form-label  fw-bold text-muted">получить Email уведомления</label>
-                        <div>
-                            {{ form.get_email_notification }}
-                        </div>
+<div class="row fv-plugins-icon-container">
+    <div class="col-md-12">
+        <form class="card mb-4" method="POST" enctype="multipart/form-data">
+            <!-- Account -->
+            <div class="card-body">
+                <div class="d-flex align-items-start align-items-sm-center gap-3 pb-4 border-bottom">
+                    <!-- Аватар пользователя -->
+                    <img src="{{ user.image.url }}" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
+                    <div class="button-wrapper">
+                        <!-- Кнопка загрузки нового фото -->
+                        <label for="upload" class="btn btn-primary me-3 mb-4" tabindex="0">
+                            <span class="d-none d-sm-block">Загрузить</span>
+                            <i class="icon-base bx bx-download d-block d-sm-none"></i>
+                            {{ form.image }}
+                        </label>
+                        <div>Разрешенные форматы: png, jpg, jpeg</div>
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
-        {% else %}
-        <div class="col-md-4 text-center">
-            <img src="{{ user.image.url }}" alt="Фото пользователя" class="img-fluid rounded-circle" width="200">
-            <h3 class="mt-3">{{ user.username }}</h3>
-            <p class="text-muted"></p>
-        </div>
-
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    <h4>Информация</h4>
-                    <div class="">
-                        <a href="{% url 'user-update' user.id %}" class="btn btn-secondary">Редактировать профиль</a>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <p><strong>Имя:</strong> {{ user.first_name }}</p>
-                    <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
-                    <p><strong>Электронная почта:</strong> {{ user.email }}</p>
-                    <p><strong>Телефон:</strong> {{ user.phone }}</p>
-                    <p><strong>Магазин:</strong> {{ user.shop.name }}</p>
-                    <p><strong>Роль:</strong> {{ user.role }}</p>
-                    <!-- Уведомления -->
-                    <div class="col-12 col-md-6 form-check form-switch">
-                        <label class="form-label  fw-bold text-muted">получить Email уведомления</label>
-                        <div>
-                            {% if user.get_email_notification %}
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked disabled>
-                                <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">Включено</label>
-                              </div>
-                              {% else %}
-                              <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDisabled" disabled>
-                                <label class="form-check-label" for="flexSwitchCheckDisabled">Выключено</label>
-                              </div>
-                            {% endif %}
+            <!-- Форма редактирования профиля -->
+            <div class="card-body pt-4">
+                {% if user.id == request.user.id %}
+                <div id="formAccountSettings" method="POST" enctype="multipart/form-data" class="fv-plugins-bootstrap5 fv-plugins-framework" novalidate="novalidate">
+                    {% csrf_token %}
+                    <div class="row gy-4">
+                        <!-- Имя -->
+                        <div class="col-md-6 form-control-validation fv-plugins-icon-container">
+                            <label for="firstName" class="form-label">Имя</label>
+                            {{ form.first_name }}
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-        <div class="col-12 mt-4">
-            <div class="card">
-                <div class="accordion mb-3" id="permissionsAccordion">
-                    <div class="accordion-item">
-                        <div class="card-header">
-                            <h2 class="accordion-header" id="permissionsHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#permissionsCollapse" aria-expanded="false" aria-controls="permissionsCollapse">
-                                    Права пользователя
-                                </button>
-                            </h2>
+                        <!-- Фамилия -->
+                        <div class="col-md-6 form-control-validation fv-plugins-icon-container">
+                            <label for="lastName" class="form-label">Фамилие</label>
+                            {{ form.last_name }}
                         </div>
-                        <div class="card-body">
-                            <div id="permissionsCollapse" class="accordion-collapse collapse" aria-labelledby="permissionsHeading" data-bs-parent="#permissionsAccordion">
-                                <div class="accordion-body" style="overflow-x: auto;">
-                                    <div style="max-width: 100%; overflow-x: auto;">
-                                        <table class="table table-bordered text-center">
-                                            <thead>
-                                                <tr>
-                                                    <th>Объект</th>
-                                                    <th>Создать</th>
-                                                    <th>Удалить</th>
-                                                    <th>Редактировать</th>
-                                                    <th>Посмотреть</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Пользователь</td>
-                                                    <td>
-                                                        {% if permissions.can_create_user %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_delete_user %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_edit_user %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_view_user %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                                
-                                                <tr>
-                                                    <td>Товар</td>
-                                                    <td>
-                                                        {% if permissions.can_create_product %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_delete_product %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_edit_product %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_view_product %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                                
-                                                <tr>
-                                                    <td>Категория</td>
-                                                    <td>
-                                                        {% if permissions.can_create_category %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_delete_category %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_edit_category %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_view_category %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                                
-                                                <tr>
-                                                    <td>Расход</td>
-                                                    <td>
-                                                        {% if permissions.can_create_expense %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_delete_expense %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_edit_expense %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td>
-                                                        {% if permissions.can_view_expense %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                                
-                                                <tr>
-                                                    <td>Общая история</td>
-                                                    <td></td>
-                                                    <td>
-                                                        {% if permissions.can_delete_orderhistory %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td></td>
-                                                    <td>
-                                                        {% if permissions.can_view_orderhistory %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                                
-                                                <tr>
-                                                    <td>История продаж</td>
-                                                    <td></td>
-                                                    <td>
-                                                        {% if permissions.can_delete_soldhistory %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td></td>
-                                                    <td>
-                                                        {% if permissions.can_view_soldhistory %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                                
-                                                <tr>
-                                                    <td>История поставок</td>
-                                                    <td></td>
-                                                    <td>
-                                                        {% if permissions.can_delete_incomehistory %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                    <td></td>
-                                                    <td>
-                                                        {% if permissions.can_view_incomehistory %}
-                                                            <i class='bx bx-check' style='color:#00ff41; font-size: 20px'></i>
-                                                        {% else %}
-                                                            <i class='bx bx-x' style='color:#ff0000; font-size: 20px'></i>
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                        <!-- Электронная почта -->
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">E-mail</label>
+                            {{ form.email }}
+                        </div>
+                        <!-- Телефон -->
+                        <div class="col-md-6">
+                            <label class="form-label" for="phoneNumber">Контактный номер</label>
+                            <div class="input-group input-group-merge">
+                                <span class="input-group-text">KG (+996)</span>
+                                {{ form.phone }}
                             </div>
                         </div>
                     </div>
+                    <!-- Кнопки сохранения и отмены -->
+                    <div class="mt-5">
+                        <button type="submit" class="btn btn-primary me-3">Сохранить</button>
+                        <a href="{% url 'password_change' %}" class="mt-2">
+                            <span>Изменение пароля</span>
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="row g-5">
+                    <div class="col-md-5">
+                        <p><strong>First Name:</strong> {{ user.first_name }}</p>
+                        <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+                        <p><strong>E-mail:</strong> {{ user.email }}</p>
+                        <p><strong>Phone:</strong> {{ user.phone }}</p>
+                        <p><strong>Shop:</strong> {{ user.shop.name }}</p>
+                        <p><strong>Role:</strong> {{ user.role }}</p>
+                        <p><strong>Email Notifications:</strong> {% if user.get_email_notification %}Enabled{% else %}Disabled{% endif %}</p>
+                    </div>
+                </div>
+                {% endif %}
                 </div>
             </div>
-        </div>
-    </div>
+        </form>
 
+    </div>
 </div>
 {% endblock %}

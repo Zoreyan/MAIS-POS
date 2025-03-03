@@ -2,62 +2,20 @@
 {% load static %}
 {% load tags %}
 {% block content %}
-<div class="mt-5">
+
+<div class="d-flex align-items-center justify-content-between me-3 mt-3 mb-4 flex-wrap">
+    <h2 class="mb-0 fw-bold text-dark">Сотрудники</h2>
+    <a href="{% url 'user-create' %}" class="btn btn-primary">
+        <i class="bx bx-plus"></i> Добавить
+    </a>
+</div>
+<div class="mt-2">
+    
     <div class="row">
         <div class="col-12">
             <div class="card">
 
-                <div class="card-header">
-                    <div class="row">
-                        <!-- Поле поиска -->
-                        <div class="col-md-3">
-                            <form method="get" class="d-flex align-items-center">
-                                <input type="search" 
-                                       name="search" 
-                                       class="form-control" 
-                                       placeholder="Поиск сотрудников" 
-                                       value="{{ search_query }}">
-                                <button type="submit" class="btn btn-outline-primary ms-2">
-                                    <i class="bx bx-search"></i>
-                                </button>
-                            </form>
-                        </div>
-                
-                        <!-- Фильтр по роли -->
-                        <form method="get" class="row gy-3 align-items-end col-md-7">
-                            <div class="col-md-6">
-                                <label for="id_role" class="form-label">Роль</label>
-                                <select id="id_role" name="role" class="form-select">
-                                    <option value="all" >Все</option>
-                                    <option value="admin" {% if selected_role == "admin" %}selected{% endif %}>Администратор</option>
-                                    <option value="manager" {% if selected_role == "manager" %}selected{% endif %}>Менеджер</option>
-                                    <option value="cashier" {% if selected_role == "cashier" %}selected{% endif %}>Кассир</option>
-                                    <option value="owner" {% if selected_role == "owner" %}selected{% endif %}>Владелец</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-success mt-4">
-                                    <i class="bx bx-filter-alt me-1"></i> Фильтр
-                                </button>
-                            </div>
-                        </form>
-                
-                        <!-- Кнопка добавления -->
-                        <div class="col-md-2">
-                            {% if request.user|has_permission:"add_user" %}
-                            <a href="{% url 'user-create' %}" class="btn btn-primary mt-4">
-                                <i class="bx bx-plus"></i> Новый сотрудник
-                            </a>
-                            {% else %}
-                            <a href="#" class="btn btn-primary mt-4" onclick="showNoAccessMessage()">
-                                <i class="bx bx-plus"></i> Новый сотрудник
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-body">
+                 <div class="card-body">
 
                     <div class="table-responsive">
                         <table class="table table-centered table-striped dt-responsive nowrap w-100">
@@ -78,68 +36,57 @@
                                                         alt="Avatar" class="rounded-circle"></div>
                                             </div>
                                             <div class="d-flex flex-column"><a href="{% url 'user-profile' user.id %}"
-                                                    class="text-heading text-truncate"><span class="fw-medium">{{ user.username }}</span></a><small>{{ user.phone }}</small></div>
+                                                    class="text-heading text-truncate"><span class="fw-medium">
+                                                        {{ user.username }}</span></a><small>
+                                                        {% if user.phone %}{{ user.phone }}{% else %}Телефон отсутствует{% endif %}
+                                                        </small></div>
                                         </div>
                                     </td>
 
                                     <td>
                                         <span class="d-flex align-items-center">
-                                            <i class="bx bx-desktop bx-sm text-danger me-2"></i>
                                             {{ user.get_role_display }}
                                         </span>
                                     </td>
-
-                                    <td>
-                                        {% if request.user|has_permission:"change_user" %}
-                                        <a href="{% url 'user-update' user.id %}" class="text-secondary"> <i
-                                                class="bx bx-edit bx-sm"></i></a>
-                                        {% else %}
-                                        <a href="#" class="text-secondary" onclick="showNoAccessMessage()"> <i
-                                                class="bx bx-edit bx-sm"></i></a>
-                                        {% endif %}
-                                        
-                                        {% if request.user|has_permission:"delete_user" %}
-                                        <button type="button" class="btn btn-sm btn-icon rounded-pill" data-bs-toggle="modal"
-                                data-bs-target="#modalDelete{{ user.id }}">
-                                <i class="bx bx-trash bx-sm"></i>
-                            </button>
-                                        {% else %}
-                                        <button type="button" class="btn btn-sm btn-icon rounded-pill" onclick="showNoAccessMessage()">
-                                <i class="bx bx-trash bx-sm"></i>
-                            </button>
-                                        {% endif %}
-                                        <div class="modal fade" id="modalDelete{{ user.id }}" tabindex="-1"
-                                style="display: none;" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="modalCenterTitle">Удаление сотрудника</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>Вы уверены, что хотите удалить сотрудника</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-label-secondary"
-                                                data-bs-dismiss="modal">Close</button>
-                                            {% if request.user|has_permission:"delete_user" %}
-                                            <a href="{% url 'user-delete' user.id %}"
-                                                class="btn btn-danger">Удалить</a>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                    <td class="d-flex align-items-center gap-2">
+                                        <a href="{% url 'user-profile' user.id %}" class="text-secondary"> <i
+                                                class="bx bx-edit bx-sm"></i>
+                                        </a>
+                                        <button type="button" class="btn"
+                                            data-bs-toggle="modal" data-bs-target="#modalDelete{{ user.id }}">
+                                            <i class="bx bx-trash bx-sm"></i>
+                                        </button>
                                     </td>
                                 </tr>
+                                <div class="modal fade" id="modalDelete{{ user.id }}" tabindex="-1"
+                                            style="display: none;" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="modalCenterTitle">Удаление
+                                                            сотрудника</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Вы уверены, что хотите удалить сотрудника</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-label-secondary"
+                                                            data-bs-dismiss="modal">Close</button>
+                                                        <a href="{% url 'user-delete' user.id %}"
+                                                            class="btn btn-danger">Удалить</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
-                </div> <!-- end card-body-->
-            </div> <!-- end card-->
-        </div> <!-- end col -->
-    </div>
+            </div> <!-- end card-body-->
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
 </div>
 {% endblock %}

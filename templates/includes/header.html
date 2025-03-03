@@ -10,7 +10,7 @@
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
 
-        <div class="navbar-nav align-items-center">
+        <div class="navbar-nav align-items-center d-none d-lg-block">
             <div class="nav-item navbar-search-wrapper mb-0">
                 <a class="nav-item nav-link search-toggler d-flex align-items-center px-0" href="javascript:void(0);">
                     <i class="bx bx-search bx-sm me-2 me-lg-4 bx-sm"></i>
@@ -18,7 +18,12 @@
                 </a>
             </div>
         </div>
-        <ul class="navbar-nav flex-row align-items-center ms-auto">
+        <ul class="navbar-nav flex-row align-items-center ms-auto gap-3">
+            <li class="nav-item">
+                <a href="{% url 'product-sale' %}" class="btn btn-primary">
+                    <i class="bx bx-card me-1"></i> POS
+                </a>
+            </li>
 
             <li class="nav-item dropdown-style-switcher dropdown">
                 <a class="nav-link btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
@@ -47,8 +52,6 @@
                 {% notifications request.user as notifications_data %}
                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="#" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online d-flex align-items-start justify-content-between">
-
-                        
                         <div>
                             {% if request.user.image %}
                             <img src="{{ request.user.image.url }}" alt="user-image" class="rounded-circle" style="object-fit: cover; width: 40px; height: 40px;">
@@ -62,7 +65,6 @@
                         {% endif %}</div>
                     </div>
                 </a>
-                
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
                         <a class="dropdown-item mt-0" href="{% url 'user-profile' request.user.id %}">
@@ -86,7 +88,7 @@
                     <li>
                         <div class="dropdown-divider my-1 mx-n2"></div>
                     </li>
-                    <a href="{% url 'notifications' request.user.id  %}" class="dropdown-item">
+                    <!-- <a href="{% url 'notifications' request.user.id  %}" class="dropdown-item">
                         <i class="bx bx-bell me-1"></i>
                         <span>Уведомления</span>
                         {% notifications request.user as notifications_data %}
@@ -95,17 +97,10 @@
                                 {{ notifications_data.unread_count }}
                             </span>
                         {% endif %}
-                    </a>
-                    <li>
+                    </a> -->
+                    <!-- <li>
                         <div class="dropdown-divider my-1 mx-n2"></div>
-                    </li>
-                    <a href="{% url 'password_change' %}" class="dropdown-item">
-                        <i class="bx bx-edit me-1"></i>
-                        <span>Смена пароля</span>
-                    </a>
-                    <li>
-                        <div class="dropdown-divider my-1 mx-n2"></div>
-                    </li>
+                    </li> -->
                     <li>
                         <a class="dropdown-item" href="{% url 'logout' %}">
                             <i class="bx bx-power-off me-1"></i>

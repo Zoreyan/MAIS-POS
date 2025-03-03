@@ -33,8 +33,6 @@
 
 <body class="authentication-bg position-relative" cz-shortcut-listen="true">
 
-
-
   <div class="container-xxl">
     <div class="authentication-wrapper authentication-basic container-p-y">
       <div class="authentication-inner">
@@ -55,9 +53,9 @@
               novalidate="novalidate">
               {% csrf_token %}
               <div class="mb-3 fv-plugins-icon-container">
-                <label for="email" class="form-label">Электронная почта</label>
-                <input type="email" class="form-control" id="email" name="email"
-                  placeholder="Введите вашу электронную почту" autofocus="">
+                <label for="login" class="form-label">Логин</label>
+                <input type="text" class="form-control" id="email" name="username"
+                  placeholder="Введите ваш логин" autofocus="">
                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
               </div>
               <div class="mb-3 form-password-toggle fv-plugins-icon-container">
@@ -76,19 +74,11 @@
                       </div>
                   {% endfor %}
               {% endif %}
-              <div class="mb-2">
-                <div class="d-flex justify-content-between mt-4">
-                  <a href="{% url 'sign-up' %}">
-                    <span>Еще нет аккаунта?</span>
-                  </a>
-                </div>
-              </div>
               <div class="mb-3">
                 <button class="btn btn-primary d-grid w-100" type="submit">Войти</button>
               </div>
               <input type="hidden">
             </form>
-
           </div>
         </div>
       </div>

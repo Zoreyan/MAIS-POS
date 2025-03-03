@@ -1,18 +1,15 @@
 from django.db import models
 from datetime import datetime
-from mptt.models import MPTTModel, TreeForeignKey
 from django.core.validators import MinValueValidator, MaxValueValidator
 from decimal import Decimal
+import uuid
 
 
-
-class Category(MPTTModel):
+class Category(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     shop = models.ForeignKey('Shop', on_delete=models.CASCADE, verbose_name='Магазин', null=True)
     name = models.CharField(max_length=100, verbose_name='Название')
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', verbose_name='Родительская категория')
 
-    class MPTTMeta:
-        order_insertion_by = ['name']
 
     class Meta:
         verbose_name = 'Категория'
@@ -24,100 +21,55 @@ class Category(MPTTModel):
 
 # comment
 class Shop(models.Model):
-    image = models.ImageField(
-        null=True, 
-        blank=True, 
-        upload_to='shops', 
-        verbose_name='Изображение',
-        default='shops/default_products.png'
-    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(
         max_length=100, 
         verbose_name='Название'
     )
-    address = models.CharField(
-        max_length=255, 
-        verbose_name='Адрес'
-    )
-    coordinates = models.CharField(
-        max_length=100, 
-        verbose_name='Координаты', 
-        null=True, 
-        blank=True
-    )
-    contacts = models.TextField(
-        verbose_name='Контакты', 
-        null=True, 
-        blank=True
-    )
-    about = models.TextField(
-        verbose_name='О нас', 
-        null=True, 
-        blank=True
-    )
-    opening_hours = models.CharField(
-        max_length=255, 
-        verbose_name='Часы работы', 
-        null=True, 
-        blank=True
-    )
-
-    email_notifications = models.BooleanField(default=True, verbose_name="Email уведомления")
-    system_notifications = models.BooleanField(default=True, verbose_name="Системные уведомления")
-
-    products_per_page = models.PositiveIntegerField(default=10)
-    finance_per_page = models.PositiveIntegerField(default=10)
-    category_per_page = models.PositiveIntegerField(default=10)
-    orderhistory_per_page = models.PositiveIntegerField(default=10)
-    salehistory_per_page = models.PositiveIntegerField(default=10)
-    incomehistory_per_page = models.PositiveIntegerField(default=10)
 
     class Meta:
         verbose_name = 'Магазин'
         verbose_name_plural = 'Магазины'
 
-        permissions = [
-            ("can_manage_shop", "Can manage shop settings"),
-        ]
 
     def __str__(self):
         return self.name
 
 # Create your models here.
 class Product(models.Model):
+    UNITS = [
+        ('шт', 'шт'),
+        ('кг', 'кг'),
+    ]
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, verbose_name='Название')
-    description = models.TextField(null=True, verbose_name='Описание')
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, verbose_name='Магазин', null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория', null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
+    cost_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Базовая цена', null=True)
     sale_price = models.DecimalField(
         max_digits=10, decimal_places=2,
         verbose_name='Продажная цена',
         default=0
     )
-    UNITS = [
-        ('шт', 'шт'),
-        ('кг', 'кг'),
-    ]
     discount = models.IntegerField(default=0, verbose_name='Скидка', null=True, validators=[MinValueValidator(0), MaxValueValidator(100)])
     unit = models.CharField(max_length=2, choices=UNITS, default='шт', verbose_name='Единица измерения', null=True)
-    image = models.ImageField(null=True, blank=True, upload_to='products', verbose_name='Изображение')
     bar_code = models.CharField(max_length=100, null=True, blank=True, verbose_name='Штрихкод', unique=True)
     quantity = models.IntegerField(default=0, verbose_name='Количество')
-    min_quantity = models.IntegerField(default=0, verbose_name='Минимальный остаток')
+    min_quantity = models.IntegerField(default=10, verbose_name='Минимальный остаток')
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['bar_code'], name='unique_bar_code', condition=models.Q(bar_code__isnull=False))
         ]
+        ordering = ['name']
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
     
     def discounted_price(self):
         if self.discount > 0:
             discount_multiplier = Decimal(1) - (Decimal(self.discount) / Decimal(100))
-            return self.sale_price * discount_multiplier
-        return self.sale_price
+            return round(self.sale_price * discount_multiplier, 1)
+        return round(self.sale_price, 1)
 
     def __str__(self):
         return self.name
@@ -125,6 +77,3 @@ class Product(models.Model):
     def in_stock(self):
         return self.quantity > 0
     
-
-    def month_sales(self):
-        return sum(i.quantity for i in self.soldhistory_set.filter(created__year=datetime.now().year, created__month=datetime.now().month))

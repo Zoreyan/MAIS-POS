@@ -13,11 +13,7 @@ class User(AbstractUser):
         verbose_name='Магазин',
         null=True
     )
-    email = models.EmailField(
-        unique=True,
-        verbose_name='Почта',
-    )
-    
+
     image = models.ImageField(
         null=True,
         verbose_name='Фото',
@@ -27,12 +23,9 @@ class User(AbstractUser):
     )
 
     ROLE_CHOICES = [
-        ('manager', 'Менеджер'),
         ('admin', 'Администратор'),
         ('cashier', 'Кассир'),
-        ('client', 'Клиент'),
         ('owner', 'Владелец'),
-
     ]
     role = models.CharField(
         max_length=10,
@@ -47,30 +40,18 @@ class User(AbstractUser):
         verbose_name='Телефон'
     )
 
-    access = models.BooleanField(
+    has_access = models.BooleanField(
         default=False,
         verbose_name='Доступ'
     )
 
-    get_email_notification = models.BooleanField(
-        default=False,
-        verbose_name='Получать уведомления'
-    )
 
-    qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username","role"]
+    USERNAME_FIELD = "username"
+    REQUIRED_FIELDS = []
 
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-
-    def have_access(self):
-        if self.role == 'owner' and self.access == True or self.is_superuser:
-            return True
-        else:
-            return False
 
     def __str__(self):
         return f'{self.username}'

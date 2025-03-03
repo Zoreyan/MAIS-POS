@@ -11,6 +11,5 @@ urlpatterns = [
     path('history/', include('apps.history.urls')),
     path('client/', include('apps.client.urls')),
     path('finance/', include('apps.finance.urls')),
-    path('shop/', include('apps.shop.urls')),
-    path('ai/', include('apps.ai.urls')),
+    path('api/', include('apps.api.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

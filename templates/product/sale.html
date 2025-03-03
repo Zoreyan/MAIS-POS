@@ -1,503 +1,364 @@
-{% extends 'base.html' %}
 {% load static %}
+<html lang="ru-RU" class="light-style layout-navbar-fixed layout-wide layout-menu-fixed layout-menu-collapsed" dir="ltr"
+    data-theme="theme-default" data-assets-path="{% static 'assets/' %}" data-template="vertical-menu-template">
 
-{% block content %}
-<div class="row gy-3">
-    <div class="col-lg-8 col-sm-12">
-        <div class="card">
-            <div class="card-body">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>Dashboard - DEER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&ampdisplay=swap"
+        rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="shortcut icon" href="{% static 'assets/img/logo/logo.svg' %}" type="image/x-icon">
 
+    <link rel="stylesheet" href="{% static 'assets/vendor/css/rtl/core.css'  %}" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="{% static 'assets/vendor/css/rtl/theme-default.css'  %}"
+        class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{% static 'assets/css/demo.css'  %}" />
 
-                <div class="row mb-2">
-                    <div class="col-sm-4 product-info"></div>
+    <script src="{% static 'assets/vendor/js/helpers.js'  %}"></script>
+    <script src="{% static 'assets/vendor/js/template-customizer.js'  %}"></script>
+    <script src="{% static 'assets/js/config.js'  %}"></script>
+    
+</head>
+
+<body>
+    <div class="bs-toast toast toast-ex animate__animated my-2 fade bg-success animate__fade hide" role="alert" id="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+        <div class="toast-header">
+          <i class="icon-base bx bx-bell me-2"></i>
+          <div class="me-auto fw-medium">Уведомление</div>
+          <small>Только что</small>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">Товар успешно оформлен.</div>
+      </div>
+    <div class="content-wrapper">
+        <div class="container-fluid flex-grow-1 container-p-y">
+            <div class="row gy-3">
+                <div class="col-lg-8 col-sm-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex gap-3 mb-4 align-items-center">
+                                <a href="{% url 'sold-history' %}">
+                                    <img src="{% static 'assets/img/logo/logo.svg' %}" width="40" alt="">
+                                </a>
+                                <input type="text" id="barcode" placeholder="Штрих код или название товара" maxlength="14"
+                                    class="form-control" name="barcode" autofocus>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gy-2 align-items-center" id="search-results" style="max-height: 70vh; overflow-y: auto;">
+                    </div>
                 </div>
-
-                <div class="table-responsive">
-                    <table class="table table-sm table-centered w-100" id="products-datatable">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Товар</th>
-                                <th>Штрих код</th>
-                                <th>Кол-во</th>
-                                <th>Цена</th>
-                                <th>Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody id="product-table-body">
-                            <!-- Данные о товарах будут вставлены сюда динамически -->
-                        </tbody>
-                    </table>
-                </div>
-            </div> <!-- end card-body-->
-        </div> <!-- end card-->
-    </div>
-
-    <div class="col-lg-4 col-sm-12">
-        <div class="mb-3" style="height: 100%; display: flex; flex-direction: column; position: relative;">
-
-            <div style="flex-grow: 0; position: sticky; top: 80px; z-index: 100;">
-                <div class="card p-2">
-                    <div class="card-body">
-
-
-                        
-                        <div class="row mb-4">
-                            <div class="col-5">
-                                <input type="number" placeholder="Штрих код" maxlength="14"
-                                    class="form-control  barcode" name="barcode" autofocus>
+                <div class="col-lg-4 col-sm-12" >
+                    <div class="card">
+                        <div class="card-body d-flex flex-column">
+                            <div class="table-responsive flex-grow-1 overflow-auto" style="max-height: 70vh;">
+                                <table class="table table-sm table-centered w-100" id="products-datatable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Товар</th>
+                                            <th>Цена</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="product-table-body">
+                                        <!-- Данные о товарах будут вставлены сюда динамически -->
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="col-4">
-                                <input type="number" placeholder="Сумма оплаты" maxlength="8"
-                                    class="form-control  amount" name="amount">
-                            </div>
-                            <div class="col-3">
-                                <input type="number" placeholder="Скидка" maxlength="8" class="form-control  discount"
-                                    name="discount">
-                            </div>
-
-                        </div>
-                        <button type="button" class="btn btn-dark d-flex align-items-center mb-2 w-100 search_btn" id=""
-                            data-bs-toggle="modal" data-bs-target="#searchModal">
-                            <i class="bx bx-search me-2"></i>
-                            <span>Поиск</span>
-                        </button>
-                        <div class="row gy-3 mt-0">
-                            <div class="col-xl-4 col-md-5 col-sm-6 col-12 form-control-validation fv-plugins-icon-container fv-plugins-bootstrap5-row-valid">
-                              <div class="form-check custom-option custom-option-icon">
-                                <label class="form-check-label custom-option-content" for="basicPlanMain1">
-                                  <span class="custom-option-body">
-                                   <img src="https://play-lh.googleusercontent.com/xf5_bSz5pNxQHd2K9yig3wM8LAaDigaLhMWdjsVKwSPW0CoyFXoJNUr7Iix1hzTgyg0" height="50" alt="">
-                                  </span>
-                                  <input name="formValidationPlan" class="form-check-input" type="radio" value="mbank" id="basicPlanMain1" >
-                                </label>
-                              </div>
-                            </div>
-                            <div class="col-xl-4 col-md-5 col-sm-6 col-12 form-control-validation">
-                              <div class="form-check custom-option custom-option-icon checked">
-                                <label class="form-check-label custom-option-content" for="basicPlanMain2">
-                                  <span class="custom-option-body">
-                                    <img src="https://i.banks.kg/10185/conversions/deputy-chairman-become-vacant-obank-thumbnail-webp.webp" height="50" alt="">
-                                  </span>
-                                  <input name="formValidationPlan" class="form-check-input" type="radio" value="obank" id="basicPlanMain2">
-                                </label>
-                              </div>
-                            </div>
-                            <div class="col-xl-4 col-md-5 col-sm-6 col-12 form-control-validation">
-                              <div class="form-check custom-option custom-option-icon">
-                                <label class="form-check-label custom-option-content" for="basicPlanMain3">
-                                  <span class="custom-option-body">
-                                    <span class="custom-option-title fs-6" style="height: 50px;">Наличные</span>
-                                  </span>
-                                  <input name="formValidationPlan" class="form-check-input" type="radio" value="cash" id="basicPlanMain3">
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-                        <div class="py-3 d-flex justify-content-between align-items-center">
-                            <h2 class="fw-semibold mb-0">Сумма: </h2>
-                            <h2 id="total-sum" class="fw-semibold mb-0">0</h2>
-                        </div>
-                        <div class="mb-2 d-flex justify-content-between align-items-center">
-                            <h2 class="fw-semibold mb-0">Сдача: </h2>
-                            <h2 class="change fw-semibold mb-0">0</h2>
-                        </div>
-                        
-                        <div class="d-flex justify-content-center mt-3">
-                            <button type="button" class="btn btn-primary btn-xl d-flex align-items-center sell">
-                                <i class="bx bx-send me-2"></i>
-                                Отправить
+                            <button type="button"
+                                class="btn btn-primary btn-xl d-flex align-items-center w-100 justify-content-between mt-3" id="checkout-btn"
+                                data-bs-toggle="offcanvas" data-bs-target="#offcanvasEnd" aria-controls="offcanvasEnd">
+                                Оплата <span class="total-sum">0сом</span>
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="searchModal" tabindex="-1" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel3">Поиск товара</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <input type="text" id="" class="form-control search" name="search" placeholder="Название товара">
-
-                <div class="mt-2" style="flex-grow: 1; display: flex; flex-direction: column;">
-
-                    <!-- Карточка для отображения товаров с прокруткой -->
-                    <div class="product-search-results mt-2" style="flex-grow: 1; height: 250px;">
-                        <div class="table-responsive text-nowrap">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Название</th>
-                                        <th>Штрих-код</th>
-                                        <th>Цена</th>
-                                        <th>На складе</th>
-                                        <th>Добавить</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="table-border-bottom-0" id="search-results">
-                                </tbody>
-                            </table>
+    
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEnd" aria-labelledby="offcanvasEndLabel">
+                <div class="offcanvas-header">
+                    <h5 id="offcanvasEndLabel" class="offcanvas-title">Оплата</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body d-flex flex-column">
+                    <div class="row gy-3">
+                        <div class="col-12">
+                            <label for="amount">Наличные</label>
+                            <input type="number" id="amount" placeholder="Наличные" maxlength="8"
+                                class="form-control amount" name="amount">
                         </div>
-
+                        <div class="col-7">
+                            <label for="online-card">Онлайн кошелек</label>
+                            <input type="number" id="online-card" placeholder="Онлайн кошелек" maxlength="8"
+                                class="form-control" name="online-card">
+                        </div>
+                        <div class="col-5">
+                            <label for="discount">Скидка</label>
+                            <input type="number" id="discount" placeholder="Скидка" maxlength="8"
+                                class="form-control discount" name="discount">
+                        </div>
                     </div>
+                    <div class="py-3 d-flex justify-content-between align-items-center">
+                        <h2 class="fw-semibold mb-0">Сумма: </h2>
+                        <h2 class="fw-semibold mb-0 total-sum">0</h2>
+                    </div>
+                    <div class="mb-2 d-flex justify-content-between align-items-center">
+                        <h2 class="fw-semibold mb-0">Сдача: </h2>
+                        <h2 class="change fw-semibold mb-0">0</h2>
+                    </div>
+                    <p class="text-warning">По умолчанию "Онлайн кошелек"</p>
+                    <button type="button" id="sale" class="btn btn-primary mb-2 w-100">Отправить</button>
+                    <button type="button" class="btn btn-label-secondary w-100" data-bs-dismiss="offcanvas">
+                        Отмена
+                    </button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Закрыть</button>
-            </div>
         </div>
     </div>
-</div>
-
-
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-    crossorigin="anonymous"></script>
-<script>
-$(document).ready(function () {
-
-    let barcodeInput = $('.barcode');
-    let amountInput = $('.amount');
-    let discountInput = $('.discount');
-    let productList = [];
-    let totalSum = 0;
-    let searchField = $('.search');
-    let discountedSum = 0;
-
-
-    function getNoBarcodeProducts() {
-        $.ajax(`{% url 'search-product' %}?filter=true`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                success: function (response) {
-                    const searchResultsContainer = document.getElementById('search-results');
-                    searchResultsContainer.innerHTML = ''; // Очищаем предыдущие результаты
-                    document.querySelector('.product-search-results').style.display = 'block';
-
-                    if (response.products && response.products.length > 0) {
-                        response.products.forEach(product => {
-                            searchResultsContainer.insertAdjacentHTML('beforeend', `
-                            <tr>
-                      <td>${product.name.slice(0, 20)}</td>
-                      <td>${product.bar_code ? product.bar_code != 'null' : 'Без штрих-кода'}</td>
-                      
-                      <td>${product.sale_price}</td>
-                      <td>
-                        ${product.quantity}
-                      </td>
-                      <td>
-                        <button class="add-product btn btn-primary btn-sm" data-id="${product.id}">+</button>
-                      </td>
-                    </tr>
-                            `);
-                        });
-                    } else {
-                        searchResultsContainer.innerHTML = '<div class="text-center">Товары не найдены.</div>';
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Ошибка поиска:', error);
-                    $('#search-results').innerHTML = '<div class="text-center">Ошибка поиска товара.</div>';
-                }
-            })
-
-    }
-
-    getNoBarcodeProducts();
-
-    $(searchField).on('input', function () {
-        console.log("Input value:", paymentMethod);
-        let searchQuery = this.value.trim();
-        
-        if (searchQuery.length >= 2) {
-            $.ajax(`{% url 'search-product' %}?query=${encodeURIComponent(searchQuery ? searchQuery : null)}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                success: function (response) {
-                    const searchResultsContainer = document.getElementById('search-results');
-                    searchResultsContainer.innerHTML = ''; // Очищаем предыдущие результаты
-                    document.querySelector('.product-search-results').style.display = 'block';
-
-                    if (response.products && response.products.length > 0) {
-                        response.products.forEach(product => {
-                            searchResultsContainer.insertAdjacentHTML('beforeend', `
-                            <tr>
-                      <td>${product.name.slice(0, 20)}</td>
-                      <td>${product.bar_code ? product.bar_code != 'null' : 'Без штрих-кода'}</td>
-                      
-                      <td>${product.sale_price}</td>
-                      <td>
-                        ${product.quantity}
-                      </td>
-                      <td>
-                        <button class="add-product btn btn-primary btn-sm" data-id="${product.id}">+</button>
-                      </td>
-                    </tr>
-                            `);
-                        });
-                    } else {
-                        searchResultsContainer.innerHTML = '<div class="text-center">Товары не найдены.</div>';
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('Ошибка поиска:', error);
-                    $('#search-results').innerHTML = '<div class="text-center">Ошибка поиска товара.</div>';
-                }
-            })
-
-        } else {
-            getNoBarcodeProducts();
-            document.querySelector('.product-search-results').style.display = 'none';
-        }
-    });
-
-
-    // Обработчик события для ввода штрих-кода
-    barcodeInput.on('keypress', function (e) {
-        if (e.which === 13) {
-        let barcode = $(this).val();
-            $.ajax({
-                url: "{% url 'get-product' %}",
-                type: "GET",
-                data: { bar_code: barcode },
-                success: function (data) {
-                    if (data.quantity <= 0) {
-                        showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
-                        return;
-                    }
-
-                    // Добавляем продукт в список, если его нет, или увеличиваем количество, если он уже есть
-                    let existingProduct = productList.find(product => product.bar_code === data.bar_code);
-                    let productName = data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name;
-
-                    if (existingProduct) {
-                        if (existingProduct.quantity < data.quantity) {
-                            existingProduct.quantity++;
-                            showNoAccessMessage(`+1 ${productName}!`, '#0b863f');
-                        } else {
-                            showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
-                        }
-                    } else {
-                        productList.unshift({
-                            id: data.id,
-                            name: data.name,
-                            bar_code: data.bar_code,
-                            quantity: 1,
-                            price: data.d_sale_price,
-                            stock: data.quantity,
-                            image: data.image
-                        });
-                        showNoAccessMessage(`Товар ${productName} добавлен!`, '#0b863f');
-                    }
-
-                    updateTable();
-                },
-                error: function () {
-                    showNoAccessMessage('Товар не найден!', '#ffa500');
-                }
-            });
-            $(this).val(''); // очищаем поле штрих-кода после поиска
-        }
-    });
-
-    // Обработчик клика по кнопке "Добавить продукт"
-    $(document).on('click', '.add-product', function () {
-        let productId = $(this).data('id'); // Получаем id продукта
-
-        // Отправляем GET-запрос на сервер с id продукта
-        $.ajax({
-            url: "{% url 'get-product' %}",
-            type: "GET",
-            data: { id: productId },
-            success: function (data) {
-                if (data.quantity <= 0) {
-                    showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
-                    return;
-                }
-
-                // Добавляем продукт в список
-                let existingProduct = productList.find(product => product.bar_code === data.bar_code);
-                let productName = data.name.length > 20 ? data.name.substring(0, 17) + '...' : data.name;
-
-                if (existingProduct) {
-                    if (existingProduct.quantity < data.quantity) {
-                        existingProduct.quantity++;
-                        showNoAccessMessage(`+1 ${productName}!`, '#0b863f');
-                    } else {
-                        showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
-                    }
-                } else {
-                    productList.push({
-                        id: data.id,
-                        name: data.name,
-                        bar_code: data.bar_code,
-                        quantity: 1,
-                        price: data.d_sale_price,
-                        stock: data.quantity,
-                        image: data.image
-                    });
-                    showNoAccessMessage(`Товар ${productName} добавлен!`, '#0b863f');
-                }
-
-                updateTable();
-            },
-            error: function () {
-                showNoAccessMessage('Товар не найден!', '#ffa500');
-            }
-        });
-    });
-
     
 
-    $(document).on('click', '.increment', function () {
-        let productId = $(this).data('id');
-        const product = productList.find(product => product.id == productId);
 
-        $('.product-info').empty();
+    <script src="{% static 'assets/vendor/libs/jquery/jquery.js'  %}"></script>
+    <script src="{% static 'assets/vendor/js/bootstrap.js'  %}"></script>
+    <script src="{% static 'assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js'  %}"></script>
+    <script src="{% static 'assets/vendor/js/menu.js'  %}"></script>
+    <script src="{% static 'assets/js/main.js'  %}"></script>
 
-        if (product && product.quantity < product.stock) {
-            product.quantity++;
-            updateTable();
-        } else {
-            showNoAccessMessage('Недостаточно товара на складе!', '#dc3545');
-        }
-    });
+    <script>
+    $(document).ready(function () {
+        let barcodeInput = $('#barcode');
+        let amountInput = $('.amount');
+        let discountInput = $('.discount');
+        let totalSumContainer = $('.total-sum');
+        let onlineCardInput = $('#online-card');
+        let productList = [];
+        
+        let totalSum = 0;
+        let discountedSum = 0;
+        getProducts();
+        disableButton();
+        
+        function showAlert() {
+        let alertBox = $("#alert");
+        alertBox.addClass("show");
 
-    $(document).on('click', '.decrement', function () {
-        let productId = $(this).data('id');
-        const product = productList.find(product => product.id == productId);
-        if (product && product.quantity > 1) {
-            product.quantity--;
-            updateTable();
-        }
-    });
-
-    function updateTotal() {
-        totalSum = productList.reduce((sum, product) => sum + product.price * product.quantity, 0);
-        applyDiscount();
-        updateDisplay();
+        setTimeout(() => {
+            alertBox.removeClass("show");
+        }, 2000);
     }
-
-    function applyDiscount() {
-        const discount = parseFloat(discountInput.val()) || 0;
-        discountedSum = Math.max(totalSum - discount, 0);
-    }
-
-    function updateDisplay() {
-        $('#total-sum').text(discountedSum.toFixed(2));
-        updateChange();
-    }
-
-    function updateChange() {
-        let amount = parseFloat(amountInput.val()) || 0;
-        $('.change').text((amount - discountedSum).toFixed(2));
-    }
-
-    amountInput.on('input', updateChange);
-    discountInput.on('input', updateTotal);
-
-    function updateTable() {
-        $('#product-table-body').empty();
-        for (let product of productList) {
-            $('#product-table-body').append(`
-                <tr>
-                    <td>${product.name.slice(0, 22)}</td>
-                    <td>${product.bar_code}</td>
-                    <td class="product-quantity d-flex align-items-center gap-2">
-                        ${product.quantity}/${product.stock}
-                        <div class="d-flex flex-column">
-                            <span class="text-muted increment" data-id="${product.id}">
-                                <i class='bx bx-chevron-up'></i>
-                            </span>
-                            <span class="text-muted decrement" data-id="${product.id}">
-                                <i class='bx bx-chevron-down'></i>
-                            </span>
-                        </div>
-                    </td>
-                    <td>${product.price}</td>
-                    <td><button class="btn btn-sm btn-danger delete-product" data-id="${product.id}">Удалить</button></td>
-                </tr>
-            `);
-        }
-        updateTotal();
-    }
-
-    $(document).on('click', '.delete-product', function () {
-        let productId = $(this).data('id');
-        productList = productList.filter(product => product.id !== productId);
-
-        let product = productList.find(product => product.id == productId);
-
-        $(this).closest('tr').fadeOut(300, function () {
-            $(this).remove();
-            totalSum -= product.price * product.quantity;
-            
-        });
-        updateTotal();
-        updateChange();
-    });
-
-    $('.sell').on('click', function () {
-        let paymentMethod = $('input[name="formValidationPlan"]:checked').val();
-
-        if (amountInput.val() < discountedSum) {
-            showNoAccessMessage('Недостаточно средств!', '#ffa500');
-            return false;
-        }
-        if (productList.length === 0) {
-            showNoAccessMessage('Введите хотя бы один товар!', '#ffa500');
-            return false;
-        }
-
-        if (paymentMethod === undefined) {
-            showNoAccessMessage('Выберите способ оплаты!', '#ffa500');
-            return false;
-        }
-
-        let products = productList.map(product => ({
-            id: product.id,
-            quantity: product.quantity
-        }));
-
-        $.ajax({
-            url: "{% url 'create-sell-history' %}",
-            type: "POST",
-            data: {
-                products: JSON.stringify(products),
-                csrfmiddlewaretoken: '{{ csrf_token }}',
-                amount: amountInput.val(),
-                change: amountInput.val() - discountedSum,
-                discount: discountInput.val(),
-                payment_method: paymentMethod,
-            },
-            success: function () {
-                showNoAccessMessage('Продажа успешна!', '#0b863f');
-                productList = [];
-                $('#product-table-body').empty();
-                productList = [];
-                totalSum = 0;
-                discountedSum = 0;
-                updateTable();
-                amountInput.val('');
-                discountInput.val('');
-                updateChange();
-            },
-            error: function (xhr, status, error) {
-                console.log(error);
+        $('#sale').on('click', function () {
+            let amount = parseFloat(amountInput.val()) || 0;
+            let discount = parseFloat(discountInput.val()) || 0;
+            let onlineCard = parseFloat(onlineCardInput.val()) || 0;
+            let totalSum = parseFloat(totalSumContainer.text()) || 0;
+            let change = amount - (totalSum - discount);
+            let paymentMethod;
+            if (onlineCard <= 0 && amount <= 0 || onlineCard > 0 && amount <= 0) {
+                paymentMethod = 'online';
+            } else if (onlineCard > 0 && amount > 0) {
+                paymentMethod = 'split';
+            } else  {
+                paymentMethod = 'cash';
             }
-        });
-    });
-});
 
-</script>
-{% endblock %}
+            $.ajax({
+                url: `{% url 'create-sale-history' %}`,
+                method: 'POST',
+                data: {
+                    products: JSON.stringify(productList),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    amount: amount + onlineCard - change ? onlineCard : totalSum,
+                    discount: discount,
+                    payment_method: paymentMethod,
+                    change: change > 0 ? change : 0
+                },
+                success: function (response) {
+                    productList = [];
+                    totalSum = 0;
+                    discountedSum = 0;
+                    totalSumContainer.text('');
+                    discountInput.val('');
+                    amountInput.val('');
+                    onlineCardInput.val('');
+                    $('.change').text('');
+                    getProducts();
+                    disableButton();
+                    $('#product-table-body').empty();
+                    showAlert();
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", status, error);
+                }
+            })
+        })
+
+        $(document).on('click', '.delete-product', function () {
+            let productId = $(this).data('id');
+            deleteProduct(productId);
+        })
+
+        amountInput.on('input', function () {
+            let amount = this.value.trim();
+            let discount = parseFloat(discountInput.val()) || 0;
+            if (amount < totalSum) {
+                onlineCardInput.val(totalSum - amount);
+            } else {
+                onlineCardInput.val(0);
+            }
+            let change = amount - (totalSum - discount);
+            $('.change').text(change >= 0 ? change.toFixed(2) : '0');
+        })
+
+        $(document).on('keydown', '.product-quantity', function (e) {
+            if (e.key === 'Enter') {
+                let productId = $(this).data('id');
+                let quantity = parseInt($(this).val());
+                updateProductQuantity(productId, quantity);
+            }
+        })
+
+        barcodeInput.on('keypress', function (e) {
+            let searchQuery = this.value.trim();
+            if (e.which === 13) {
+                getProduct(null, searchQuery);
+                $('#checkout-btn').prop('disabled', false);
+                $('#sale').prop('disabled', false);
+                barcodeInput.val('');
+            }
+        })
+    
+        barcodeInput.on('input', function(e) {
+            let searchQuery = this.value.trim();
+            getProducts(searchQuery);
+        })
+    
+        function getProducts(query) {
+            $.ajax({
+                url: `{% url 'get-products' %}${query ? '?query=' + encodeURIComponent(query) : ''}`,
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                success: function (data) {
+                    $('#search-results').empty();                
+                    data.forEach(element => {
+                        
+                        $('#search-results').append(`
+                        <div class='col-lg-2 col-sm-6 col-md-4'>
+                            <div class='card h-100 add-product bg-primary text-white cursor-pointer' data-id="${element.id}">
+                                <div class='card-body d-flex flex-column justify-content-between'>
+                                    <span class=''>${element.name.slice(0, 20)}</span>
+                                    <span class='small'>${element.sale_price} сом</span>
+                                </div> 
+                            </div>
+                        </div>
+                        `);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+    
+        $(document).on('click', '.add-product', function () {
+            let productId = $(this).data('id');
+            getProduct(productId);
+            $('#sale').prop('disabled', false);
+            $('#checkout-btn').prop('disabled', false);
+        })
+    
+        function addProduct(product_) {
+            
+            let product = productList.find(product => product.id === product_.id)
+            if (product) {
+                product.quantity += 1
+
+            } else {
+                product_.quantity = 1
+                productList.push(product_)
+            }
+            updateTable();
+            calculateTotalSum();
+            amountInput.val('');
+            discountInput.val('');
+            onlineCardInput.val('');
+        }
+
+        function updateProductQuantity(productId, quantity) {
+            let product = productList.find(product => product.id === productId);
+            if (product) {
+                product.quantity = quantity;
+                updateTable();
+                calculateTotalSum();
+            }
+        }
+        function deleteProduct(productId) {
+            productList = productList.filter(product => product.id !== productId);
+            if (productList.length == 0) {
+                disableButton();
+            }
+            updateTable();
+            calculateTotalSum();
+        }
+        function updateTable() {
+            let tableBody = $('#product-table-body');
+            tableBody.empty();
+            productList.forEach(product => {
+                tableBody.append(`
+                    <tr>
+                        <td class="d-flex align-items-center gap-2">
+                            <button class="btn btn-sm text-danger fs-3 delete-product" data-id="${product.id}">
+                                <i class='bx bx-x-circle'></i>    
+                            </button>    
+                            <div class="d-flex flex-column">
+                                <span>${product.name.slice(0, 20)}...</span>
+                                <input type="number" class="form-control form-control-sm product-quantity" style="width: 100px;" value="${product.quantity}" data-id="${product.id}"/>  
+                            </div>
+                        </td>
+                        <td>${product.sale_price * product.quantity}<sup>сом</sup></td>
+                    </tr>
+                `);
+            });
+            totalSum = productList.reduce((total, product) => total + product.price * product.quantity, 0);
+        }
+    
+        function getProduct(productId, productBarCode) {
+            $.ajax({
+                url: `{% url 'get-product' %}${productId ? '?product_id=' + encodeURIComponent(productId) : '?bar_code=' + encodeURIComponent(productBarCode)}`,
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                success: function (data) {
+                    addProduct(data)
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                }
+            })
+        }
+
+        function calculateTotalSum() {
+            totalSum = productList.reduce((total, product) => total + product.sale_price * product.quantity, 0);
+            totalSumContainer.text(totalSum.toFixed(2)+' сом');
+        }
+
+        function disableButton() {
+            $('#sale').prop('disabled', true);
+            $('#checkout-btn').prop('disabled', true);
+        }
+        
+        amountInput.on('input', updateChange);
+        discountInput.on('input', updateChange);
+    });
+    </script>
+
+</body>
+
+</html>

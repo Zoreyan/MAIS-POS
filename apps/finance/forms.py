@@ -2,6 +2,9 @@ from django import forms
 from .models import Expense
 
 class ExpenseForm(forms.ModelForm):
+    def __init__(self, *args, shop=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['user'].queryset = shop.user_set.all()
     expend_type = forms.CharField(widget=forms.HiddenInput(), required=False)
     class Meta:
         model = Expense
