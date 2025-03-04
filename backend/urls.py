@@ -9,6 +9,7 @@ urlpatterns = [
     path('user/', include('apps.user.urls')),
     path('product/', include('apps.product.urls')),
     path('history/', include('apps.history.urls')),
+    
     path('finance/', include('apps.finance.urls')),
     path('api/', include('apps.api.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
