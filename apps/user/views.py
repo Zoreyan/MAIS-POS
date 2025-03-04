@@ -116,14 +116,3 @@ def delete(request, pk):
     user.delete()
     return redirect('user-list')
 
-@login_required
-@check_permission
-def notifications(request, pk):
-
-    user = get_object_or_404(User, pk=pk)
-    notifications = Notification.objects.filter(shop=user.shop).order_by('-created')
-    for notification in notifications:
-        if user in notification.is_not_read.all():
-            notification.is_not_read.remove(user)
-
-    return render(request, 'user/notifications.html', {'notifications': notifications})
