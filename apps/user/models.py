@@ -55,3 +55,10 @@ class User(AbstractUser):
 
     def __str__(self):
         return f'{self.username}'
+    
+
+class Telegram(models.Model):
+    username = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
+    

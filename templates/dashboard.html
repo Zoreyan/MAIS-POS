@@ -23,9 +23,9 @@
             <div class="content-left">
               <span class="text-white">Общий доход</span>
               <div class="d-flex align-items-center my-1">
-                <h5 class="mb-0 me-2 text-white">{{ total_incomes|default:0|intcomma }} ₽</h5>
-                <p class="{% if incomes_growth > 0 %}text-success{% else %}text-danger{% endif %} mb-0">
-                  {{ incomes_growth|floatformat:1 }}%
+                <h5 class="mb-0 me-2 text-white">{{ total_sales|default:0|intcomma }} СОМ</h5>
+                <p class="{% if sales_growth > 0 %}text-success{% else %}text-danger{% endif %} mb-0">
+                  {{ sales_growth|floatformat:1 }}%
                 </p>
               </div>
             </div>
@@ -47,9 +47,9 @@
             <div class="content-left">
               <span class="text-white">Продажи</span>
               <div class="d-flex align-items-center my-1">
-                <h5 class="mb-0 me-2 text-white">{{ total_sales|default:0|intcomma }} ₽</h5>
+                <h5 class="mb-0 me-2 text-white">{{ total_sales_quantity|default:0|intcomma }} шт</h5>
                 <p class="{% if sales_growth > 0 %}text-success{% else %}text-danger{% endif %} mb-0">
-                  {{ sales_growth|floatformat:1 }}%
+                  {{ sales_quantity_growth|floatformat:1 }}%
                 </p>
               </div>
             </div>
@@ -71,7 +71,7 @@
             <div class="content-left">
               <span class="text-white">Общие расходы</span>
               <div class="d-flex align-items-center my-1">
-                <h5 class="mb-0 me-2 text-white">{{ total_expenses|default:0|intcomma }} ₽</h5>
+                <h5 class="mb-0 me-2 text-white">{{ total_expenses|default:0|intcomma }} СОМ</h5>
                 <p class="{% if expenses_growth > 0 %}text-success{% else %}text-danger{% endif %} mb-0">
                   {{ expenses_growth|floatformat:1 }}%
                 </p>
@@ -95,7 +95,7 @@
             <div class="content-left">
               <span class="text-white">Чистая прибыль</span>
               <div class="d-flex align-items-center my-1">
-                <h5 class="mb-0 me-2 text-white">{{ profit|default:0|intcomma }} ₽</h5>
+                <h5 class="mb-0 me-2 text-white">{{ profit|default:0|intcomma }} СОМ</h5>
               </div>
             </div>
             <div class="avatar">
@@ -136,8 +136,8 @@
                 <div class="me-2">
                   <small class="d-block">{{ sale.total_quantity }} {{ sale.product__unit }}</small>
                   <h6 class="fw-normal mb-0" data-bs-toggle="tooltip" data-bs-offset="0,6" data-bs-placement="top"
-                    data-bs-html="true" data-bs-original-title="<span>{{ sale.product__name }}</span>">
-                    {{ sale.product__name|truncatechars:15 }}</h6>
+                    data-bs-html="true" data-bs-original-title="<span>{{ sale.product.name }}</span>">
+                    {{ sale.product.name|truncatechars:15 }}</h6>
                 </div>
                 <div class="user-progress d-flex align-items-center gap-2">
                   <h6 class="fw-normal mb-0">+{{ sale.total_amount|intcomma }}</h6>
