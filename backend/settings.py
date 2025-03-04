@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'apps.product',
     'apps.user',
     'apps.history',
-    'apps.client',
     'apps.finance',
     'apps.api',
     'mptt',

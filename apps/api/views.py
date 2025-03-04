@@ -1,9 +1,11 @@
 from rest_framework import generics
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from apps.product.models import Product
+from apps.product.models import Product, Shop
 from django.db.models import Q
 from .serializers import ProductSerializer
+from apps.user.models import User
 
 
 class GetProduct(generics.RetrieveAPIView):
@@ -43,3 +45,25 @@ class GetProducts(generics.ListAPIView):
                 filters &= Q(name__icontains=query) | Q(category__name__icontains=query)
 
         return Product.objects.filter(filters)
+
+
+
+class SignUpView(generics.CreateAPIView):
+    def post(self, request, *args, **kwargs):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        shop_name = request.POST.get('shop')
+        user = User.objects.filter(username=username).exists()
+        if user:
+            return Response({'status': 'error', 'message': 'Пользователь с таким именем уже существует'}, status=400)
+        else:
+            shop = Shop.objects.create(name=shop_name)
+            User.objects.create_user(username=username, password=password, shop=shop, role='owner')
+            return Response({'status': 'success', 'message': 'Пользователь успешно создан'}, status=201)
+
+
+class CheckUserExists(APIView):
+    def get(self, request, *args, **kwargs):
+        username = request.GET.get('username')
+        user = User.objects.filter(username=username).exists()
+        return Response({'exists': user}, status=200)
