@@ -101,3 +101,8 @@ def order_delete(request, pk):
     order.delete()
 
     return redirect('total')
+
+def receipt(request, pk):
+    order = OrderHistory.objects.get(id=pk)
+    
+    return render(request, 'receipt.html', {'order': order})
