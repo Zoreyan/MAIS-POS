@@ -13,7 +13,7 @@ class OrderHistory(models.Model):
         ('sale', 'Продажа'),
         ('income', 'Поступление')
         ]
-    user = models.ForeignKey('user.User', on_delete=models.CASCADE, null=True)
+    cashier = models.ForeignKey('user.User', on_delete=models.CASCADE, null=True)
     shop = models.ForeignKey('product.Shop', on_delete=models.CASCADE, null=True)
     amount = models.FloatField()
     change = models.FloatField(null=True, blank=True)
@@ -21,6 +21,7 @@ class OrderHistory(models.Model):
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, null=True)
     created = models.DateTimeField(auto_now_add=True)
     order_type = models.CharField(max_length=10, choices=ORDER_TYPES, null=True)
+    qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
 
     def __str__(self):
         return str(self.id)

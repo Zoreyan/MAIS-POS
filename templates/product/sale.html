@@ -112,6 +112,12 @@
                         <h2 class="change fw-semibold mb-0">0</h2>
                     </div>
                     <p class="text-warning">По умолчанию "Онлайн кошелек"</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="printReceipt" checked>
+                        <label class="form-check-label" for="printReceipt">
+                            чек
+                        </label>
+                    </div>
                     <button type="button" id="sale" class="btn btn-primary mb-2 w-100">Отправить</button>
                     <button type="button" class="btn btn-label-secondary w-100" data-bs-dismiss="offcanvas">
                         Отмена
@@ -166,6 +172,8 @@
                 paymentMethod = 'cash';
             }
 
+            const printReceiptChecked = document.getElementById('printReceipt').checked;
+
             $.ajax({
                 url: `{% url 'create-sale-history' %}`,
                 method: 'POST',
@@ -190,6 +198,25 @@
                     disableButton();
                     $('#product-table-body').empty();
                     showAlert();
+
+                    if (printReceiptChecked) {
+                            const popupUrl = `/history/receipt/${data.order_id}`; // Получаем ID заказа из ответа
+                            const left = (window.screen.width - 200) / 2;
+                            const top = (window.screen.height - 600) / 4;
+
+                            const popupWindow = window.open(popupUrl, 'popupWindow', 
+                                `width=200,height=600,left=${left},top=${top},toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no`
+                            );
+
+                            // Печать и закрытие попапа после печати
+                            popupWindow.onload = function() {
+                                popupWindow.print();
+                                popupWindow.onafterprint = function() {
+                                    popupWindow.close();
+                                };
+                            };
+                        }
+
                 },
                 error: function (xhr, status, error) {
                     console.log("Error:", status, error);

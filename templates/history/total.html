@@ -55,7 +55,7 @@
               <tr>
                 <td>
                   <span class="text-primary" data-bs-toggle="modal" data-bs-target="#itemModal{{ order.id }}">
-                    <i class="mdi mdi-cart me-1"></i>{{ order.user }}
+                    <i class="mdi mdi-cart me-1"></i><a id="openreceipt{{ order.id }}">#{{ order.id }}</a>
                   </span>
                   <div id="itemModal{{ order.id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-lg">
@@ -165,7 +165,22 @@
                 </td>
 
               </tr>
-              
+              <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                  document.getElementById('openreceipt{{order.id}}').addEventListener('click', function(e) {
+                      e.preventDefault();
+                      const popupUrl = '/history/receipt/{{order.id}}';
+                      const left = (window.screen.width - 200) / 2; // Центрируем по горизонтали
+                      const top = (window.screen.height - 600) / 4; // Смещаем чуть выше центра
+
+                      window.open(popupUrl, 'popupWindow', `width=200,height=600,left=${left},top=${top},toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no`);
+                  });
+              });
+                </script>
+              {% empty %}
+              <tr>
+                <td colspan="7" class="text-center">Нет данных</td>
+              </tr>
               {% endfor %}
             </tbody>
           </table>
