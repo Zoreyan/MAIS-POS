@@ -158,6 +158,7 @@
         }, 2000);
     }
         $('#sale').on('click', function () {
+            const printReceiptChecked = document.getElementById('print-check').checked;
             let cash = parseFloat(cashInput.val()) || 0;
             let discount = parseFloat(discountInput.val()) || 0;
             let onlineCard = parseFloat(onlineCardInput.val()) || 0;
@@ -169,6 +170,7 @@
             // Расчет сдачи (если сумма оплаты больше, чем надо)
             let change = (cash + onlineCard) - finalcash;
             change = change > 0 ? change : 0;
+
 
             $.ajax({
                 url: `{% url 'create-sale-history' %}`,
@@ -194,6 +196,25 @@
                     disableButton();
                     $('#product-table-body').empty();
                     showAlert();
+
+                    if (printReceiptChecked && response.order_id) {
+                            const popupUrl = `/history/receipt/${response.order_id}`; // Получаем ID заказа из ответа
+                            const left = (window.screen.width - 200) / 2;
+                            const top = (window.screen.height - 600) / 4;
+
+                            const popupWindow = window.open(popupUrl, 'popupWindow', 
+                                `width=200,height=600,left=${left},top=${top},toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no`
+                            );
+
+                            // Печать и закрытие попапа после печати
+                            popupWindow.onload = function() {
+                                popupWindow.print();
+                                popupWindow.onafterprint = function() {
+                                    popupWindow.close();
+                                };
+                            };
+                        }
+
                 },
                 error: function (xhr, status, error) {
                     console.log("Error:", status, error);

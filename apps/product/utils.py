@@ -1,5 +1,24 @@
 from apps.history.models import *
 from .models import *
+import qrcode
+from io import BytesIO
+from django.core.files.base import ContentFile
+from django.contrib.sites.shortcuts import get_current_site
+
+def generate_qr_code(order_id, request):
+    """Генерирует QR-код для заказа с учётом текущего хоста"""
+    current_site = get_current_site(request)
+    qr_data = f"https://{current_site.domain}/history/receipt/{order_id}"  # Формируем полный URL
+
+    qr = qrcode.make(qr_data)
+
+    # Сохраняем QR-код в памяти
+    qr_io = BytesIO()
+    qr.save(qr_io, format='PNG')
+    qr_io.seek(0)
+
+    # Создаём файл для Django
+    return ContentFile(qr_io.read(), name=f'qr_codes/order_{order_id}.png')
 
 def create_sale(request, cash_payment, online_payment, change, discount, products):
     if cash_payment > 0 and online_payment > 0:
@@ -19,6 +38,10 @@ def create_sale(request, cash_payment, online_payment, change, discount, product
         discount=discount,
         payment_method=payment_method
     )
+
+    qr_code_file = generate_qr_code(order.id, request)
+    order.qr_code.save(f'order_{order.id}.png', qr_code_file, save=True)
+
     for item in products:
         product = Product.objects.get(id=item['id'])
         quantity = int(item['quantity'])
@@ -33,3 +56,5 @@ def create_sale(request, cash_payment, online_payment, change, discount, product
         )
         product.quantity -= quantity
         product.save()
+        
+    return order 

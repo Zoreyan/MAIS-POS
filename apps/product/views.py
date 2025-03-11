@@ -183,7 +183,6 @@ def income(request):
     return render(request, 'product/income.html', context)
 
 
-
 @login_required
 @check_permission
 def create_sale_history(request):
@@ -195,10 +194,11 @@ def create_sale_history(request):
         change = int(request.POST.get('change', 0) or 0)
         discount = int(request.POST.get('discount', 0) or 0)
         
-        create_sale(request, products=products,
+        
+        order = create_sale(request, products=products,
                     cash_payment=cash_payment, online_payment=online_payment,
                     change=change, discount=discount)
-        return JsonResponse({'status': 'success'})
+        return JsonResponse({'status': 'success','order_id': order.id })
         
 
 @login_required

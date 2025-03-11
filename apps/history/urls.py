@@ -11,4 +11,5 @@ urlpatterns = [
     path('income-history-delete/<uuid:pk>/', income_delete, name='income-history-delete'),
     path('order-history-delete/<uuid:pk>/', order_delete, name='order-history-delete'),
     path('log-history/', log_list, name='log-history'),
+    path('receipt/<uuid:pk>/', receipt, name='receipt'),
 ]
