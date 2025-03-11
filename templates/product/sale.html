@@ -43,7 +43,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="d-flex gap-3 mb-4 align-items-center">
-                                <a href="{% url 'sold-history' %}">
+                                <a href="{% url 'total' %}">
                                     <img src="{% static 'assets/img/logo/logo.svg' %}" width="40" alt="">
                                 </a>
                                 <input type="text" id="barcode" placeholder="Штрих код или название товара" maxlength="14"
@@ -86,11 +86,13 @@
                     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body d-flex flex-column">
+                    <p class="text-info">По умолчанию "Онлайн кошелек"</p>
+
                     <div class="row gy-3">
                         <div class="col-12">
-                            <label for="amount">Наличные</label>
-                            <input type="number" id="amount" placeholder="Наличные" maxlength="8"
-                                class="form-control amount" name="amount">
+                            <label for="cash">Наличные</label>
+                            <input type="number" id="cash" placeholder="Наличные" maxlength="8"
+                                class="form-control cash" name="cash">
                         </div>
                         <div class="col-7">
                             <label for="online-card">Онлайн кошелек</label>
@@ -111,7 +113,10 @@
                         <h2 class="fw-semibold mb-0">Сдача: </h2>
                         <h2 class="change fw-semibold mb-0">0</h2>
                     </div>
-                    <p class="text-warning">По умолчанию "Онлайн кошелек"</p>
+                    <div class="mb-2 d-flex gap-2">
+                        <label for="print-check">Печатать чек</label>
+                        <input type="checkbox" id="print-check" name="print-check" class="form-check-input">
+                    </div>
                     <button type="button" id="sale" class="btn btn-primary mb-2 w-100">Отправить</button>
                     <button type="button" class="btn btn-label-secondary w-100" data-bs-dismiss="offcanvas">
                         Отмена
@@ -132,7 +137,7 @@
     <script>
     $(document).ready(function () {
         let barcodeInput = $('#barcode');
-        let amountInput = $('.amount');
+        let cashInput = $('.cash');
         let discountInput = $('.discount');
         let totalSumContainer = $('.total-sum');
         let onlineCardInput = $('#online-card');
@@ -142,6 +147,7 @@
         let discountedSum = 0;
         getProducts();
         disableButton();
+       
         
         function showAlert() {
         let alertBox = $("#alert");
@@ -152,19 +158,17 @@
         }, 2000);
     }
         $('#sale').on('click', function () {
-            let amount = parseFloat(amountInput.val()) || 0;
+            let cash = parseFloat(cashInput.val()) || 0;
             let discount = parseFloat(discountInput.val()) || 0;
             let onlineCard = parseFloat(onlineCardInput.val()) || 0;
             let totalSum = parseFloat(totalSumContainer.text()) || 0;
-            let change = amount - (totalSum - discount);
-            let paymentMethod;
-            if (onlineCard <= 0 && amount <= 0 || onlineCard > 0 && amount <= 0) {
-                paymentMethod = 'online';
-            } else if (onlineCard > 0 && amount > 0) {
-                paymentMethod = 'split';
-            } else  {
-                paymentMethod = 'cash';
-            }
+            // Итоговая сумма с учетом скидки
+            let finalcash = totalSum - discount;
+
+           
+            // Расчет сдачи (если сумма оплаты больше, чем надо)
+            let change = (cash + onlineCard) - finalcash;
+            change = change > 0 ? change : 0;
 
             $.ajax({
                 url: `{% url 'create-sale-history' %}`,
@@ -172,9 +176,9 @@
                 data: {
                     products: JSON.stringify(productList),
                     csrfmiddlewaretoken: '{{ csrf_token }}',
-                    amount: amount + onlineCard - change ? onlineCard : totalSum,
+                    cash_payment: cash,
+                    online_payment: onlineCard <= 0 && cash > 0 ? onlineCard : finalcash - cash,
                     discount: discount,
-                    payment_method: paymentMethod,
                     change: change > 0 ? change : 0
                 },
                 success: function (response) {
@@ -183,7 +187,7 @@
                     discountedSum = 0;
                     totalSumContainer.text('');
                     discountInput.val('');
-                    amountInput.val('');
+                    cashInput.val('');
                     onlineCardInput.val('');
                     $('.change').text('');
                     getProducts();
@@ -193,6 +197,7 @@
                 },
                 error: function (xhr, status, error) {
                     console.log("Error:", status, error);
+                    alert('Произошла ошибка при отправке данных. Пожалуйста, попробуйте еще раз.' + error);
                 }
             })
         })
@@ -202,15 +207,15 @@
             deleteProduct(productId);
         })
 
-        amountInput.on('input', function () {
-            let amount = this.value.trim();
+        cashInput.on('input', function () {
+            let cash = this.value.trim();
             let discount = parseFloat(discountInput.val()) || 0;
-            if (amount < totalSum) {
-                onlineCardInput.val(totalSum - amount);
+            if (cash < totalSum) {
+                onlineCardInput.val(totalSum - cash);
             } else {
                 onlineCardInput.val(0);
             }
-            let change = amount - (totalSum - discount);
+            let change = cash - (totalSum - discount);
             $('.change').text(change >= 0 ? change.toFixed(2) : '0');
         })
 
@@ -221,21 +226,24 @@
                 updateProductQuantity(productId, quantity);
             }
         })
+        function isOnlyDigits(str) {
+            return /^\d+$/.test(str);
+        }
 
-        barcodeInput.on('keypress', function (e) {
+        barcodeInput.on('keydown', function (e) {
             let searchQuery = this.value.trim();
-            if (e.which === 13) {
-                getProduct(null, searchQuery);
-                $('#checkout-btn').prop('disabled', false);
-                $('#sale').prop('disabled', false);
-                barcodeInput.val('');
+
+            if (e.key === 'Enter' && searchQuery) {
+                if (isOnlyDigits(searchQuery)) {
+                    getProduct(null, searchQuery);
+                } else if (searchQuery.length == 0) {
+                    getProducts();
+                } else {
+                    getProducts(searchQuery);
+                }
+                console.log(isOnlyDigits(searchQuery));
             }
-        })
-    
-        barcodeInput.on('input', function(e) {
-            let searchQuery = this.value.trim();
-            getProducts(searchQuery);
-        })
+        });
     
         function getProducts(query) {
             $.ajax({
@@ -245,15 +253,15 @@
                     'X-Requested-With': 'XMLHttpRequest',
                 },
                 success: function (data) {
+                    console.log(data);
                     $('#search-results').empty();                
                     data.forEach(element => {
-                        
                         $('#search-results').append(`
-                        <div class='col-lg-2 col-sm-6 col-md-4'>
-                            <div class='card h-100 add-product bg-primary text-white cursor-pointer' data-id="${element.id}">
+                        <div class='col-lg-2'>
+                            <div class='card add-product bg-primary text-white cursor-pointer' style='height: 100px;' data-id="${element.id}">
                                 <div class='card-body d-flex flex-column justify-content-between'>
-                                    <span class=''>${element.name.slice(0, 20)}</span>
-                                    <span class='small'>${element.sale_price} сом</span>
+                                    <span class='small'>${element.name.slice(0, 20)}</span>
+                                    <span class='small'>${element.sale_price - element.discount} сом</span>
                                 </div> 
                             </div>
                         </div>
@@ -269,8 +277,7 @@
         $(document).on('click', '.add-product', function () {
             let productId = $(this).data('id');
             getProduct(productId);
-            $('#sale').prop('disabled', false);
-            $('#checkout-btn').prop('disabled', false);
+            
         })
     
         function addProduct(product_) {
@@ -285,9 +292,10 @@
             }
             updateTable();
             calculateTotalSum();
-            amountInput.val('');
+            cashInput.val('');
             discountInput.val('');
             onlineCardInput.val('');
+            barcodeInput.val(''); // Очищаем поле после обработки
         }
 
         function updateProductQuantity(productId, quantity) {
@@ -321,7 +329,7 @@
                                 <input type="number" class="form-control form-control-sm product-quantity" style="width: 100px;" value="${product.quantity}" data-id="${product.id}"/>  
                             </div>
                         </td>
-                        <td>${product.sale_price * product.quantity}<sup>сом</sup></td>
+                        <td class='fw-bold'>${product.sale_price * product.quantity}<sup>сом</sup></td>
                     </tr>
                 `);
             });
@@ -336,10 +344,13 @@
                     'X-Requested-With': 'XMLHttpRequest',
                 },
                 success: function (data) {
-                    addProduct(data)
+                    $('#sale').prop('disabled', false);
+                    $('#checkout-btn').prop('disabled', false);
+                    addProduct(data);
                 },
                 error: function (xhr, status, error) {
                     console.error(error);
+                    alert('Товар не найден');
                 }
             })
         }
@@ -354,7 +365,7 @@
             $('#checkout-btn').prop('disabled', true);
         }
         
-        amountInput.on('input', updateChange);
+        cashInput.on('input', updateChange);
         discountInput.on('input', updateChange);
     });
     </script>

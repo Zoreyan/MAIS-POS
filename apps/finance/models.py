@@ -22,3 +22,7 @@ class Expense(models.Model):
     
     def __str__(self):
         return f"{self.description} - {self.amount} - {self.created}"
+    
+    class Meta:
+        verbose_name = 'Расход'
+        verbose_name_plural = 'Расходы'

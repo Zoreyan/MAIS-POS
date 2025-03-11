@@ -2,15 +2,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import Permission
 from django.contrib import messages
-from .utils import generate_text, check_permission
+from apps.utils.utils import generate_text, check_permission
 from django.db.models import Q
 from apps.dashboard.models import *
 from .models import *
 from .forms import *
-
-
+from apps.utils.utils import delete_obj
+from apps.history.models import LogHistory
 
 def login_page(request):
     if request.user.is_authenticated:
@@ -22,6 +21,7 @@ def login_page(request):
         user = authenticate(request, username=username, password=password)
         if user is not None and user.has_access:
             login(request, user)
+            LogHistory.objects.create(user=request.user, message='Вошел в систему', object=request.user.username)
             messages.success(request, 'Вы вошли в систему')
             return redirect('dashboard')
         else:
@@ -71,6 +71,7 @@ def profile(request, pk):
         if form.is_valid():
             user = form.save(commit=False)
             user.role = user.role
+            LogHistory.objects.create(user=request.user, message='Обновлен пользователь', object=user.username)
             user.save()
             return redirect('user-profile', pk=user.id)
 
@@ -96,7 +97,7 @@ def create(request):
                 first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'],
                 phone=form.cleaned_data['phone'], email=form.cleaned_data['email'],
                 image=form.files['image'], role=form.cleaned_data['role'])
-
+            LogHistory.objects.create(user=request.user, message='Создан пользователь', object=form.cleaned_data['username'])
             messages.success(request, 'Пользователь успешно создан.')
             return redirect('user-list')
     context = {'form': form}
@@ -105,14 +106,6 @@ def create(request):
 @login_required
 @check_permission
 def delete(request, pk):
-    permission = Permission.objects.filter(user=request.user, codename='delete_user')
-    if not permission.exists():
-        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
-        if referer:  # Если заголовок HTTP_REFERER доступен
-            return redirect(referer)
-        return redirect('dashboard')
-
-    user = User.objects.get(id=pk)
-    user.delete()
+    delete_obj(request, User, pk, 'Удален пользователь')
     return redirect('user-list')
 

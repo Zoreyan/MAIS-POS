@@ -1,19 +1,15 @@
+from apps.utils.utils import check_permission, delete_obj, paginate
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from .filters import ExpenseFilter
+from .models import Expense
 from .models import *
 from .forms import *
-from .models import Expense
-from apps.history.models import *
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
-from .filters import ExpenseFilter
-from apps.product.utils import paginate
-from apps.user.utils import check_permission
-
+from apps.history.models import LogHistory
 
 @login_required
 @check_permission
 def finance_list(request):
-    
 
     expenses = Expense.objects.filter(shop=request.user.shop).order_by('-created')
     filters = ExpenseFilter(request.GET, queryset=expenses)
@@ -51,6 +47,7 @@ def create(request):
                 expend.description = form.cleaned_data['description']
             else:
                 expend.description = expend_display_name
+            LogHistory.objects.create(user=request.user, message='Добавлен расход', object=expend_type)
             expend.save()
             
             return redirect('finance-list')  # Перенаправление на список расходов
@@ -65,6 +62,5 @@ def create(request):
 @login_required
 @check_permission
 def expense_delete(request, pk):
-    expend = get_object_or_404(Expense, id=pk)
-    expend.delete()
+    delete_obj(request, Expense, pk, 'Удален расход')
     return redirect('finance-list')

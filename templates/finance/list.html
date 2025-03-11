@@ -31,7 +31,7 @@
         <button class="btn btn-primary" type="button" id="timelineWapper" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
             <span>Добавить</span>
           </button>
-          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="timelineWapper" style="">
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="timelineWapper">
             <a class="dropdown-item" href="{% url 'finance-create' %}?type=rent">Аренда</a>
             <a class="dropdown-item" href="{% url 'finance-create' %}?type=utilities">Коммунальные услуги</a>
             <a class="dropdown-item" href="{% url 'finance-create' %}?type=salaries">Зарплаты</a>
@@ -42,56 +42,58 @@
 
 
 <div class="card">
-    <div class="table-responsive text-nowrap">
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Описание</th>
-                    <th>Сумма</th>
-                    <th>Дата</th>
-                    <th>Действия</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for expend in page_obj %}
-                <tr>
-                    <td>{{ expend.description|default:"-" }}{% if expend.user %}:{{ expend.user }}{% endif %}</td>
-                    <td>{{ expend.amount }}</td>
-                    <td>{{ expend.created|date:"d.m.Y H:i" }}</td>
-                    <td>
-                        <button type="button" class="btn" data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal{{ expend.id }}">
-                                        <i class="bx bx-trash fs-5"></i>
-                                    </button>
-                        
-                        <div class="modal fade" id="deleteModal{{ expend.id }}" tabindex="-1"
-                            aria-labelledby="deleteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="fs-5" id="deleteModalLabel">Вы уверены, что хотите удалить?</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <h3>{{ expend.description }}</h3>
-                                        <span>{{ expend.amount }} сом</span>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <a href="{% url 'expense-delete' expend.id %}" class="btn btn-danger">Да</a>
+    <div class="card-body">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Описание</th>
+                        <th>Сумма</th>
+                        <th>Дата</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expend in page_obj %}
+                    <tr>
+                        <td>{{ expend.description|default:"-" }}{% if expend.user %}:{{ expend.user }}{% endif %}</td>
+                        <td>{{ expend.amount }}</td>
+                        <td>{{ expend.created|date:"d.m.Y H:i" }}</td>
+                        <td>
+                            <button type="button" class="btn" data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal{{ expend.id }}">
+                                            <i class="bx bx-trash fs-5"></i>
+                                        </button>
+                            
+                            <div class="modal fade" id="deleteModal{{ expend.id }}" tabindex="-1"
+                                aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="fs-5" id="deleteModalLabel">Вы уверены, что хотите удалить?</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h3>{{ expend.description }}</h3>
+                                            <span>{{ expend.amount }} сом</span>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="{% url 'expense-delete' expend.id %}" class="btn btn-danger">Да</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center">Нет расходов, соответствующих фильтру.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">Нет расходов, соответствующих фильтру.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <div class="d-flex align-items-center justify-content-center me-3 mt-5 flex-wrap">
             <div class="pagination-container">
                 <nav aria-label="Пагинация">

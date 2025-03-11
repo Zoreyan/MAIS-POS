@@ -2,20 +2,7 @@
 {% load static %}
 {% load tags %}
 {% block content %}
-<div class="bs-toast toast toast-placement-ex m-2 fade bg-primary bottom-0 end-0 hide" role="alert" id="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
-    <div class="toast-header">
-      <i class="icon-base bx bx-bell me-2"></i>
-      <div class="me-auto fw-medium">Менеджер импорта</div>
-      <small>Только что</small>
-    </div>
-    <div class="toast-body">
-        <span>Пожалуйста не покидайте страницу до завершения импорта.</span>
-        <p id="file_name">Идет импорт файла</p>
-        <div class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" id="progress-bar" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-    </div>
-  </div>
+
 <div class="d-flex align-items-center justify-content-between mt-3 mb-4 gap-3 flex-wrap">
     <div class="d-flex align-items-center gap-3">
         <h2 class="mb-0 fw-bold text-dark">Каталог</h2>
@@ -59,7 +46,7 @@
                             {% for product in page_obj %}
                             <tr>
                                 <td>
-                                    <a href="javascript:void(0);"
+                                    <a href="{% url 'product-details' product.id %}"
                                         class="d-flex justify-content-start align-items-center product-name">
                                         
                                         <div class="d-flex flex-column">
@@ -126,73 +113,73 @@
                                 {% endfor %}
                         </tbody>
                     </table>
-                    <div class="d-flex align-items-center justify-content-center me-3 mt-5 flex-wrap">
-                        <div class="pagination-container">
-                            <nav aria-label="Пагинация">
-                                <ul class="pagination justify-content-center">
-                                    {% if page_obj.number > 1 %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page=1" aria-label="Первая">
-                                            <span aria-hidden="true">&laquo;&laquo;</span>
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled">
-                                        <span class="page-link">&laquo;&laquo;</span>
-                                    </li>
-                                    {% endif %}
-                    
-                                    {% if page_obj.has_previous %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled">
-                                        <span class="page-link">&laquo;</span>
-                                    </li>
-                                    {% endif %}
-                    
-                                    {% for page_num in visible_pages %}
-                                    {% if page_num  ==  page_obj.number %}
-                                    <li class="page-item active" aria-current="page">
-                                        <span class="page-link">{{ page_num }}</span>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_num }}?">{{ page_num }}</a>
-                                    </li>
-                                    {% endif %}
-                                    {% endfor %}
-                    
-                                    {% if page_obj.has_next %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled">
-                                        <span class="page-link">&raquo;</span>
-                                    </li>
-                                    {% endif %}
-                    
-                                    {% if page_obj.number < page_obj.paginator.num_pages %}
-                                    <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
-                                            <span aria-hidden="true">&raquo;&raquo;</span>
-                                        </a>
-                                    </li>
-                                    {% else %}
-                                    <li class="page-item disabled">
-                                        <span class="page-link">&raquo;&raquo;</span>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
-                            
-                        </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-center me-3 mt-5 flex-wrap">
+                    <div class="pagination-container">
+                        <nav aria-label="Пагинация">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.number > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1" aria-label="Первая">
+                                        <span aria-hidden="true">&laquo;&laquo;</span>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;&laquo;</span>
+                                </li>
+                                {% endif %}
+                
+                                {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo;</span>
+                                </li>
+                                {% endif %}
+                
+                                {% for page_num in visible_pages %}
+                                {% if page_num  ==  page_obj.number %}
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_num }}?">{{ page_num }}</a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                
+                                {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперёд">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;</span>
+                                </li>
+                                {% endif %}
+                
+                                {% if page_obj.number < page_obj.paginator.num_pages %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Последняя">
+                                        <span aria-hidden="true">&raquo;&raquo;</span>
+                                    </a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&raquo;&raquo;</span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                        
                     </div>
                 </div>
             </div>
@@ -227,74 +214,5 @@
 </style>
 
 <script src="{% static 'assets/vendor/libs/jquery/jquery.js'  %}"></script>
-<script>
-    $(document).ready(function () {
-        
-        let taskId = null;
-        $('#upload_csv').on('change', function() {
-            let file = this.files[0]; // Получаем выбранный файл
-            if (!file) {
-                alert('Файл не выбран!');
-                return;
-            }
-            let formData = new FormData();
-            formData.append('file', file);
-            $.ajax({
-                url: `{% url 'start-csv-import' %}`,
-                method: 'POST',
-                data: formData,
-                headers: {
-                    'X-CSRFToken': `{{ csrf_token }}`  // Не забудьте добавить CSRF-токен
-                },
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    taskId = response.task_id
-                    $('#alert').addClass('show').removeClass('hide');
-                    $('#file_name').text('Сейчас импортируется ' + file.name);
-                    $('#timelineWapper').prop('disabled', true)
-                    if (taskId) {
-                        setInterval(checkTaskStatus, 1000);
-                    }
-                },
-                error: function(e){
-                    alert('Ошибка загрузки файла!');
-            }
-            })
-            
-        })
-        function checkTaskStatus() {
-            $.ajax({
-                url: `{% url 'check-csv-import-status' %}`,
-                method: 'GET',
-                data: {
-                    task_id: taskId
-                },
-                success: function(response) {
-                    if (response.status === 'PROGRESS') {
-                        updateProgressBar(response.progress, response.total);
-                    } else if (response.status === 'SUCCESS') {
-                        updateProgressBar(100);
-                        $('#alert').removeClass('show');
-                        $('#timelineWapper').prop('disabled', false)
-                        window.location.href = `{% url 'product-list' %}`;
-                    }
-                },
-                error: function(){
-                    alert('Ошибка загрузки файла!');
-                }
-            });
-        }
-        
-        function updateProgressBar(progress, total) {
-            let progressBar = $('#progress-bar');
-            let progressPercentage = Math.round((progress / total) * 100);
-            progressBar.css('width', progressPercentage  + '%');
-            progressBar.attr('aria-valuenow', progressPercentage);
-            progressBar.text(progressPercentage + '%');
-}
-    });
 
-
-</script>
 {% endblock %}

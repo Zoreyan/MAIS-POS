@@ -25,9 +25,9 @@ class ProductForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'bar_code': forms.TextInput(attrs={'class': 'form-control', 'autofocus': True}),
-            'cost_price': forms.NumberInput(attrs={'class': 'form-control'}),
-            'discount': forms.NumberInput(attrs={'class': 'form-control'}),
-            'sale_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'coscount': forms.NumberInput(attrs={'class': 'form-control'}),
+            'salt_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'dise_price': forms.NumberInput(attrs={'class': 'form-control'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
             'min_quantity': forms.NumberInput(attrs={'class': 'form-control'}),
             'unit': forms.Select(attrs={'class': 'form-control'}),

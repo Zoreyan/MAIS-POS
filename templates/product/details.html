@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-2">
+    <div class="d-flex">
+      <h2 class="mb-0 text-dark" data-bs-toggle="tooltip" data-bs-offset="0,6" data-bs-placement="right" data-bs-html="true" data-bs-original-title="<i class='icon-base bx bx-barcode icon-xs' ></i> <span>{{ product.bar_code }}</span>">{{ product.name }}</h2>
+
+      <sup class="small">{{ product.category.name }}</sup>
+    </div>
+    
+    <div class="d-flex gap-1">
+        <a href="{% url 'product-update' product.id %}" class="btn btn-icon btn-label-secondary">
+            <i class="bx bx-edit"></i>
+        </a>
+        <button class="btn btn-icon btn-label-secondary" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bx bx-trash"></i></button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+      <div class="row mb-2">
+        <article class="col-sm-6 col-xl-6">
+          <div class="card bg-primary">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between">
+                <div class="content-left">
+                  <span class="text-white">Цена</span>
+                  <div class="d-flex align-items-center my-1">
+                    <div class="d-flex">
+                      <h5 class="mb-0 me-2 text-white">{{ product.sale_price|default:0|intcomma }} СОМ</h5>
+                      <sup class="text-success">{{ product.cost_price }}</sup>
+                    </div>
+                  </div>
+                </div>
+                <div class="avatar">
+                  <span class="avatar-initial rounded bg-label-primary">
+                    <i class="bx bx-money bx-26px"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="col-sm-6 col-xl-6">
+          <div class="card bg-primary">
+            <div class="card-body">
+              <div class="d-flex align-items-start justify-content-between">
+                <div class="content-left">
+                  <span class="text-white">Продажи</span>
+                  <div class="d-flex align-items-center my-1">
+                    <h5 class="mb-0 me-2 text-white">{{ total_sold_quantity|default:0|intcomma }} {{ product.unit }}</h5>
+                  </div>
+                </div>
+                <div class="avatar">
+                  <span class="avatar-initial rounded bg-label-primary">
+                    10
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+       <div class="card">
+        <div class="card-body">
+            <canvas id="myChart" class="chartjs"></canvas>
+        </div>
+       </div>
+    </div>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Цена</th>
+                            <th>Количество</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for history in product.soldhistory_set.all %}
+                        <tr>
+                            <td>{{ history.created }}</td>
+                            <td>{{ history.amount }} СОМ</td>
+                            <td>{{ history.quantity }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  $(document).ready(function () {
+    const ctx = document.getElementById('myChart');
+    $.ajax({
+      url: "{% url 'get-product-chart-data' %}?product_id={{ product.id }}",
+      method: 'GET',
+      success: function (data) {
+        
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: data.months,
+            datasets: [{
+              label: 'Продажи',
+              data: data.totals,
+              borderWidth: 2,
+              borderColor: '#000',
+              backgroundColor: '#001',
+              BigInt
+            }]
+          },
+          options: {
+            responsive: true,
+            
+            scales: {
+              
+              y: {
+                beginAtZero: true
+              }
+            }
+          },
+        });
+      }
+    })
+
+
+  })
+</script>
+{% endblock %}

@@ -1,23 +1,19 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .tasks import import_products_from_csv
-from django.contrib.auth.models import Permission
-from django.core.paginator import Paginator
 from celery.result import AsyncResult
 from django.http import JsonResponse
 from django.contrib import messages
 from django.db.models import Count
-from django.db.models import Q
-from decimal import Decimal
+from .filters import ProductFilter
+from apps.dashboard.utils import *
 from apps.history.models import *
 from apps.finance.models import *
+from apps.utils.utils import *
 from .models import *
 from .forms import *
+from .utils import *
 import json
-from .filters import ProductFilter
-from .utils import paginate
-from apps.user.utils import check_permission
-
 
 
 
@@ -46,7 +42,6 @@ def list_(request):
     return render(request, 'product/list.html', context)
 
 
-
 def start_csv_import(request):
     if request.method == 'POST':
         csv_file = request.FILES.get('file')
@@ -61,6 +56,7 @@ def start_csv_import(request):
             messages.error(request, f'Ошибка запуска импорта: {e}')
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
 
 def check_csv_import_status(request):
     task_id = request.GET.get('task_id')
@@ -80,6 +76,7 @@ def check_csv_import_status(request):
         'total': task.result.get('total') if task.result else None
     })
 
+
 @login_required
 @check_permission
 def create(request):
@@ -87,14 +84,19 @@ def create(request):
     form = ProductForm(shop=request.user.shop)
     if request.method == 'POST':
         form = ProductForm(request.POST, shop=request.user.shop)
-        if form.is_valid():
-            form.instance.shop = request.user.shop
-            form.save()
-            messages.success(request, 'Товар успешно создан')
-            return redirect('product-create')
-        else:
-            messages.error(request, 'Ошибка при создании товара')
-    
+        try:
+
+            if form.is_valid():
+                form.instance.shop = request.user.shop
+                form.save()
+                LogHistory.objects.create(user=request.user, shop=request.user.shop, message='Добавлен товар', object=form.instance.name)
+                messages.success(request, 'Товар успешно создан')
+
+                return redirect('product-create')
+            else:
+                messages.error(request, 'Ошибка при создании товара')
+        except Exception as e:
+            messages.error(request, f'Ошибка уникальности баркода')
     context = {
         'form': form,
     }
@@ -102,17 +104,18 @@ def create(request):
     return render(request, 'product/create.html', context)
 
 
-
 @login_required
 @check_permission
 def update(request, pk):
    
-    product = Product.objects.get(id=pk)
+    product = get_object_or_404(Product, id=pk)
     form = ProductForm(instance=product)
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
+            LogHistory.objects.create(user=request.user, message='Обновлен товар', shop=request.user.shop, object=form.instance.name)
+            messages.success(request, 'Товар обновлен')
             return redirect('product-list')
 
     context = {
@@ -121,11 +124,11 @@ def update(request, pk):
     }
     return render(request, 'product/update.html', context)
 
+
 @login_required
 @check_permission
 def delete(request, pk):
-   
-    Product.objects.get(id=pk).delete()
+    delete_obj(request, Product, pk, 'Удален товар')
     return redirect('product-list')
 
 @login_required
@@ -135,24 +138,19 @@ def sale(request):
 
 @login_required
 def income_create(request, product_id, quantity, amount):
-    product = Product.objects.get(id=product_id)
+    product = get_object_or_404(Product, id=product_id)
     product.quantity += int(quantity)
     product.save()
     
-    order = OrderHistory.objects.create(
-        shop=request.user.shop,
-        amount=amount,
-        change=0,
-        order_type='income',
-        user=request.user)
 
     IncomeHistory.objects.create(
-        order=order,
         product=product,
         quantity=quantity,
         shop=request.user.shop,
         amount=amount
     )
+    LogHistory.objects.create(user=request.user, shop=request.user.shop, message='Добавлена поставка')
+
 
 
 @login_required
@@ -192,54 +190,14 @@ def create_sale_history(request):
     
     if request.method == 'POST':
         products = json.loads(request.POST.get('products'))
-        amount = request.POST.get('amount')
-        change = request.POST.get('change')
-        discount = request.POST.get('discount', 0)
-        payment_method = request.POST.get('payment_method')
-        profit = Decimal(0)
-        order = OrderHistory.objects.create(
-            shop=request.user.shop,
-            amount=amount,
-            change=change,
-            discount=discount,
-            order_type='sale',
-            user=request.user,
-            payment_method=payment_method
-        )
-        for item in products:
-            product = Product.objects.get(id=item['id'])
-            quantity = int(item['quantity'])
-
-            # Проверяем доступность количества
-            if product.quantity < quantity:
-                return JsonResponse({
-                    'status': 'error',
-                    'message': f"Недостаточно товара для продукта {product.name}. Доступно: {product.quantity}, запрошено: {quantity}."
-                })
-
-            # Сохраняем текущую цену продукта
-            SoldHistory.objects.create(
-                shop=request.user.shop,
-                order=order,
-                product=product,
-                quantity=quantity,
-                amount=product.discounted_price(),
-            )
-
-            product_profit = (product.discounted_price() - product.cost_price) * quantity
-            profit += product_profit
-
-
-            # Обновляем количество продукта
-            product.quantity -= quantity
-            product.save()
+        cash_payment = int(request.POST.get('cash_payment', 0) or 0)
+        online_payment = int(request.POST.get('online_payment', 0) or 0)
+        change = int(request.POST.get('change', 0) or 0)
+        discount = int(request.POST.get('discount', 0) or 0)
         
-        profit = profit - Decimal(discount)
-
-        order.profit = profit
-        order.save()
-
-
+        create_sale(request, products=products,
+                    cash_payment=cash_payment, online_payment=online_payment,
+                    change=change, discount=discount)
         return JsonResponse({'status': 'success'})
         
 
@@ -271,15 +229,7 @@ def category_list(request):
 @login_required
 @check_permission
 def category_delete(request, pk):
-    permission = Permission.objects.filter(user=request.user, codename='delete_category')
-    if not permission.exists():
-        referer = request.META.get('HTTP_REFERER')  # Получить URL предыдущей страницы
-        if referer:  # Если заголовок HTTP_REFERER доступен
-            return redirect(referer)
-        return redirect('dashboard')
-
-    category = Category.objects.get(id=pk)
-    category.delete()
+    delete_obj(request, Category, pk, 'Удалена категория')
     return redirect('category-list')
 
 @login_required
@@ -292,6 +242,7 @@ def category_update(request, pk):
         form = CategoryForm(request.POST, instance=category)
         if form.is_valid():
             form.save()
+            LogHistory.objects.create(user=request.user, message='Обновлена категория', shop=request.user.shop, object=form.instance.name)
             return redirect('category-list')
 
     context = {
@@ -299,3 +250,23 @@ def category_update(request, pk):
         'form': form
     }
     return render(request, 'product/category_update.html', context)
+
+@login_required
+def get_product_chart_data(request):
+    product_id = request.GET.get('product_id')
+    print(product_id)
+    sales_by_month = get_sales_by_month(request, SoldHistory, product__id=product_id)
+    months = [sale['month'].strftime('%Y-%m') for sale in sales_by_month]  # Форматируем даты
+    totals = [sale['total_sales'] for sale in sales_by_month]  # Суммы продаж
+
+    return JsonResponse({'months': months, 'totals': totals})
+
+def details(request, pk):
+    product = get_object_or_404(Product, id=pk)
+    total_sold_quantity = SoldHistory.objects.filter(product=product).aggregate(total_quantity=Sum('quantity'))['total_quantity'] or 0
+
+    context = {
+        'product': product,
+        'total_sold_quantity': total_sold_quantity
+    }
+    return render(request, 'product/details.html', context)

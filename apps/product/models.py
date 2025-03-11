@@ -53,14 +53,14 @@ class Product(models.Model):
     )
     discount = models.IntegerField(default=0, verbose_name='Скидка', null=True, validators=[MinValueValidator(0), MaxValueValidator(100)])
     unit = models.CharField(max_length=2, choices=UNITS, default='шт', verbose_name='Единица измерения', null=True)
-    bar_code = models.CharField(max_length=100, null=True, blank=True, verbose_name='Штрихкод', unique=True)
+    bar_code = models.CharField(max_length=100, null=True, blank=True, verbose_name='Штрихкод')
     quantity = models.IntegerField(default=0, verbose_name='Количество')
+    is_favorite = models.BooleanField(default=False, verbose_name='Избранный')
     min_quantity = models.IntegerField(default=10, verbose_name='Минимальный остаток')
 
+
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['bar_code'], name='unique_bar_code', condition=models.Q(bar_code__isnull=False))
-        ]
+        unique_together = ('bar_code', 'shop')
         ordering = ['name']
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'

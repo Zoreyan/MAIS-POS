@@ -1,13 +1,35 @@
-from django.core.paginator import Paginator
-def paginate(request, products, page_number, per_page=20):
-    paginator = Paginator(products, per_page)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    current_page = page_obj.number
-    total_pages = paginator.num_pages
-    delta = 3
+from apps.history.models import *
+from .models import *
 
-    start_page = max(current_page - delta, 1)
-    end_page = min(current_page + delta, total_pages)
-    visible_pages = range(start_page, end_page + 1)
-    return page_obj, visible_pages
+def create_sale(request, cash_payment, online_payment, change, discount, products):
+    if cash_payment > 0 and online_payment > 0:
+        payment_method = 'split'  # Если оба поля заполнены, это split-оплата
+    elif cash_payment > 0:
+        payment_method = 'cash'  # Если только cash_payment > 0, это наличные
+    elif online_payment > 0:
+        payment_method = 'online'  # Если только online_payment > 0, это онлайн-оплата
+    else:
+        payment_method = 'online'
+    order = OrderHistory.objects.create(
+        user=request.user,
+        shop=request.user.shop,
+        cash_payment=cash_payment,
+        online_payment=online_payment,
+        change=change,
+        discount=discount,
+        payment_method=payment_method
+    )
+    for item in products:
+        product = Product.objects.get(id=item['id'])
+        quantity = int(item['quantity'])
+
+        # Сохраняем текущую цену продукта
+        SoldHistory.objects.create(
+            shop=request.user.shop,
+            order=order,
+            product=product,
+            quantity=quantity,
+            amount=product.discounted_price(),
+        )
+        product.quantity -= quantity
+        product.save()

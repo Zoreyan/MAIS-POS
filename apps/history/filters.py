@@ -22,15 +22,7 @@ class OrderHistoryFilter(django_filters.FilterSet):
             }
         ), label='Метод оплаты'
     )
-    order_type = django_filters.ChoiceFilter(
-        field_name="order_type",
-        choices=OrderHistory.ORDER_TYPES,
-        widget=forms.widgets.Select(
-            attrs={
-                'class': 'form-select'
-            }
-        ), label='Тип очереди'
-    )
+  
     amount_min = django_filters.NumberFilter(
         field_name="amount", lookup_expr="gte",
         label="Цена от",
@@ -79,6 +71,12 @@ class SoldHistoryFilter(django_filters.FilterSet):
 
 class IncomeHistoryFilter(django_filters.FilterSet):
 
+    name = django_filters.CharFilter(
+        field_name="product__name", lookup_expr="icontains",
+        label="Название товара",
+        widget= forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Название товара:'})
+    )
+
     created_min = django_filters.DateTimeFilter(
         field_name="created", lookup_expr="gte",
         label="Дата от",
@@ -108,4 +106,24 @@ class IncomeHistoryFilter(django_filters.FilterSet):
         field_name="quantity", lookup_expr="lte",
         label="Кол-во до",
         widget= forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Кол-во до:'})
+    )
+
+
+class LogHistoryFilter(django_filters.FilterSet):
+
+    created_min = django_filters.DateTimeFilter(
+        field_name="created", lookup_expr="gte",
+        label="Дата от",
+        widget= forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'})
+    )
+    created_max = django_filters.DateTimeFilter(
+        field_name="created", lookup_expr="lte",
+        label="Дата до",
+        widget= forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'})
+    )
+
+    message = django_filters.CharFilter(
+        field_name="message", lookup_expr="icontains",
+        label="Сообщение",
+        widget= forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Сообщение:'})
     )

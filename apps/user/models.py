@@ -45,6 +45,7 @@ class User(AbstractUser):
         verbose_name='Доступ'
     )
 
+    tg_id = models.IntegerField(null=True, blank=True, verbose_name='ID в Telegram')
 
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = []
@@ -55,10 +56,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return f'{self.username}'
-    
-
-class Telegram(models.Model):
-    username = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-
-    

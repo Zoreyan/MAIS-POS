@@ -1,6 +1,7 @@
 
 
 from pathlib import Path
+from datetime import timedelta
 
 from celery.schedules import crontab
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,12 +32,12 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.staticfiles',
 
+    'apps.api',
     'apps.dashboard',
     'apps.product',
     'apps.user',
     'apps.history',
     'apps.finance',
-    'apps.api',
     'mptt',
     'django_filters',
     'django_celery_beat',
@@ -162,6 +163,13 @@ LOGIN_URL = 'user/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-
+# Celery
 CELERY_BROKER_URL = 'redis://redis:6379/0'  
 CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+    }
+}

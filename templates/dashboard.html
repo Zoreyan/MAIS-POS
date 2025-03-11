@@ -29,11 +29,7 @@
                 </p>
               </div>
             </div>
-            <div class="avatar">
-              <span class="avatar-initial rounded bg-label-primary">
-                <i class="bx bx-bar-chart bx-26px"></i>
-              </span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -47,17 +43,13 @@
             <div class="content-left">
               <span class="text-white">Продажи</span>
               <div class="d-flex align-items-center my-1">
-                <h5 class="mb-0 me-2 text-white">{{ total_sales_quantity|default:0|intcomma }} шт</h5>
+                <h5 class="mb-0 me-2 text-white">{{ sales_quantity|default:0|intcomma }} шт</h5>
                 <p class="{% if sales_growth > 0 %}text-success{% else %}text-danger{% endif %} mb-0">
                   {{ sales_quantity_growth|floatformat:1 }}%
                 </p>
               </div>
             </div>
-            <div class="avatar">
-              <span class="avatar-initial rounded bg-label-primary">
-                <i class="bx bx-cart bx-26px"></i>
-              </span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -77,11 +69,7 @@
                 </p>
               </div>
             </div>
-            <div class="avatar">
-              <span class="avatar-initial rounded bg-label-danger">
-                <i class="bx bx-money bx-26px"></i>
-              </span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -98,10 +86,73 @@
                 <h5 class="mb-0 me-2 text-white">{{ profit|default:0|intcomma }} СОМ</h5>
               </div>
             </div>
-            <div class="avatar">
-              <span class="avatar-initial rounded bg-label-success">
-                <i class="bx bx-wallet bx-26px"></i>
-              </span>
+            
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="row justify-content-between gy-3 mb-2">
+    <!-- Общий доход -->
+    <article class="col-sm-6 col-xl-3">
+      <div class="card bg-info">
+        <div class="card-body">
+          <div class="d-flex align-items-start justify-content-between">
+            <div class="content-left">
+              <span class="text-white">Сегодняшний доход</span>
+              <div class="d-flex align-items-center my-1">
+                <h5 class="mb-0 me-2 text-white">{{ today_sales|default:0|intcomma }} СОМ</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Продажи -->
+    <article class="col-sm-6 col-xl-3">
+      <div class="card bg-info">
+        <div class="card-body">
+          <div class="d-flex align-items-start justify-content-between">
+            <div class="content-left">
+              <span class="text-white">Сегодняшние продажи</span>
+              <div class="d-flex align-items-center my-1">
+                <h5 class="mb-0 me-2 text-white">{{ today_sales_quantity|default:0|intcomma }} шт</h5>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Общие расходы -->
+    <article class="col-sm-6 col-xl-3">
+      <div class="card bg-info">
+        <div class="card-body">
+          <div class="d-flex align-items-start justify-content-between">
+            <div class="content-left">
+              <span class="text-white">Сегодняшние расходы</span>
+              <div class="d-flex align-items-center my-1">
+                <h5 class="mb-0 me-2 text-white">{{ today_expenses|default:0|intcomma }} СОМ</h5>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+    </article>
+
+    <!-- Чистая прибыль -->
+    <article class="col-sm-6 col-xl-3">
+      <div class="card bg-info">
+        <div class="card-body">
+          <div class="d-flex align-items-start justify-content-between">
+            <div class="content-left">
+              <span class="text-white">Сегодняшнаяя прибыль</span>
+              <div class="d-flex align-items-center my-1">
+                <h5 class="mb-0 me-2 text-white">{{ product_profit|default:0|intcomma }} СОМ</h5>
+              </div>
             </div>
           </div>
         </div>
@@ -109,19 +160,25 @@
     </article>
   </section>
 
+
+
   <div class="row gy-2">
     <div class="col-lg-8 col-sm-12">
-      <div class="card h-100">
-        <div class="card-header">
-          <h5>График продаж</h5>
+      <div class="card">
+        <div class="card-header header-elements">
+          <h5 class="card-title mb-0">Аналитика</h5>
+          
         </div>
-        <div class="card-body">
-          <canvas id="myChart" class="chartjs"></canvas>
+        <div class="card-body pt-2">
+          <div id="legendContainer1" class="custom-legend"></div>
+          <div>
+            <canvas id="lineAreaChart" class="chartjs" data-height="450"></canvas>
+          </div>
         </div>
       </div>
     </div>
     <div class="col-lg-4 col-sm-12">
-      <div class="card">
+      <div class="card h-100">
         <div class="card-header d-flex align-items-center justify-content-between">
           <h5 class="card-title m-0 me-2">Топ продаж</h5>
         </div>
@@ -152,7 +209,10 @@
     </div>
   </div>
 </section>
-
+<style>
+  .custom-legend .custom-legend-ul{display:flex;cursor:pointer}.custom-legend .custom-legend-ul .custom-legend-li{display:flex;align-items:center;font-size:.75rem;margin-inline-end:1.25rem}.custom-legend .custom-legend-ul .legend-box{border-radius:50rem;block-size:.5rem;inline-size:.5rem;margin-inline-end:5px}
+</style>
+<script src="{% static 'assets/js/charts-chartjs-legend.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -163,26 +223,107 @@
       method: 'GET',
       success: function (data) {
         
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: data.months,
-            datasets: [{
-              label: 'Продажи',
-              data: data.totals,
-              borderWidth: 2
-            }]
-          },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
+        
+        const greyLightColor = '#EDF1F4',
+  blueColor = '#2B9AFF',
+  blueLightColor = '#84D0FF';
+let cardColor, headingColor, labelColor, borderColor, legendColor;
+
+if (isDarkStyle) {
+  cardColor = config.colors_dark.cardColor;
+  headingColor = config.colors_dark.headingColor;
+  labelColor = config.colors_dark.textMuted;
+  legendColor = config.colors_dark.bodyColor;
+  borderColor = config.colors_dark.borderColor;
+} else {
+  cardColor = config.colors.cardColor;
+  headingColor = config.colors.headingColor;
+  labelColor = config.colors.textMuted;
+  legendColor = config.colors.bodyColor;
+  borderColor = config.colors.borderColor;
+}
+const lineAreaChart = document.getElementById('lineAreaChart');
+if (lineAreaChart) {
+  const lineAreaChartVar = new Chart(lineAreaChart, {
+    type: 'line',
+    data: {
+      labels: data.months,
+      datasets: [
+        {
+          label: 'Продажи',
+          data: data.totals,
+          tension: 0,
+          fill: true,
+          backgroundColor: blueColor,
+          pointStyle: 'circle',
+          borderColor: 'transparent',
+          pointRadius: 0.5,
+          pointHoverRadius: 5,
+          pointHoverBorderWidth: 5,
+          pointBorderColor: 'transparent',
+          pointHoverBackgroundColor: blueColor,
+          pointHoverBorderColor: cardColor
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          rtl: isRtl,
+          align: 'start',
+          labels: {
+            usePointStyle: true,
+            padding: 35,
+            boxWidth: 6,
+            boxHeight: 6,
+            color: legendColor
           }
-        });
+        },
+        tooltip: {
+          // Updated default tooltip UI
+          rtl: isRtl,
+          backgroundColor: cardColor,
+          titleColor: headingColor,
+          bodyColor: legendColor,
+          borderWidth: 1,
+          borderColor: borderColor
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            color: 'transparent',
+            borderColor: borderColor
+          },
+          ticks: {
+            color: labelColor
+          }
+        },
+        y: {
+          min: 0,
+          max: 400,
+          grid: {
+            color: 'transparent',
+            borderColor: borderColor
+          },
+          ticks: {
+            stepSize: 100,
+            color: labelColor
+          }
+        }
       }
+    }
+  });
+}
+      
+      }
+
+      
     })
+
 
 
   })
