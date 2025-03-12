@@ -156,3 +156,7 @@ def log_list(request):
         'filters': filters
     }
     return render(request, 'history/logs.html', context)
+
+def receipt(request, pk):
+    order = OrderHistory.objects.get(id=pk)
+    return render(request, 'receipt.html', {'order': order})

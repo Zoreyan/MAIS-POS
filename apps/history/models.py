@@ -17,6 +17,7 @@ class OrderHistory(models.Model):
     change = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True, default=0)
     discount = models.DecimalField(decimal_places=2, max_digits=10, default=0)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, null=True, blank=True)
+    qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
