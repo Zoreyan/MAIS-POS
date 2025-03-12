@@ -10,3 +10,7 @@ urlpatterns = [
     path('create-payment/', PaymentCreateView.as_view(), name='create-payment'),
     path('check-payment-status/', CheckPaymentStatusView.as_view(), name='check-payment-status'),
 ]
+
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+router.register(r'sales', TodayRevenue, basename='sales')

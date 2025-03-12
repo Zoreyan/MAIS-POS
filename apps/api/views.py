@@ -1,16 +1,20 @@
 from rest_framework import generics
 from rest_framework.views import APIView
+from rest_framework import viewsets
 from rest_framework.response import Response
 from apps.product.models import Product, Shop
-from django.db.models import Q
+from django.db.models import Q, Sum, F
 from .serializers import ProductSerializer
 from apps.user.models import User
 from apps.utils.utils import generate_text
 from .models import Payment
+from .serializers import *
 import logging
 from django.db import transaction
 from django.core.cache import cache
-
+from rest_framework.decorators import action
+from apps.history.models import *
+from django.utils.timezone import now
 
 logger = logging.getLogger(__name__)
 
@@ -160,3 +164,29 @@ class CheckPaymentStatusView(APIView):
         except Exception as e:
             logger.error(f"Ошибка при проверке статуса платежа: {e}")
             return Response({'status': 'error', 'message': 'Внутренняя ошибка сервера'}, status=500)
+        
+
+
+
+# Вьюсет для статистики продаж
+class TodayRevenue(viewsets.ViewSet):
+    
+    @action(detail=False, methods=['get'])
+    def today_revenue(self, request):
+        today = now().date()
+        total_revenue = OrderHistory.objects.filter(created__date=today).aggregate(
+            total=Sum('cash_payment') + Sum('online_payment')
+        )["total"] or 0
+        return Response({"today_revenue": total_revenue})
+    
+    @action(detail=False, methods=['get'])
+    def order_history(self, request):
+        orders = OrderHistory.objects.all()
+        serializer = OrderHistorySerializer(orders, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def sold_history(self, request):
+        sales = SoldHistory.objects.all()
+        serializer = SoldHistorySerializer(sales, many=True)
+        return Response(serializer.data)

@@ -156,3 +156,4 @@ def log_list(request):
         'filters': filters
     }
     return render(request, 'history/logs.html', context)
+
