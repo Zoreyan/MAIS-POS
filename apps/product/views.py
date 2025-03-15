@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from .tasks import import_products_from_csv
 from celery.result import AsyncResult
 from django.http import JsonResponse
@@ -14,30 +15,200 @@ from .models import *
 from .forms import *
 from .utils import *
 import json
+from django.http import HttpResponse
+from import_export.formats import base_formats
+from .resources import ProductResource
+import logging
+
+logger = logging.getLogger(__name__)
+
+@login_required
+def update_per_pages(request):
+    # Проверка для products_per_page
+    if "products" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.products_per_page = int(number)
+            request.user.shop.save()
+            return redirect('product-list')
+
+    # Проверка для finance_per_page
+    if "finance" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.finance_per_page = int(number)
+            request.user.shop.save()
+            return redirect('finance-list')
+
+    # Проверка для category_per_page
+    if "category" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.category_per_page = int(number)
+            request.user.shop.save()
+            return redirect('category-list')
+
+    # Проверка для orderhistory_per_page
+    if "orderhistory" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.orderhistory_per_page = int(number)
+            request.user.shop.save()
+            return redirect('total')
+
+    # Проверка для salehistory_per_page
+    if "salehistory" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.salehistory_per_page = int(number)
+            request.user.shop.save()
+            return redirect('sold-history')
+
+    # Проверка для incomehistory_per_page
+    if "incomehistory" in request.POST:
+        number = request.POST.get('number_per_page')
+        if number.isdigit() and int(number) > 0:
+            request.user.shop.incomehistory_per_page = int(number)
+            request.user.shop.save()
+            return redirect('income-history')
+
+    return redirect('dashboard')
 
 
+@csrf_exempt
+def select_all_products(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            filter_params = data.get("filters", "")
+            check_only = data.get("check_only", False)
+
+            products = Product.objects.filter(shop=request.user.shop)
+            
+            if filter_params:
+                filters = ProductFilter(request.GET, queryset=products, shop=request.user.shop)
+                products = filters.qs
+
+            selected_ids = [str(product.id) for product in products]
+
+            if check_only:
+                return JsonResponse({"success": True, "selected_ids": selected_ids})
+            
+            return JsonResponse({"success": True, "selected_ids": selected_ids})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+    
+    return JsonResponse({"success": False})
+
+
+@csrf_exempt
+def export_products(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            product_ids = data.get("product_ids", [])
+            format_type = data.get("format", "csv")
+            fields = data.get("fields", [])
+
+            if not product_ids:
+                return JsonResponse({"success": False, "error": "Нет выбранных товаров"}, status=400)
+
+            if not fields:
+                return JsonResponse({"success": False, "error": "Не выбраны поля для экспорта"}, status=400)
+
+            # Фильтруем товары
+            products = Product.objects.filter(id__in=product_ids, shop=request.user.shop)
+            if not products.exists():
+                return JsonResponse({"success": False, "error": "Товары не найдены"}, status=404)
+
+            # Создаем ресурс
+            resource = ProductResource()
+            dataset = resource.export(queryset=products)
+
+            # Фильтруем Dataset, оставляя только выбранные поля
+            from tablib import Dataset
+            filtered_dataset = Dataset()
+            filtered_headers = [field.replace('category__name', 'category') for field in fields]
+            filtered_dataset.headers = filtered_headers
+
+            for row in dataset.dict:
+                filtered_row = []
+                for field in fields:
+                    if field == 'category__name':
+                        value = row.get('category', '')
+                    else:
+                        value = row.get(field, '')
+                    filtered_row.append(str(value) if value is not None else '')
+                filtered_dataset.append(filtered_row)
+
+            # Выбор формата
+            if format_type == "xlsx":
+                format_obj = base_formats.XLSX()
+                file_data = format_obj.export_data(filtered_dataset)
+                filename = "exported_products.xlsx"
+                content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            else:  # csv по умолчанию
+                format_obj = base_formats.CSV()
+                file_data = format_obj.export_data(filtered_dataset)
+                filename = "exported_products.csv"
+                content_type = "text/csv"
+
+            response = HttpResponse(file_data, content_type=content_type)
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            return response
+        except Exception as e:
+            logger.error(f"Ошибка при экспорте: {str(e)}")
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+    return JsonResponse({"success": False, "error": "Недопустимый метод"}, status=400)
+
+@csrf_exempt
+def delete_products(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            product_ids = data.get("product_ids", [])
+
+            if not product_ids:
+                return JsonResponse({"success": False, "error": "Нет выбранных товаров"}, status=400)
+
+            products = Product.objects.filter(id__in=product_ids, shop=request.user.shop)
+            count = products.count()
+            products.delete()
+            messages.success(request, 'Удалено товаров: ' + str(count))
+            
+            return JsonResponse({"success": True, "deleted_count": count})
+        except Exception as e:
+            logger.error(f"Ошибка при удалении: {str(e)}")
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+    return JsonResponse({"success": False, "error": "Недопустимый метод"}, status=400)
 
 @login_required
 @check_permission
 def list_(request):
    
     products = Product.objects.filter(shop=request.user.shop)
+    products_count = products.count()
     categories = Category.objects.filter(shop=request.user.shop)
     query = request.GET.get('query', '').strip()
+    number_per_page = request.user.shop.products_per_page
 
     filters = ProductFilter(request.GET, queryset=products, shop=request.user.shop)
 
     page_number = request.GET.get('page')
 
-    page_obj, visible_pages = paginate(request, filters.qs, page_number)
+    page_obj, visible_pages = paginate(request, filters.qs, page_number, per_page=number_per_page)
 
+    selected_ids = request.session.get('selected_products', [])
 
     context = {
         'categories': categories,
         'visible_pages': visible_pages,
         'page_obj': page_obj,
         'query': query,
-        'filters': filters
+        'filters': filters,
+        'products_count':products_count,
+        'selected_ids': selected_ids,
+        'number_per_page':number_per_page
     }
     return render(request, 'product/list.html', context)
 

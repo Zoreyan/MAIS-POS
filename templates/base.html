@@ -31,6 +31,23 @@
     {% block css %} {% endblock css %}
 </head>
 <body>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="bs-toast toast toast-ex animate__animated my-2 fade 
+                {% if message.tags == 'success' %} bg-success {% elif message.tags == 'error' %} bg-danger {% endif %}
+                animate__tada show" role="alert" id="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
+                <div class="toast-header">
+                    <i class="icon-base bx bx-bell me-2"></i>
+                    <div class="me-auto fw-medium">Система</div>
+                    <small>Только что</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
     <div class="bs-toast toast toast-placement-ex m-2 fade bg-primary bottom-0 end-0 hide" role="alert" id="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000">
         <div class="toast-header">
           <i class="icon-base bx bx-bell me-2"></i>

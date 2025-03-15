@@ -27,6 +27,13 @@ class Shop(models.Model):
         verbose_name='Название'
     )
 
+    products_per_page = models.PositiveIntegerField(default=10)
+    finance_per_page = models.PositiveIntegerField(default=10)
+    category_per_page = models.PositiveIntegerField(default=10)
+    orderhistory_per_page = models.PositiveIntegerField(default=10)
+    salehistory_per_page = models.PositiveIntegerField(default=10)
+    incomehistory_per_page = models.PositiveIntegerField(default=10)
+
     class Meta:
         verbose_name = 'Магазин'
         verbose_name_plural = 'Магазины'

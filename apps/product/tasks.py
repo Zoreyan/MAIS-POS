@@ -32,7 +32,7 @@ def import_products_from_csv(self, file_data, shop_id):
                     name=row['name'],
                     shop=shop,
                     category=category,
-                    cost_price=row.get('cost_price'),
+                    cost_price=row.get('cost_price', 0),
                     sale_price=row.get('sale_price', 0),
                     discount=row.get('discount', 0),
                     unit=row.get('unit', 'шт'),
