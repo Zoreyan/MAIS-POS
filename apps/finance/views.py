@@ -13,13 +13,15 @@ def finance_list(request):
 
     expenses = Expense.objects.filter(shop=request.user.shop).order_by('-created')
     filters = ExpenseFilter(request.GET, queryset=expenses)
+    number_per_page = request.user.shop.finance_per_page
     
     page_number = request.GET.get('page')
-    page_obj, visible_pages = paginate(request, filters.qs, page_number)
+    page_obj, visible_pages = paginate(request, filters.qs, page_number, number_per_page)
     context = {
         'page_obj': page_obj,
         'visible_pages': visible_pages,
-        'filters': filters
+        'filters': filters,
+        'number_per_page':number_per_page
     }
     
     return render(request, 'finance/list.html', context)

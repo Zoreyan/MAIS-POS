@@ -378,6 +378,7 @@ def category_list(request):
 
     categories = Category.objects.annotate(total_products=Count('product')).filter(shop=request.user.shop)
     form = CategoryForm()   
+    number_per_page = request.user.shop.category_per_page
 
     if request.method == 'POST':
         form = CategoryForm(request.POST)
@@ -388,12 +389,13 @@ def category_list(request):
 
     # Пагинация
     page_number = request.GET.get('page')
-    page_obj, visible_pages = paginate(request, categories, page_number)
+    page_obj, visible_pages = paginate(request, categories, page_number, number_per_page)
 
     context = {
         'page_obj': page_obj,
         'visible_pages': visible_pages,
         'form': form,
+        'number_per_page':number_per_page
     }
     return render(request, 'product/category_list.html', context)
 

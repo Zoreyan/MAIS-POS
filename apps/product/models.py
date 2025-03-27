@@ -26,6 +26,8 @@ class Shop(models.Model):
         max_length=100, 
         verbose_name='Название'
     )
+    
+    system_notifications = models.BooleanField(default=True, verbose_name="Системные уведомления")
 
     products_per_page = models.PositiveIntegerField(default=10)
     finance_per_page = models.PositiveIntegerField(default=10)

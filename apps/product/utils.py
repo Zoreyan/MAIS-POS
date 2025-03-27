@@ -4,11 +4,12 @@ import qrcode
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.contrib.sites.shortcuts import get_current_site
+from .tasks import check_product_stock
 
 def generate_qr_code(order_id, request):
     """Генерирует QR-код для заказа с учётом текущего хоста"""
     current_site = get_current_site(request)
-    qr_data = f"https://{current_site.domain}/history/receipt/{order_id}"  # Формируем полный URL
+    qr_data = f"https://{current_site.domain}/history/receipt/{order_id}"
 
     qr = qrcode.make(qr_data)
 
@@ -42,6 +43,8 @@ def create_sale(request, cash_payment, online_payment, change, discount, product
     qr_code_file = generate_qr_code(order.id, request)
     order.qr_code.save(f'order_{order.id}.png', qr_code_file, save=True)
 
+    product_ids = []
+
     for item in products:
         product = Product.objects.get(id=item['id'])
         quantity = int(item['quantity'])
@@ -56,5 +59,8 @@ def create_sale(request, cash_payment, online_payment, change, discount, product
         )
         product.quantity -= quantity
         product.save()
-        
-    return order 
+        product_ids.append(product.id)
+
+    check_product_stock.delay(product_ids, request.user.shop.id)
+    
+    return order

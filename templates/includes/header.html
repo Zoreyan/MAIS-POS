@@ -49,8 +49,11 @@
             </li>
             
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                {% notifications request.user as notifications_data %}
                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="#" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online d-flex align-items-start justify-content-between">
+
+                        
                         <div>
                             {% if request.user.image %}
                             <img src="{{ request.user.image.url }}" alt="user-image" class="rounded-circle" style="object-fit: cover; width: 40px; height: 40px;">
@@ -58,8 +61,13 @@
                             <img src="https://static.vecteezy.com/system/resources/previews/005/129/844/non_2x/profile-user-icon-isolated-on-white-background-eps10-free-vector.jpg" alt="user-image" class="rounded-circle" style="object-fit: cover; width: 40px; height: 40px;">
                         {% endif %}
                         </div>
+                        
+                        <div class="pt-2">{% if notifications_data.unread_count > 0 %}
+                            <span class="badge bg-danger d-flex translate-middle p-1" style="width: 10px; height: 10px; border-radius: 50%;"></span>
+                        {% endif %}</div>
                     </div>
                 </a>
+                
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
                         <a class="dropdown-item mt-0" href="{% url 'user-profile' request.user.id %}">
@@ -83,7 +91,26 @@
                     <li>
                         <div class="dropdown-divider my-1 mx-n2"></div>
                     </li>
-                    
+                    <a href="{% url 'notifications' request.user.id  %}" class="dropdown-item">
+                        <i class="bx bx-bell me-1"></i>
+                        <span>Уведомления</span>
+                        {% notifications request.user as notifications_data %}
+                        {% if notifications_data.unread_count > 0 %}
+                            <span class="badge bg-danger">
+                                {{ notifications_data.unread_count }}
+                            </span>
+                        {% endif %}
+                    </a>
+                    <li>
+                        <div class="dropdown-divider my-1 mx-n2"></div>
+                    </li>
+                    <a href="{% url 'password_change' %}" class="dropdown-item">
+                        <i class="bx bx-edit me-1"></i>
+                        <span>Смена пароля</span>
+                    </a>
+                    <li>
+                        <div class="dropdown-divider my-1 mx-n2"></div>
+                    </li>
                     <li>
                         <a class="dropdown-item" href="{% url 'logout' %}">
                             <i class="bx bx-power-off me-1"></i>

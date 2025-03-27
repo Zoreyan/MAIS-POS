@@ -17,3 +17,4 @@ class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'role', 'shop', 'is_active', 'is_staff', 'has_access')
     list_filter = ('role', 'is_active', 'is_staff', 'is_superuser', 'shop')
 
+admin.site.register(Notification)

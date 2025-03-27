@@ -27,6 +27,44 @@
         <button type="button" class="btn btn-dark " data-bs-toggle="modal" data-bs-target="#filterModal">
             Фильтр
         </button>
+        <div class="dropdown">
+            <button class="btn btn-secondary rounded-circle p-2" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class='bx bx-dots-vertical-rounded'></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+              <li>
+                <button class="dropdown-item d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                    <i class='bx bx-cog'></i>
+                    <span>Настройки страницы</span>
+                </button>
+            </li>
+            </ul>
+            <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="settingsModalLabel">Настройки</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" action="{% url 'update-per-pages' %}">    
+                                {% csrf_token %}
+                                <span>Введите количество товаров на странице</span>
+                                <input type="number" class="form-control" name="number_per_page" value="{{ number_per_page }}">
+                                <div class="alert alert-warning d-flex align-items-center mt-2" role="alert">
+                                    <i class="bx bx-exclamation-triangle me-2"></i>
+                                    <span>Эта настройка касается всем пользователям магазина</span>
+                                </div>
+                                <button type="submit" name="salehistory" class="btn btn-primary">Сохранить</button>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
     </div>
   </div>
 

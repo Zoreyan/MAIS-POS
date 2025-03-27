@@ -3,30 +3,40 @@
 {% block content %}
 <div class="container mt-5">
     <h2 class="text-center mb-4">Уведомления</h2>
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
             {% if notifications %}
                 {% for notification in notifications %}
-                    <div class="card mb-3 shadow-sm rounded-3" style="border-left: 5px solid #007bff;">
-                        <div class="card-header d-flex justify-content-between align-items-center bg-light">
-                            <strong class="text-primary">{{ notification.category }}</strong>
-                            <small class="text-muted">{{ notification.created }}</small>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title text-dark">{{ notification.title }}</h5>
-                            <!-- Стрелка для раскрытия/сворачивания -->
-                            <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#details{{ notification.id }}" aria-expanded="false" aria-controls="details{{ notification.id }}">
-                                <i class="bx bx-chevron-down"></i>
-                            </button>
-                            <div class="collapse" id="details{{ notification.id }}">
-                                <p class="card-text mt-3">{{ notification.details|safe }}</p>
+                    <div class="card mb-3 shadow-sm rounded-3 border-0">
+                        <div class="card-body position-relative">
+                            {% if notification.id in unread_ids %}
+                                <span class="position-absolute top-0 end-0 p-2 bg-primary rounded-circle" 
+                                      style="width: 10px; height: 10px;"></span>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="card-title mb-0 text-dark">
+                                    {{ notification.title }}
+                                </h4>
+                                <h5 class="text-muted">{{ notification.created|date:"d.m.Y H:i" }}</h5>
                             </div>
+                            {% if notification.details %}
+                                <button class="btn btn-sm text-primary p-0 mt-2" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#details{{ notification.id }}" 
+                                        aria-expanded="false">
+                                    Подробнее <i class="bx bx-chevron-down"></i>
+                                </button>
+                                <div class="collapse mt-2" id="details{{ notification.id }}">
+                                    <p class="card-text text-muted">{{ notification.details|safe }}</p>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="alert alert-info text-center" role="alert">
-                    У вас нет уведомлений.
+                <div class="alert alert-light text-center shadow-sm rounded-3 p-3">
+                    <i class="bx bx-bell-off text-secondary fs-4"></i>
+                    <p class="mb-0 text-muted">У вас нет новых уведомлений.</p>
                 </div>
             {% endif %}
         </div>

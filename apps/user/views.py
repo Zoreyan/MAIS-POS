@@ -109,3 +109,18 @@ def delete(request, pk):
     delete_obj(request, User, pk, 'Удален пользователь')
     return redirect('user-list')
 
+def notifications(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    notifications = Notification.objects.filter(shop=user.shop).order_by('-created')
+    
+    unread_ids = [n.id for n in notifications if user in n.is_not_read.all()]
+    
+    for notification in notifications:
+        if user in notification.is_not_read.all():
+            notification.is_not_read.remove(user)
+            notification.save()
+
+    return render(request, 'user/notifications.html', {
+        'notifications': notifications,
+        'unread_ids': unread_ids
+    })
